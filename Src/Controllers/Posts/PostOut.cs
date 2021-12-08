@@ -14,7 +14,7 @@ namespace Blog.Controllers.Posts
 
         public List<string> Authors { get; set; }
 
-        public List<string> Comments { get; set; }
+        public List<CommentOut> Comments { get; set; }
 
         public List<string> Tags { get; set; }
 
@@ -29,7 +29,7 @@ namespace Blog.Controllers.Posts
             CreatedAt = post.CreatedAt;
 
             Authors = post.Authors?.Select(b => b.Name).ToList();
-            Comments = post.Comments?.Select(c => c.Body).ToList();
+            Comments = post.Comments?.Select(c => new CommentOut(c)).ToList();
             Tags = post.Tags?.Select(c => c.Name).ToList();
         }
     }

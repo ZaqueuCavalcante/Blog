@@ -14,6 +14,8 @@ namespace Blog.Database.Configurations
 
             blogger.Property(a => a.Name).IsRequired();
             blogger.Property(a => a.Resume).IsRequired();
+
+            blogger.Property(a => a.CreatedAt).IsRequired();
         }
     }
 }

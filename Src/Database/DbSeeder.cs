@@ -9,12 +9,14 @@ namespace Blog.Database
             var blogger = new Blogger
             {
                 Name = "Sam",
-                Resume = "A tech blogger..."
+                Resume = "A tech blogger...",
+                CreatedAt = DateTime.Now
             };
 
             var reader = new Reader
             {
-                Name = "Elliot"
+                Name = "Elliot",
+                CreatedAt = DateTime.Now
             };
 
             var comment = new Comment

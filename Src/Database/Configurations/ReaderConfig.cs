@@ -13,6 +13,8 @@ namespace Blog.Database.Configurations
             reader.HasKey(a => a.Id);
 
             reader.Property(a => a.Name).IsRequired();
+
+            reader.Property(a => a.CreatedAt).IsRequired();
         }
     }
 }
