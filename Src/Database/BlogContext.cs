@@ -9,6 +9,7 @@ namespace Blog.Database
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Reader> Readers { get; set; }
+        public DbSet<Reply> Replies { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
         public BlogContext(DbContextOptions<BlogContext> options) : base(options) {}

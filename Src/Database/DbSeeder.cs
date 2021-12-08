@@ -13,19 +13,6 @@ namespace Blog.Database
                 CreatedAt = DateTime.Now
             };
 
-            var reader = new Reader
-            {
-                Name = "Elliot",
-                CreatedAt = DateTime.Now
-            };
-
-            var comment = new Comment
-            {
-                Body = "A comment...",
-                CreatedAt = DateTime.Now,
-                Reader = reader
-            };
-
             var techTag = new Tag
             {
                 Name = "Tech",
@@ -45,23 +32,40 @@ namespace Blog.Database
                 Body = "A blog post with many informations...",
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ blogger },
-                Comments = new List<Comment>{ comment },
                 Tags = new List<Tag>{ techTag, csharpTag }
             };
 
             db.Posts.Add(post);
             db.SaveChanges();
 
-            var commentId = db.Comments.First(x => x.Body == "A comment...").Id;
-
-            var reply = new Comment
+            var reader = new Reader
             {
+                Name = "Elliot",
+                CreatedAt = DateTime.Now
+            };
+
+            db.Readers.Add(reader);
+            db.SaveChanges();
+
+            var comment = new Comment
+            {
+                PostId = post.Id,
+                Body = "A comment...",
+                CreatedAt = DateTime.Now,
+                ReaderId = reader.Id
+            };
+
+            db.Comments.Add(comment);
+            db.SaveChanges();
+
+            var reply = new Reply
+            {
+                CommentId = comment.Id,
                 Body = "A comment reply...",
                 CreatedAt = DateTime.Now,
-                Blogger = blogger,
-                RepliedCommentId = commentId
+                BloggerId = blogger.Id
             };
-            db.Comments.Add(reply);
+            db.Replies.Add(reply);
 
             db.SaveChanges();
 

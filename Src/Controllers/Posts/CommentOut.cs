@@ -12,8 +12,7 @@ namespace Blog.Controllers.Posts
         public int? ReaderId { get; set; }
         public int? BloggerId { get; set; }
 
-        public int? RepliedCommentId { get; set; }
-        public List<CommentOut> Replies { get; set; }
+        public List<ReplyOut> Replies { get; set; }
 
         public CommentOut(Comment comment)
         {
@@ -25,9 +24,7 @@ namespace Blog.Controllers.Posts
             ReaderId = comment.ReaderId;
             BloggerId = comment.BloggerId;
 
-            RepliedCommentId = comment.RepliedCommentId;
-
-            Replies = comment.Replies?.Select(b => new CommentOut(b)).ToList();
+            Replies = comment.Replies?.Select(b => new ReplyOut(b)).ToList();
         }
     }
 }

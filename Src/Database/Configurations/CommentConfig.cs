@@ -11,27 +11,30 @@ namespace Blog.Database.Configurations
             comment.ToTable("comments");
 
             comment.HasKey(a => a.Id);
+            comment.Property(a => a.PostId).IsRequired();
 
             comment.Property(a => a.Body).IsRequired();
-
             comment.Property(a => a.CreatedAt).IsRequired();
 
-            comment.Property(a => a.PostId).IsRequired(false);
-
-            comment.HasOne<Reader>(p => p.Reader)
+            comment.HasOne<Reader>()
                 .WithMany()
                 .HasForeignKey(x => x.ReaderId)
                 .IsRequired(false);
 
-            comment.HasOne<Blogger>(p => p.Blogger)
+            comment.HasOne<Blogger>()
                 .WithMany()
                 .HasForeignKey(x => x.BloggerId)
                 .IsRequired(false);
 
-            comment.HasMany<Comment>(p => p.Replies)
+            comment.HasMany<Reply>(p => p.Replies)
                 .WithOne()
-                .HasForeignKey(x => x.RepliedCommentId)
-                .IsRequired(false);
+                .HasForeignKey(x => x.CommentId)
+                .IsRequired();
+
+            comment.HasCheckConstraint(
+                "comments_must_have_a_single_commenter",
+                "(reader_id IS NULL) != (blogger_id IS NULL)"
+            );
         }
     }
 }
