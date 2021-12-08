@@ -1,9 +1,9 @@
 # Blog
 
 Stack:
-    - .Net Core
-    - EF Core
-    - PostgreSQL
+- .Net Core
+- EF Core
+- PostgreSQL
 
 
 ## References:
