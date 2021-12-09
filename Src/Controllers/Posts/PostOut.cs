@@ -10,7 +10,7 @@ namespace Blog.Controllers.Posts
         public string Resume { get; set; }
         public string Body { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         public List<string> Authors { get; set; }
 
@@ -26,7 +26,7 @@ namespace Blog.Controllers.Posts
             Resume = post.Resume;
             Body = post.Body;
 
-            CreatedAt = post.CreatedAt;
+            CreatedAt = post.CreatedAt.ToString("dd/MM/yyyy HH:mm");;
 
             Authors = post.Authors?.Select(b => b.Name).ToList();
             Comments = post.Comments?.Select(c => new CommentOut(c)).ToList();

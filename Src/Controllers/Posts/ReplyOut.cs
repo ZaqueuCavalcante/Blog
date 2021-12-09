@@ -7,7 +7,7 @@ namespace Blog.Controllers.Posts
         public int Id { get; set; }
 
         public string Body { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         public int? ReaderId { get; set; }
         public int? BloggerId { get; set; }
@@ -17,7 +17,7 @@ namespace Blog.Controllers.Posts
             Id = reply.Id;
 
             Body = reply.Body;
-            CreatedAt = reply.CreatedAt;
+            CreatedAt = reply.CreatedAt.ToString("dd/MM/yyyy HH:mm");;
 
             ReaderId = reply.ReaderId;
             BloggerId = reply.BloggerId;

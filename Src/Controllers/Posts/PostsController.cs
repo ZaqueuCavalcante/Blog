@@ -97,8 +97,10 @@ namespace Blog.Controllers.Posts
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(l => l.Authors)
+                .Include(l => l.Comments).ThenInclude(c => c.Replies)
                 .Include(l => l.Tags)
                 .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))
+                .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
             return Ok(posts.Select(x => new PostOut(x)).ToList());
