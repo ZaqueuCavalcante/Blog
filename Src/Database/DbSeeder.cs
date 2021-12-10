@@ -22,7 +22,6 @@ namespace Blog.Database
             db.Users.AddRange(bloggerUser, readerUser);
             db.SaveChanges();
 
-
             var blogger = new Blogger
             {
                 Name = "Sam",
@@ -69,12 +68,22 @@ namespace Blog.Database
             var comment = new Comment
             {
                 PostId = post.Id,
+                PostRating = 5,
                 Body = "A comment...",
                 CreatedAt = DateTime.Now,
                 ReaderId = reader.Id
             };
 
-            db.Comments.Add(comment);
+            var otherComment = new Comment
+            {
+                PostId = post.Id,
+                PostRating = 2,
+                Body = "A other comment...",
+                CreatedAt = DateTime.Now,
+                ReaderId = reader.Id
+            };
+
+            db.Comments.AddRange(comment, otherComment);
             db.SaveChanges();
 
             var reply = new Reply
@@ -85,6 +94,16 @@ namespace Blog.Database
                 BloggerId = blogger.Id
             };
             db.Replies.Add(reply);
+
+            db.SaveChanges();
+
+            var like = new Like
+            {
+                CommentId = comment.Id,
+                CreatedAt = DateTime.Now,
+                ReaderId = reader.Id
+            };
+            db.Likes.Add(like);
 
             db.SaveChanges();
 

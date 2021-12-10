@@ -15,5 +15,13 @@ namespace Blog.Domain
         public List<Comment> Comments { get; set; }
 
         public List<Tag> Tags { get; set; }
+
+        public byte GetRating()
+        {
+            if (Comments == null || !Comments.Any())
+                return 0;
+
+            return (byte) (Comments.Sum(c => c.PostRating) / Comments.Count);
+        }
     }
 }

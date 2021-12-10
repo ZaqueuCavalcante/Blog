@@ -10,6 +10,8 @@ namespace Blog.Controllers.Posts
         public string Resume { get; set; }
         public string Body { get; set; }
 
+        public byte Rating { get; set; }
+
         public string CreatedAt { get; set; }
 
         public List<string> Authors { get; set; }
@@ -25,6 +27,8 @@ namespace Blog.Controllers.Posts
             Title = post.Title;
             Resume = post.Resume;
             Body = post.Body;
+
+            Rating = post.GetRating();
 
             CreatedAt = post.CreatedAt.ToString("dd/MM/yyyy HH:mm");;
 

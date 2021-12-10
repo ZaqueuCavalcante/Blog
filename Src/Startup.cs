@@ -34,6 +34,7 @@ namespace Blog
                 options.UseNpgsql(Configuration.GetConnectionString("Connection"));
                 options.UseSnakeCaseNamingConvention();
                 options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
             });
 
             services.AddCors();

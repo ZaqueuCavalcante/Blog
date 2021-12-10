@@ -12,6 +12,7 @@ namespace Blog.Database.Configurations.Domain
 
             comment.HasKey(b => b.Id);
             comment.Property(b => b.PostId).IsRequired();
+            comment.Property(b => b.PostRating).IsRequired();
 
             comment.Property(b => b.Body).IsRequired();
             comment.Property(b => b.CreatedAt).IsRequired();
@@ -31,9 +32,19 @@ namespace Blog.Database.Configurations.Domain
                 .HasForeignKey(r => r.CommentId)
                 .IsRequired();
 
+            comment.HasMany<Like>(c => c.Likes)
+                .WithOne()
+                .HasForeignKey(l => l.CommentId)
+                .IsRequired();
+
             comment.HasCheckConstraint(
                 "comments_must_have_a_single_commenter",
                 "(reader_id IS NULL) != (blogger_id IS NULL)"
+            );
+
+            comment.HasCheckConstraint(
+                "post_ratings_must_be_between_1_and_5",
+                "post_rating >= 1 AND post_rating <= 5"
             );
         }
     }

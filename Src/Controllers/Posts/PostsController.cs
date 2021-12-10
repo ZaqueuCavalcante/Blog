@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using System.Xml.Linq;
 using Blog.Database;
 using Blog.Domain;
 using Blog.Exceptions;
@@ -46,10 +46,10 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}", new PostOut(post));
         }
 
-        [HttpPost("{id}/comments")]
-        public async Task<IActionResult> PostComment(int id, CommentIn dto)
+        [HttpPost("{postId}/comments")]
+        public async Task<IActionResult> PostComment(int postId, CommentIn dto)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
                 throw new DomainException("Post not found.");
 
@@ -63,9 +63,10 @@ namespace Blog.Controllers.Posts
 
             var comment = new Comment
             {
+                PostId = postId,
+                PostRating = dto.PostRating,
                 Body = dto.Body,
                 CreatedAt = DateTime.Now,
-                PostId = id,
                 ReaderId = dto.ReaderId,
                 BloggerId = dto.BloggerId
             };
@@ -76,13 +77,71 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}", new PostOut(post));
         }
 
+        [HttpPost("{postId}/comments/{commentId}/likes")]
+        public async Task<IActionResult> PostCommentLike(int postId, int commentId, LikeIn dto)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post is null)
+                throw new DomainException("Post not found.");
+
+            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
+            if (comment is null)
+                throw new DomainException("Comment not found.");
+
+            var reader = await _context.Readers.FirstOrDefaultAsync(r => r.Id == dto.ReaderId);
+            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == dto.BloggerId);
+            if (reader is null && blogger is null)
+                throw new DomainException("Liker not found.");
+
+            if (reader is not null && blogger is not null)
+                throw new DomainException("A like must have a single liker.");
+
+            Like like;
+
+            if (reader is not null)
+            {
+                like = await _context.Likes.FirstOrDefaultAsync(
+                    l => l.CommentId == commentId && l.ReaderId == reader.Id
+                );
+            }
+            else
+            {
+                like = await _context.Likes.FirstOrDefaultAsync(
+                    l => l.CommentId == commentId && l.BloggerId == blogger.Id
+                );
+            }
+
+            if (like is not null)
+            {
+                _context.Likes.Remove(like);
+                await _context.SaveChangesAsync();
+                return Ok("Like removed.");
+            }
+
+            like = new Like
+            {
+                CommentId = comment.Id,
+                CreatedAt = DateTime.Now,
+                ReaderId = reader?.Id,
+                BloggerId = blogger?.Id
+            };
+
+            _context.Likes.Add(like);
+            await _context.SaveChangesAsync();
+
+            return Ok("Like added.");
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<PostOut>> GetPost(int id)
         {
             var post = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(l => l.Authors)
-                .Include(l => l.Comments).ThenInclude(c => c.Replies)
+                .Include(l => l.Comments)
+                    .ThenInclude(c => c.Replies)
+                .Include(l => l.Comments)
+                    .ThenInclude(c => c.Likes)
                 .Include(l => l.Tags)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
@@ -98,9 +157,12 @@ namespace Blog.Controllers.Posts
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(l => l.Authors)
-                .Include(l => l.Comments).ThenInclude(c => c.Replies)
+                .Include(l => l.Comments)
+                    .ThenInclude(c => c.Replies)
+                .Include(l => l.Comments)
+                    .ThenInclude(c => c.Likes)
                 .Include(l => l.Tags)
-                .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))  // Sql Injection??
+                .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 

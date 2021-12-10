@@ -12,6 +12,7 @@ namespace Blog.Database
         public DbSet<Reader> Readers { get; set; }
         public DbSet<Reply> Replies { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<Like> Likes { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }

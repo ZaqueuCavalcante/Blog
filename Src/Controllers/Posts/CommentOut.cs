@@ -6,6 +6,10 @@ namespace Blog.Controllers.Posts
     {
         public int Id { get; set; }
 
+        public byte PostRating { get; set; }
+
+        public int Likes { get; set; }
+
         public string Body { get; set; }
         public string CreatedAt { get; set; }
 
@@ -17,6 +21,10 @@ namespace Blog.Controllers.Posts
         public CommentOut(Comment comment)
         {
             Id = comment.Id;
+
+            PostRating = comment.PostRating;
+
+            Likes = comment.GetLikes();
 
             Body = comment.Body;
             CreatedAt = comment.CreatedAt.ToString("dd/MM/yyyy HH:mm");
