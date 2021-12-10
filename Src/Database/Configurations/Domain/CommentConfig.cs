@@ -2,7 +2,7 @@ using Blog.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Blog.Database.Configurations
+namespace Blog.Database.Configurations.Domain
 {
     public class CommentConfig : IEntityTypeConfiguration<Comment>
     {
@@ -10,25 +10,25 @@ namespace Blog.Database.Configurations
         {
             comment.ToTable("comments");
 
-            comment.HasKey(a => a.Id);
-            comment.Property(a => a.PostId).IsRequired();
+            comment.HasKey(b => b.Id);
+            comment.Property(b => b.PostId).IsRequired();
 
-            comment.Property(a => a.Body).IsRequired();
-            comment.Property(a => a.CreatedAt).IsRequired();
+            comment.Property(b => b.Body).IsRequired();
+            comment.Property(b => b.CreatedAt).IsRequired();
 
             comment.HasOne<Reader>()
                 .WithMany()
-                .HasForeignKey(x => x.ReaderId)
+                .HasForeignKey(c => c.ReaderId)
                 .IsRequired(false);
 
             comment.HasOne<Blogger>()
                 .WithMany()
-                .HasForeignKey(x => x.BloggerId)
+                .HasForeignKey(c => c.BloggerId)
                 .IsRequired(false);
 
-            comment.HasMany<Reply>(p => p.Replies)
+            comment.HasMany<Reply>(c => c.Replies)
                 .WithOne()
-                .HasForeignKey(x => x.CommentId)
+                .HasForeignKey(r => r.CommentId)
                 .IsRequired();
 
             comment.HasCheckConstraint(

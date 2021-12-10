@@ -2,7 +2,7 @@ using Blog.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Blog.Database.Configurations
+namespace Blog.Database.Configurations.Domain
 {
     public class ReplyConfig : IEntityTypeConfiguration<Reply>
     {
@@ -10,19 +10,19 @@ namespace Blog.Database.Configurations
         {
             reply.ToTable("replies");
 
-            reply.HasKey(a => a.Id);
+            reply.HasKey(r => r.Id);
 
-            reply.Property(a => a.Body).IsRequired();
-            reply.Property(a => a.CreatedAt).IsRequired();
+            reply.Property(r => r.Body).IsRequired();
+            reply.Property(r => r.CreatedAt).IsRequired();
 
             reply.HasOne<Reader>()
                 .WithMany()
-                .HasForeignKey(x => x.ReaderId)
+                .HasForeignKey(r => r.ReaderId)
                 .IsRequired(false);
 
             reply.HasOne<Blogger>()
                 .WithMany()
-                .HasForeignKey(x => x.BloggerId)
+                .HasForeignKey(r => r.BloggerId)
                 .IsRequired(false);
 
             reply.HasCheckConstraint(

@@ -1,4 +1,5 @@
-﻿using Blog.Database;
+﻿using System.Data.SqlClient;
+using Blog.Database;
 using Blog.Domain;
 using Blog.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -99,7 +100,7 @@ namespace Blog.Controllers.Posts
                 .Include(l => l.Authors)
                 .Include(l => l.Comments).ThenInclude(c => c.Replies)
                 .Include(l => l.Tags)
-                .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))
+                .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))  // Sql Injection??
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 

@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Identity;
 
 namespace Blog.Database
 {
@@ -6,11 +7,28 @@ namespace Blog.Database
     {
         public static void Seed(this BlogContext db)
         {
+            var bloggerUser = new User
+            {
+                UserName = "Sam",
+                Email = "sam@blog.com"
+            };
+
+            var readerUser = new User
+            {
+                UserName = "Elliot",
+                Email = "elliot@blog.com"
+            };
+
+            db.Users.AddRange(bloggerUser, readerUser);
+            db.SaveChanges();
+
+
             var blogger = new Blogger
             {
                 Name = "Sam",
                 Resume = "A tech blogger...",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                UserId = bloggerUser.Id
             };
 
             var techTag = new Tag
@@ -41,7 +59,8 @@ namespace Blog.Database
             var reader = new Reader
             {
                 Name = "Elliot",
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                UserId = readerUser.Id
             };
 
             db.Readers.Add(reader);

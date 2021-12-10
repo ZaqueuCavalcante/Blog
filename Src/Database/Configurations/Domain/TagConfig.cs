@@ -2,7 +2,7 @@ using Blog.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Blog.Database.Configurations
+namespace Blog.Database.Configurations.Domain
 {
     public class TagConfig : IEntityTypeConfiguration<Tag>
     {
@@ -10,9 +10,9 @@ namespace Blog.Database.Configurations
         {
             tag.ToTable("tags");
 
-            tag.HasKey(a => a.Name).HasName("Name");
+            tag.HasKey(t => t.Name);
 
-            tag.Property(a => a.CreatedAt).IsRequired();
+            tag.Property(t => t.CreatedAt).IsRequired();
         }
     }
 }

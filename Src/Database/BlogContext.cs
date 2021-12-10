@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Database
@@ -12,17 +13,20 @@ namespace Blog.Database
         public DbSet<Reply> Replies { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
         public BlogContext(DbContextOptions<BlogContext> options) : base(options) {}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.HasDefaultSchema("blog");
+            builder.HasDefaultSchema("blog");
 
-            modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+            builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
         }
     }
 }
