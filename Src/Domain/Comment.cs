@@ -1,3 +1,5 @@
+using Blog.Exceptions;
+
 namespace Blog.Domain
 {
     public class Comment
@@ -17,6 +19,14 @@ namespace Blog.Domain
         public List<Reply> Replies { get; set; }
 
         public List<Like> Likes { get; set; }
+
+        public void SetPostRating(byte postRating)
+        {
+            if (postRating < 1 || postRating > 5)
+                throw new DomainException("Post rating out of range. Must be between 1 and 5.");
+
+            PostRating = postRating;
+        }
 
         public int GetLikes()
         {

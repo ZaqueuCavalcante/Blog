@@ -64,12 +64,13 @@ namespace Blog.Controllers.Posts
             var comment = new Comment
             {
                 PostId = postId,
-                PostRating = dto.PostRating,
                 Body = dto.Body,
                 CreatedAt = DateTime.Now,
-                ReaderId = dto.ReaderId,
-                BloggerId = dto.BloggerId
+                ReaderId = (reader == null) ? null : reader.Id,
+                BloggerId = (blogger == null) ? null : blogger.Id
             };
+
+            comment.SetPostRating(dto.PostRating);
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();

@@ -5,6 +5,7 @@ using Blog.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Blog.Identity;
+using System.Reflection;
 
 namespace Blog
 {
@@ -24,7 +25,16 @@ namespace Blog
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Blog", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Blog",
+                    Version = "1.0",
+                    Description = "A API to a simple blog engine."
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
             });
 
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -132,7 +142,7 @@ namespace Blog
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));
 
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();

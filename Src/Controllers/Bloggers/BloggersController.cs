@@ -1,4 +1,5 @@
-﻿using Blog.Database;
+﻿using System.Security;
+using Blog.Database;
 using Blog.Domain;
 using Blog.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,11 @@ namespace Blog.Controllers.Bloggers
             return Created($"/bloggers/{blogger.Id}", new BloggerOut(blogger));
         }
 
+        /// <summary>
+        /// Returns a blogger, given your id.
+        /// </summary>
+        /// <param name="id">The id of blogger.</param>
+        /// <returns>A blogger.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
         {
@@ -49,6 +55,10 @@ namespace Blog.Controllers.Bloggers
             return Ok(new BloggerOut(blogger));
         }
 
+        /// <summary>
+        /// Returns all the bloggers.
+        /// </summary>
+        /// <returns>A list of bloggers.</returns>
         [HttpGet]
         public async Task<ActionResult<List<BloggerOut>>> GetBloggers()
         {
