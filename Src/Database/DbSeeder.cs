@@ -7,6 +7,8 @@ namespace Blog.Database
     {
         public static void Seed(this BlogContext db)
         {
+            #region Users
+
             var bloggerUser = new User
             {
                 UserName = "Sam",
@@ -19,8 +21,18 @@ namespace Blog.Database
                 Email = "elliot@blog.com"
             };
 
-            db.Users.AddRange(bloggerUser, readerUser);
+            var otherReaderUser = new User
+            {
+                UserName = "Darlene",
+                Email = "darlene@blog.com"
+            };
+
+            db.Users.AddRange(bloggerUser, readerUser, otherReaderUser);
             db.SaveChanges();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Bloggers, Tags and Posts
 
             var blogger = new Blogger
             {
@@ -42,6 +54,12 @@ namespace Blog.Database
                 CreatedAt = DateTime.Now
             };
 
+            var efCoreTag = new Tag
+            {
+                Name = "EF Core",
+                CreatedAt = DateTime.Now
+            };
+
             var post = new Post
             {
                 Title = "A simple blog post title",
@@ -49,11 +67,15 @@ namespace Blog.Database
                 Body = "A blog post with many informations...",
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ blogger },
-                Tags = new List<Tag>{ techTag, csharpTag }
+                Tags = new List<Tag>{ techTag, csharpTag, efCoreTag }
             };
 
             db.Posts.Add(post);
             db.SaveChanges();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Readers
 
             var reader = new Reader
             {
@@ -62,8 +84,19 @@ namespace Blog.Database
                 UserId = readerUser.Id
             };
 
-            db.Readers.Add(reader);
+            var otherReader = new Reader
+            {
+                Name = "Darlene",
+                CreatedAt = DateTime.Now,
+                UserId = otherReaderUser.Id
+            };
+
+            db.Readers.AddRange(reader, otherReader);
             db.SaveChanges();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Comments
 
             var comment = new Comment
             {
@@ -77,14 +110,18 @@ namespace Blog.Database
             var otherComment = new Comment
             {
                 PostId = post.Id,
-                PostRating = 2,
+                PostRating = 1,
                 Body = "A other comment...",
                 CreatedAt = DateTime.Now,
-                ReaderId = reader.Id
+                ReaderId = otherReader.Id
             };
 
             db.Comments.AddRange(comment, otherComment);
             db.SaveChanges();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Replies
 
             var reply = new Reply
             {
@@ -93,9 +130,21 @@ namespace Blog.Database
                 CreatedAt = DateTime.Now,
                 BloggerId = blogger.Id
             };
-            db.Replies.Add(reply);
 
+            var otherReply = new Reply
+            {
+                CommentId = comment.Id,
+                Body = "A other comment reply...",
+                CreatedAt = DateTime.Now,
+                BloggerId = otherReader.Id
+            };
+
+            db.Replies.AddRange(reply, otherReply);
             db.SaveChanges();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Likes
 
             var like = new Like
             {
@@ -103,11 +152,18 @@ namespace Blog.Database
                 CreatedAt = DateTime.Now,
                 ReaderId = reader.Id
             };
-            db.Likes.Add(like);
 
+            var otherLike = new Like
+            {
+                CommentId = comment.Id,
+                CreatedAt = DateTime.Now,
+                ReaderId = otherReader.Id
+            };
+
+            db.Likes.AddRange(like, otherLike);
             db.SaveChanges();
 
-            Console.WriteLine("Database seed completed...");
+            #endregion
         }
     }
 }

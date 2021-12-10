@@ -39,6 +39,11 @@ namespace Blog.Controllers.Readers
         [HttpGet("{id}")]
         public async Task<ActionResult<ReaderOut>> GetReader(int id)
         {
+            var user = HttpContext.User;
+
+            var claims = user.Claims;
+
+
             var reader = await _context.Readers
                 .FirstOrDefaultAsync(l => l.Id == id);
 

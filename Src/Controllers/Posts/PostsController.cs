@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using Blog.Database;
+﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Exceptions;
 using Microsoft.AspNetCore.Mvc;
