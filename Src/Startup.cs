@@ -119,11 +119,13 @@ namespace Blog
 
             services.Configure<CookieAuthenticationOptions>(options =>
             {
-                // options.AccessDeniedPath = "/identity/account/access-denied";  // Used by the handler for the redirection target when handling ForbidAsync.
+                options.LoginPath = "/identity/users/login";
+                options.LogoutPath = "/identity/users/logout";
+                options.AccessDeniedPath = "/identity/users/forbidden";  // Used by the handler for the redirection target when handling ForbidAsync.
+
                 // options.ClaimsIssuer = "";  // The issuer that should be used for any claims that are created.
                 // options.Cookie.Name = "YourAppCookieName";
                 // options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                // options.LoginPath = "/identity/account/login";
                 // options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 // options.SlidingExpiration = true;
             });

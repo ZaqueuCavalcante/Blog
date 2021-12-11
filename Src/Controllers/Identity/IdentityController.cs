@@ -43,25 +43,27 @@ namespace Blog.Controllers.Identity
             SignInResult result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, true, true);
 
             if (result.Succeeded)
-                return Ok("Succeeded");
+                return Ok("Login succeeded!");
             
             if (result.IsLockedOut)
                 return Ok("Account Locked");
 
             if (result.IsNotAllowed)
-                return Ok("Sign In Not Allowed");
+                return Ok("Login Not Allowed");
 
             if (result.RequiresTwoFactor)
                 return Ok("Requires Two Factor");
-
-            if (result.IsLockedOut)
-                return Ok("Requires Two Factor");
             
-            return Ok("Sign In Failed");
+            return Ok("Login Failed");
         }
 
-
-
+        [HttpPost("users/logout")]
+        public async Task<ActionResult> Logout(UserIn dto)
+        {
+            await _signInManager.SignOutAsync();
+            
+            return Ok("Logout succeeded");
+        }
 
         [HttpGet("features")]
         public async Task<ActionResult> GetFeatures()

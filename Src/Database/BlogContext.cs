@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Database
 {
-    public class BlogContext : IdentityDbContext<User, Role, int>  //DbContext
+    public class BlogContext : IdentityDbContext<User, Role, int>
     {
         public DbSet<Blogger> Bloggers { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -16,12 +16,6 @@ namespace Blog.Database
         public DbSet<Like> Likes { get; set; }
 
         public DbSet<User> Users { get; set; }
-        // public DbSet<Role> Roles { get; set; }
-        // public DbSet<UserRole> UserRoles { get; set; }
-        // public DbSet<UserClaim> UserClaims { get; set; }
-        // public DbSet<UserLogin> UserLogins { get; set; }
-        // public DbSet<UserToken> UserTokens { get; set; }
-        // public DbSet<RoleClaim> RoleClaims { get; set; }
 
         public BlogContext(DbContextOptions<BlogContext> options) : base(options) {}
 
