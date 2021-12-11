@@ -1,12 +1,12 @@
-using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Blog.Database.Configurations.Identity
 {
-    public class UserLoginConfig : IEntityTypeConfiguration<UserLogin>
+    public class UserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<int>>
     {
-        public void Configure(EntityTypeBuilder<UserLogin> userLogin)
+        public void Configure(EntityTypeBuilder<IdentityUserLogin<int>> userLogin)
         {
             userLogin.ToTable("user_logins", "entity");
 

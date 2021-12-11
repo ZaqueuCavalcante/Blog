@@ -1,4 +1,5 @@
 using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,13 +14,13 @@ namespace Blog.Database.Configurations.Identity
             role.HasKey(r => r.Id);
 
             // Each Role can have many entries in the UserRole join table.
-            role.HasMany<UserRole>()
+            role.HasMany<IdentityUserRole<int>>()
                 .WithOne()
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
 
             // Each Role can have many associated RoleClaims.
-            role.HasMany<RoleClaim>()
+            role.HasMany<IdentityRoleClaim<int>>()
                 .WithOne()
                 .HasForeignKey(rc => rc.RoleId)
                 .IsRequired();

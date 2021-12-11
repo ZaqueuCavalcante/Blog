@@ -76,19 +76,25 @@ namespace Blog
 
             services.Configure<IdentityOptions>(options =>
             {
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // The amount of time a user is locked out when a lockout occurs.
-                options.Lockout.MaxFailedAccessAttempts = 5;  // The number of failed access attempts until a user is locked out, if lockout is enabled.
-                options.Lockout.AllowedForNewUsers = true;  // Determines if a new user can be locked out.
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
             });
 
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 6;  // The minimum length.
                 options.Password.RequireDigit = true;  // Requires a number between 0-9.
-                options.Password.RequireUppercase = true;  // Requires an uppercase character.
                 options.Password.RequireLowercase = true;  // Requires a lowercase character.
+                options.Password.RequireUppercase = true;  // Requires an uppercase character.
                 options.Password.RequireNonAlphanumeric = true;  // Requires a non-alphanumeric character (@, %, #, !, &, $, ...).
-                options.Password.RequiredUniqueChars = 1;  // Requires the number of distinct characters.
+                options.Password.RequiredUniqueChars = 1;  // Requires the minimum number of distinct characters.
+            });
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // The amount of time a user is locked out when a lockout occurs.
+                options.Lockout.MaxFailedAccessAttempts = 5;  // The number of failed access attempts until a user is locked out, if lockout is enabled.
+                options.Lockout.AllowedForNewUsers = true;  // Determines if a new user can be locked out.
             });
 
             services.Configure<IdentityOptions>(options =>
@@ -109,11 +115,7 @@ namespace Blog
                 // options.Tokens.ProviderMap = "";  // Used to construct a User Token Provider with the key used as the provider's name.
             });
 
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = false;
-            });
+ 
 
             services.Configure<CookieAuthenticationOptions>(options =>
             {

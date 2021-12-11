@@ -1,12 +1,12 @@
-using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Blog.Database.Configurations.Identity
 {
-    public class UserClaimConfig : IEntityTypeConfiguration<UserClaim>
+    public class UserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<int>>
     {
-        public void Configure(EntityTypeBuilder<UserClaim> userClaim)
+        public void Configure(EntityTypeBuilder<IdentityUserClaim<int>> userClaim)
         {
             userClaim.ToTable("user_claims", "entity");
 

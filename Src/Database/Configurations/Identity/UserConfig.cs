@@ -1,4 +1,5 @@
 using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,25 +14,25 @@ namespace Blog.Database.Configurations.Identity
             user.HasKey(u => u.Id);
 
             // Each User can have many UserClaims.
-            user.HasMany<UserClaim>()
+            user.HasMany<IdentityUserClaim<int>>()
                 .WithOne()
                 .HasForeignKey(uc => uc.UserId)
                 .IsRequired();
 
             // Each User can have many UserLogins.
-            user.HasMany<UserLogin>()
+            user.HasMany<IdentityUserLogin<int>>()
                 .WithOne()
                 .HasForeignKey(ul => ul.UserId)
                 .IsRequired();
 
             // Each User can have many UserTokens.
-            user.HasMany<UserToken>()
+            user.HasMany<IdentityUserToken<int>>()
                 .WithOne()
                 .HasForeignKey(ut => ut.UserId)
                 .IsRequired();
 
             // Each User can have many entries in the UserRole join table.
-            user.HasMany<UserRole>()
+            user.HasMany<IdentityUserRole<int>>()
                 .WithOne()
                 .HasForeignKey(ur => ur.UserId)
                 .IsRequired();

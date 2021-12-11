@@ -1,12 +1,12 @@
-using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Blog.Database.Configurations.Identity
 {
-    public class UserTokenConfig : IEntityTypeConfiguration<UserToken>
+    public class UserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<int>>
     {
-        public void Configure(EntityTypeBuilder<UserToken> userToken)
+        public void Configure(EntityTypeBuilder<IdentityUserToken<int>> userToken)
         {
             userToken.ToTable("user_tokens", "entity");
 
