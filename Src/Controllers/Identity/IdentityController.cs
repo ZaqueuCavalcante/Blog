@@ -1,7 +1,10 @@
-﻿using Blog.Identity;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Blog.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace Blog.Controllers.Identity
 {
@@ -11,13 +14,16 @@ namespace Blog.Controllers.Identity
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private IConfiguration _configuration { get; }
 
         public IdentityController(
             UserManager<User> userManager,
-            SignInManager<User> signInManager
+            SignInManager<User> signInManager,
+            IConfiguration configuration
         ) {
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         [HttpPost("users")]
@@ -40,11 +46,16 @@ namespace Blog.Controllers.Identity
         [HttpPost("users/login")]
         public async Task<ActionResult> Login(UserIn dto)
         {
-            SignInResult result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, true, true);
+            var result = await _signInManager.PasswordSignInAsync(
+                userName: dto.Email,
+                password: dto.Password,
+                isPersistent: true,
+                lockoutOnFailure: true
+            );
 
             if (result.Succeeded)
-                return Ok("Login succeeded!");
-            
+                return Ok(new { Jwt = await GetJwt(dto.Email) });
+
             if (result.IsLockedOut)
                 return Ok("Account Locked");
 
@@ -58,11 +69,63 @@ namespace Blog.Controllers.Identity
         }
 
         [HttpPost("users/logout")]
-        public async Task<ActionResult> Logout(UserIn dto)
+        public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             
             return Ok("Logout succeeded");
+        }
+
+        [HttpPost("users/change-password")]
+        public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                dto.Current,
+                dto.NewPassword
+            );
+
+            if (result.Succeeded)
+                return Ok("Password changed.");
+
+            return Ok("Password not changed.");
+        }
+
+        private async Task<string> GetJwt(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+
+            var identityClaims = new ClaimsIdentity();
+            identityClaims.AddClaims(claims);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:SecurityKey"]);
+            var expirationTime = double.Parse(_configuration["Jwt:ExpirationTimeInSeconds"]);
+            var signingCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature
+            );
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"],
+                Expires = DateTime.UtcNow.AddSeconds(expirationTime),
+                SigningCredentials = signingCredentials,
+                Subject = identityClaims
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var encodedToken = tokenHandler.WriteToken(token);
+
+            return encodedToken;
         }
 
         [HttpGet("features")]

@@ -1,6 +1,8 @@
 ﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Exceptions;
+using Blog.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +10,7 @@ namespace Blog.Controllers.Posts
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class PostsController : ControllerBase
     {
         private readonly BlogContext _context;
@@ -152,6 +155,8 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpGet]
+        [ClaimsAuthorize("auth", "yes")]
+        [ClaimsAuthorize("verify", "yes")]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
         {
             var posts = await _context.Posts

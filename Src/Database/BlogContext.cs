@@ -1,11 +1,10 @@
 using Blog.Domain;
 using Blog.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Database
 {
-    public class BlogContext : IdentityDbContext<User, Role, int>
+    public class BlogContext : DbContext
     {
         public DbSet<Blogger> Bloggers { get; set; }
         public DbSet<Comment> Comments { get; set; }

@@ -70,7 +70,17 @@ namespace Blog.Database
                 Tags = new List<Tag>{ techTag, csharpTag, efCoreTag }
             };
 
-            db.Posts.Add(post);
+            var otherPost = new Post
+            {
+                Title = "A other simple blog post title",
+                Resume = "A other very short blog post resume.",
+                Body = "A other blog post with many informations...",
+                CreatedAt = DateTime.Now,
+                Authors = new List<Blogger>{ blogger },
+                Tags = new List<Tag>{ techTag }
+            };
+
+            db.Posts.AddRange(post, otherPost);
             db.SaveChanges();
 
             #endregion

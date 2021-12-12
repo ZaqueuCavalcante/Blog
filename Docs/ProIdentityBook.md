@@ -72,7 +72,20 @@ Other simple project, with Authentication and Authorization.
         - If the credentials match the stored data, then a **cookie** is added to the response that securely identifies the user in subsequent requests.
         - ASP.NET Core uses the **ClaimsPrincipal** class to represent the signed-in user.
         - Evaluating the user’s credentials and creating the ClaimsPrincipal object are the responsibilities of the sign-in manager class, SignInManager<User>, which is configured as a service when Identity is configured.
-        - 
+
+## 9 - Creating, Deleting, and Locking Accounts
+
+- Creating
+
+- Deleting
+
+- Locking
+
+## 10 - Using Roles and Claims
+
+- Roles differentiate **groups of users** to create **authorization policies**.
+- Claims are used to represent any data known about a user.
+
 
 
 
