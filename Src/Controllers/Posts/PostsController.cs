@@ -156,7 +156,6 @@ namespace Blog.Controllers.Posts
 
         [HttpGet]
         [ClaimsAuthorize("auth", "yes")]
-        [ClaimsAuthorize("verify", "yes")]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
         {
             var posts = await _context.Posts

@@ -2,6 +2,7 @@ using System.Text;
 using Blog.Database;
 using Blog.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,7 +20,7 @@ namespace Bolg.Services
 
             services.Configure<IdentityOptions>(options =>
             {
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.AllowedUserNameCharacters += "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
                 options.User.RequireUniqueEmail = false;
             });
 
@@ -80,7 +81,12 @@ namespace Bolg.Services
 
 
 
-            services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", options =>
             {
                 options.SaveToken = true;
 

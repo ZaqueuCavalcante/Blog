@@ -54,7 +54,17 @@ namespace Blog.Controllers.Identity
             );
 
             if (result.Succeeded)
-                return Ok(new { Jwt = await GetJwt(dto.Email) });
+            {
+                var response = new {
+                    AccessToken = await GetJwt(dto.Email),
+                    TokenType = "Bearer",
+                    ExpiresIn = _configuration["Jwt:ExpirationTimeInSeconds"],
+                    RefreshToken = "",
+                    Scope = "create"
+                };
+
+                return Ok(response);
+            }
 
             if (result.IsLockedOut)
                 return Ok("Account Locked");
@@ -126,20 +136,6 @@ namespace Blog.Controllers.Identity
             var encodedToken = tokenHandler.WriteToken(token);
 
             return encodedToken;
-        }
-
-        [HttpGet("features")]
-        public async Task<ActionResult> GetFeatures()
-        {
-            var features = _userManager.GetType().GetProperties()
-                .Where(prop => prop.Name.StartsWith("Supports"))
-                .OrderBy(p => p.Name)
-                .Select(prop => (prop.Name, prop.GetValue(_userManager)
-                .ToString())).ToList();
-
-            var result = features.Select(t => new { Feature = t.Item1, Supports = t.Item2 });
-
-            return Ok(result);
         }
     }
 }
