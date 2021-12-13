@@ -1,10 +1,7 @@
-using System.Text;
 using Blog.Database;
 using Blog.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Bolg.Services
 {
@@ -76,35 +73,6 @@ namespace Bolg.Services
             {
                 // options.IterationCount = 10_000;
                 // options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3;
-            });
-
-
-
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer("Bearer", options =>
-            {
-                options.SaveToken = true;
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.ASCII.GetBytes(configuration["Jwt:SecurityKey"])
-                    ),
-
-                    ValidateAudience = true,
-                    ValidAudience = configuration["Jwt:Audience"],
-
-                    ValidateLifetime = true
-                };
             });
 
             return services;

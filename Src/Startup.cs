@@ -31,9 +31,11 @@ namespace Blog
                 options.EnableSensitiveDataLogging();
             });
 
-            services.AddCors();
+            services.AddCorsConfigurations(Configuration);
 
             services.AddIdentityConfigurations(Configuration);
+
+            services.AddJwtConfigurations(Configuration);
         }
 
         public void Configure(
@@ -47,15 +49,17 @@ namespace Blog
                 app.UseSwagger();
                 app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));
 
+                app.UseCors("Development");
+
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
                 DbSeeder.Seed(context);
             }
-
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()); 
+            else
+            {
+                app.UseCors("Production");
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
 

@@ -8,6 +8,8 @@ namespace Blog.Domain
         public string Resume { get; set; }
         public string Body { get; set; }
 
+        public string Category { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public List<Blogger> Authors { get; set; }

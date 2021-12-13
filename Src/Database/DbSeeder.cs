@@ -1,3 +1,4 @@
+using System.Reflection;
 using Blog.Domain;
 using Blog.Identity;
 
@@ -32,7 +33,7 @@ namespace Blog.Database
 
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            #region Bloggers, Tags and Posts
+            #region Bloggers, Tags, Categories and Posts
 
             var blogger = new Blogger
             {
@@ -60,11 +61,19 @@ namespace Blog.Database
                 CreatedAt = DateTime.Now
             };
 
+            var category = new Category
+            {
+                Name = "ASP.NET CORE",
+                Description = "Category description...",
+                CreatedAt = DateTime.Now
+            };
+
             var post = new Post
             {
                 Title = "A simple blog post title",
                 Resume = "A very short blog post resume.",
                 Body = "A blog post with many informations...",
+                Category = category.Name,
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ blogger },
                 Tags = new List<Tag>{ techTag, csharpTag, efCoreTag }
@@ -75,11 +84,13 @@ namespace Blog.Database
                 Title = "A other simple blog post title",
                 Resume = "A other very short blog post resume.",
                 Body = "A other blog post with many informations...",
+                Category = category.Name,
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ blogger },
                 Tags = new List<Tag>{ techTag }
             };
 
+            db.Categories.Add(category);
             db.Posts.AddRange(post, otherPost);
             db.SaveChanges();
 
