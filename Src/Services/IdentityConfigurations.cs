@@ -7,10 +7,8 @@ namespace Bolg.Services
 {
     public static class IdentityConfigurations
     {
-        public static IServiceCollection AddIdentityConfigurations(
-            this IServiceCollection services,
-            IConfiguration configuration
-        ) {
+        public static IServiceCollection AddIdentityConfigurations(this IServiceCollection services)
+        {
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<BlogContext>()
                 .AddDefaultTokenProviders();

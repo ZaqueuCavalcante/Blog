@@ -31,29 +31,25 @@ namespace Blog
                 options.EnableSensitiveDataLogging();
             });
 
-            services.AddCorsConfigurations(Configuration);
+            services.AddCorsConfigurations();
 
-            services.AddIdentityConfigurations(Configuration);
+            services.AddIdentityConfigurations();
 
             services.AddJwtConfigurations(Configuration);
         }
 
         public void Configure(
             IApplicationBuilder app,
-            IWebHostEnvironment env,
-            BlogContext context
+            IWebHostEnvironment env
         ) {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
                 app.UseSwagger();
                 app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));
 
                 app.UseCors("Development");
-
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-                DbSeeder.Seed(context);
             }
             else
             {

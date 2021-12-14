@@ -26,23 +26,6 @@ namespace Blog.Controllers.Identity
             _configuration = configuration;
         }
 
-        [HttpPost("users")]
-        public async Task<ActionResult> PostUser(UserIn dto)
-        {
-            var user = new User
-            {
-                UserName = dto.Name,
-                Email = dto.Email
-            };
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (result.Succeeded)
-                return Created($"identity/users/{user.Id}", user);
-
-            return BadRequest(result.Errors);
-        }
-
         [HttpPost("users/login")]
         public async Task<ActionResult> Login(UserIn dto)
         {

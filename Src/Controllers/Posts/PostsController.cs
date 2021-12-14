@@ -80,6 +80,65 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}", new PostOut(post));
         }
 
+        [HttpPost("{postId}/comments/{commentId}/replies")]
+        public async Task<IActionResult> PostCommentReply(int postId, int commentId, LikeIn dto)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post is null)
+                throw new DomainException("Post not found.");
+
+            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
+            if (comment is null)
+                throw new DomainException("Comment not found.");
+
+            var reader = await _context.Readers.FirstOrDefaultAsync(r => r.Id == dto.ReaderId);
+            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == dto.BloggerId);
+            if (reader is null && blogger is null)
+                throw new DomainException("Liker not found.");
+
+            if (reader is not null && blogger is not null)
+                throw new DomainException("A like must have a single liker.");
+
+            Like like;
+
+            if (reader is not null)
+            {
+                like = await _context.Likes.FirstOrDefaultAsync(
+                    l => l.CommentId == commentId && l.ReaderId == reader.Id
+                );
+            }
+            else
+            {
+                like = await _context.Likes.FirstOrDefaultAsync(
+                    l => l.CommentId == commentId && l.BloggerId == blogger.Id
+                );
+            }
+
+            if (like is not null)
+            {
+                _context.Likes.Remove(like);
+                await _context.SaveChangesAsync();
+                return Ok("Like removed.");
+            }
+
+            like = new Like
+            {
+                CommentId = comment.Id,
+                CreatedAt = DateTime.Now,
+                ReaderId = reader?.Id,
+                BloggerId = blogger?.Id
+            };
+
+            _context.Likes.Add(like);
+            await _context.SaveChangesAsync();
+
+            return Ok("Like added.");
+        }
+
+
+
+
+
         [HttpPost("{postId}/comments/{commentId}/likes")]
         public async Task<IActionResult> PostCommentLike(int postId, int commentId, LikeIn dto)
         {
@@ -155,7 +214,7 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpGet]
-        [ClaimsAuthorize("auth", "yes")]
+        // [ClaimsAuthorize("auth", "yes")]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
         {
             var posts = await _context.Posts

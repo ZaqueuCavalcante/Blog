@@ -1,6 +1,7 @@
 ﻿using Blog.Database;
 using Blog.Domain;
-using Blog.Exceptions;
+using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,24 +12,36 @@ namespace Blog.Controllers.Readers
     public class ReadersController : ControllerBase
     {
         private readonly BlogContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public ReadersController(BlogContext context)
-        {
+        public ReadersController(
+            BlogContext context,
+            UserManager<User> userManager
+        ) {
             _context = context;
+            _userManager = userManager;
         }
 
+        /// <summary>
+        /// Register a new reader.
+        /// </summary>
+        /// <returns>The registered reader.</returns>
         [HttpPost]
         public async Task<IActionResult> PostReader(ReaderIn dto)
         {
-            var reader = await _context.Readers.FirstOrDefaultAsync(b => b.Name.ToLower() == dto.Name.ToLower());
-            if (reader != null)
-                throw new DomainException("A reader with this name already exists.");
-
-            reader = new Reader
+            var user = new User
             {
-                Name = dto.Name,
-                CreatedAt = DateTime.Now
+                UserName = dto.Email,
+                Email = dto.Email
             };
+
+            var reader = new Reader(dto.Name, user.Id);
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            reader.UserId = user.Id;
 
             _context.Readers.Add(reader);
             await _context.SaveChangesAsync();
@@ -36,14 +49,14 @@ namespace Blog.Controllers.Readers
             return Created($"/readers/{reader.Id}", new ReaderOut(reader));
         }
 
+        /// <summary>
+        /// Returns a reader, given your id.
+        /// </summary>
+        /// <param name="id">The id of reader.</param>
+        /// <returns>A reader.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<ReaderOut>> GetReader(int id)
         {
-            var user = HttpContext.User;
-
-            var claims = user.Claims;
-
-
             var reader = await _context.Readers
                 .FirstOrDefaultAsync(l => l.Id == id);
 
@@ -53,6 +66,10 @@ namespace Blog.Controllers.Readers
             return Ok(new ReaderOut(reader));
         }
 
+        /// <summary>
+        /// Returns all the readers.
+        /// </summary>
+        /// <returns>A list of readers.</returns>
         [HttpGet]
         public async Task<ActionResult<List<ReaderOut>>> GetReaders()
         {

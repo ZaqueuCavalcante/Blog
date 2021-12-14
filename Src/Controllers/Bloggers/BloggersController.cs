@@ -1,7 +1,7 @@
-﻿using System.Security;
-using Blog.Database;
+﻿using Blog.Database;
 using Blog.Domain;
-using Blog.Exceptions;
+using Blog.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,25 +12,36 @@ namespace Blog.Controllers.Bloggers
     public class BloggersController : ControllerBase
     {
         private readonly BlogContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public BloggersController(BlogContext context)
-        {
+        public BloggersController(
+            BlogContext context,
+            UserManager<User> userManager
+        ) {
             _context = context;
+            _userManager = userManager;
         }
 
+        /// <summary>
+        /// Register a new blogger.
+        /// </summary>
+        /// <returns>The registered blogger.</returns>
         [HttpPost]
         public async Task<IActionResult> PostBlogger(BloggerIn dto)
         {
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Name.ToLower() == dto.Name.ToLower());
-            if (blogger != null)
-                throw new DomainException("A blogger with this name already exists.");
-
-            blogger = new Blogger
+            var user = new User
             {
-                Name = dto.Name,
-                Resume = dto.Resume,
-                CreatedAt = DateTime.Now
+                UserName = dto.Email,
+                Email = dto.Email
             };
+
+            var blogger = new Blogger(dto.Name, dto.Resume, user.Id);
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            blogger.UserId = user.Id;
 
             _context.Bloggers.Add(blogger);
             await _context.SaveChangesAsync();
@@ -39,7 +50,7 @@ namespace Blog.Controllers.Bloggers
         }
 
         /// <summary>
-        /// Returns a blogger, given your id.
+        /// Returns a blogger.
         /// </summary>
         /// <param name="id">The id of blogger.</param>
         /// <returns>A blogger.</returns>
@@ -66,6 +77,44 @@ namespace Blog.Controllers.Bloggers
                 .ToListAsync();
 
             return Ok(bloggers.Select(x => new BloggerOut(x)).ToList());
+        }
+
+        /// <summary>
+        /// Update a blogger.
+        /// </summary>
+        [HttpPut("{id}")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        public async Task<IActionResult> UpdateBlogger(int id, BloggerUpdateIn dto)
+        {
+            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == id);
+
+            if (blogger == null)
+                return NotFound("Blogger not found.");
+
+            blogger.Update(dto.Name, dto.Resume);
+
+            _context.Bloggers.Update(blogger);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete a blogger.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
+        public async Task<IActionResult> DeleteBlogger(int id)
+        {
+            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == id);
+
+            if (blogger == null)
+                return NotFound("Blogger not found.");
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == blogger.UserId);
+            await _userManager.DeleteAsync(user);
+
+            return Ok();
         }
     }
 }

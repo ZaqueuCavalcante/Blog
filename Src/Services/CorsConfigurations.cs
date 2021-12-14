@@ -2,10 +2,8 @@ namespace Bolg.Services
 {
     public static class CorsConfigurations
     {
-        public static IServiceCollection AddCorsConfigurations(
-            this IServiceCollection services,
-            IConfiguration configuration
-        ) {
+        public static IServiceCollection AddCorsConfigurations(this IServiceCollection services)
+        {
             services.AddCors(options =>
             {
                 options.AddPolicy("Development", builder => builder
