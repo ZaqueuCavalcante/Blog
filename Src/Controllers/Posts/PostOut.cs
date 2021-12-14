@@ -30,7 +30,7 @@ namespace Blog.Controllers.Posts
 
             Rating = post.GetRating();
 
-            CreatedAt = post.CreatedAt.ToString("dd/MM/yyyy HH:mm");;
+            CreatedAt = post.CreatedAt.ToString("dd/MM/yyyy HH:mm");
 
             Authors = post.Authors?.Select(b => b.Name).ToList();
             Comments = post.Comments?.Select(c => new CommentOut(c)).ToList();

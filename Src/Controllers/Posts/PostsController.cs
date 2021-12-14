@@ -81,63 +81,38 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpPost("{postId}/comments/{commentId}/replies")]
-        public async Task<IActionResult> PostCommentReply(int postId, int commentId, LikeIn dto)
+        public async Task<IActionResult> PostCommentReply(int postId, int commentId, ReplyIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
                 throw new DomainException("Post not found.");
 
-            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
+            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)
                 throw new DomainException("Comment not found.");
 
             var reader = await _context.Readers.FirstOrDefaultAsync(r => r.Id == dto.ReaderId);
             var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == dto.BloggerId);
             if (reader is null && blogger is null)
-                throw new DomainException("Liker not found.");
+                throw new DomainException("Replier not found.");
 
             if (reader is not null && blogger is not null)
-                throw new DomainException("A like must have a single liker.");
+                throw new DomainException("A reply must have a single replier.");
 
-            Like like;
-
-            if (reader is not null)
-            {
-                like = await _context.Likes.FirstOrDefaultAsync(
-                    l => l.CommentId == commentId && l.ReaderId == reader.Id
-                );
-            }
-            else
-            {
-                like = await _context.Likes.FirstOrDefaultAsync(
-                    l => l.CommentId == commentId && l.BloggerId == blogger.Id
-                );
-            }
-
-            if (like is not null)
-            {
-                _context.Likes.Remove(like);
-                await _context.SaveChangesAsync();
-                return Ok("Like removed.");
-            }
-
-            like = new Like
+            var reply = new Reply
             {
                 CommentId = comment.Id,
+                Body = dto.Body,
                 CreatedAt = DateTime.Now,
                 ReaderId = reader?.Id,
                 BloggerId = blogger?.Id
             };
 
-            _context.Likes.Add(like);
+            _context.Replies.Add(reply);
             await _context.SaveChangesAsync();
 
-            return Ok("Like added.");
+            return Created($"/posts/{post.Id}", new PostOut(post));
         }
-
-
-
-
 
         [HttpPost("{postId}/comments/{commentId}/likes")]
         public async Task<IActionResult> PostCommentLike(int postId, int commentId, LikeIn dto)
@@ -146,7 +121,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 throw new DomainException("Post not found.");
 
-            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
+            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)
                 throw new DomainException("Comment not found.");
 
