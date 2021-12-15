@@ -22,6 +22,11 @@ namespace Blog.Database.Configurations.Domain
                 .WithOne()
                 .HasForeignKey<Blogger>(b => b.UserId)
                 .IsRequired();
+
+            blogger.HasMany<Network>(b => b.Networks)
+                .WithOne()
+                .HasForeignKey(n => n.BloggerId)
+                .IsRequired();
         }
     }
 }

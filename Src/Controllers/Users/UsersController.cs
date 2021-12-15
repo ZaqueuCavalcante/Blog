@@ -6,17 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace Blog.Controllers.Identity
+namespace Blog.Controllers.Users
 {
     [ApiController]
     [Route("[controller]")]
-    public class IdentityController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private IConfiguration _configuration { get; }
 
-        public IdentityController(
+        public UsersController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IConfiguration configuration
@@ -26,7 +26,7 @@ namespace Blog.Controllers.Identity
             _configuration = configuration;
         }
 
-        [HttpPost("users/login")]
+        [HttpPost("login")]
         public async Task<ActionResult> Login(UserIn dto)
         {
             var result = await _signInManager.PasswordSignInAsync(
@@ -61,7 +61,7 @@ namespace Blog.Controllers.Identity
             return Ok("Login Failed");
         }
 
-        [HttpPost("users/logout")]
+        [HttpPost("logout")]
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -69,7 +69,7 @@ namespace Blog.Controllers.Identity
             return Ok("Logout succeeded");
         }
 
-        [HttpPost("users/change-password")]
+        [HttpPost("change-password")]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
             var user = await _userManager.GetUserAsync(User);

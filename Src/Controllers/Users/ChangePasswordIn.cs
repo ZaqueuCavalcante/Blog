@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Identity
+namespace Blog.Controllers.Users
 {
     public class ChangePasswordIn
     {

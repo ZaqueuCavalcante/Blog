@@ -58,6 +58,7 @@ namespace Blog.Controllers.Bloggers
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
         {
             var blogger = await _context.Bloggers
+                .Include(b => b.Networks)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
             if (blogger is null)

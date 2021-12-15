@@ -1,4 +1,4 @@
-namespace Blog.Controllers.Identity
+namespace Blog.Controllers.Users
 {
     public class UserIn
     {

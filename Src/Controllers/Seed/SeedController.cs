@@ -48,6 +48,12 @@ namespace Blog.Controllers.Bloggers
             var samBlogger = new Blogger("Sam Esmail", "A TV show blogger...", samUser.Id);
             var elliotBlogger = new Blogger("Sam Sepiol", "A tech blogger...", elliotUser.Id);
 
+            samBlogger.Networks = new List<Network>
+            {
+                new Network { Name = "YouTube", Uri = "https://www.youtube.com/sam" },
+                new Network { Name = "Twitter", Uri = "https://twitter.com/sam" }
+            };
+
             var techTag = new Tag { Name = "Tech", CreatedAt = DateTime.Now };
             var seriesTag = new Tag { Name = "Series", CreatedAt = DateTime.Now };
             var hackingTag = new Tag { Name = "Hacking", CreatedAt = DateTime.Now };
@@ -161,7 +167,7 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Replies
 
-            var reply = new Reply
+            var reply01 = new Reply
             {
                 CommentId = mrRobotPostComment01.Id,
                 Body = "A comment reply...",
@@ -169,40 +175,72 @@ namespace Blog.Controllers.Bloggers
                 BloggerId = samBlogger.Id
             };
 
-
-
-
-
-            var otherReply = new Reply
+            var reply02 = new Reply
             {
                 CommentId = mrRobotPostComment01.Id,
                 Body = "A other comment reply...",
                 CreatedAt = DateTime.Now,
-                BloggerId = samBlogger.Id
+                BloggerId = elliotBlogger.Id
             };
 
-            await _context.Replies.AddRangeAsync(reply, otherReply);
+            var reply03 = new Reply
+            {
+                CommentId = mrRobotPostComment02.Id,
+                Body = "A reply lalala...",
+                CreatedAt = DateTime.Now,
+                ReaderId = angelaReader.Id
+            };
+
+            await _context.Replies.AddRangeAsync(reply01, reply02, reply03);
             await _context.SaveChangesAsync();
 
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Likes
 
-            var like = new Like
+            var like01 = new Like
             {
                 CommentId = mrRobotPostComment01.Id,
                 CreatedAt = DateTime.Now,
                 ReaderId = darleneReader.Id
             };
 
-            var otherLike = new Like
+            var like02 = new Like
             {
                 CommentId = mrRobotPostComment01.Id,
                 CreatedAt = DateTime.Now,
                 ReaderId = tyrellReader.Id
             };
 
-            await _context.Likes.AddRangeAsync(like, otherLike);
+            var like03 = new Like
+            {
+                CommentId = mrRobotPostComment01.Id,
+                CreatedAt = DateTime.Now,
+                ReaderId = angelaReader.Id
+            };
+
+            var like04 = new Like
+            {
+                CommentId = mrRobotPostComment02.Id,
+                CreatedAt = DateTime.Now,
+                ReaderId = tyrellReader.Id
+            };
+
+            var like05 = new Like
+            {
+                CommentId = linuxPostComment01.Id,
+                CreatedAt = DateTime.Now,
+                BloggerId = samBlogger.Id
+            };
+
+            var like06 = new Like
+            {
+                CommentId = linuxPostComment02.Id,
+                CreatedAt = DateTime.Now,
+                BloggerId = elliotBlogger.Id
+            };
+
+            await _context.Likes.AddRangeAsync(like01, like02, like03, like04, like05, like06);
             await _context.SaveChangesAsync();
 
             #endregion

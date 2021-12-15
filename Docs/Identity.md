@@ -170,3 +170,30 @@
 
 
 ## 3 - 
+
+
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Curso de IdentityServer4 - desenvolvedor.io
+
+- OpenID Connect + OAuth2
+- Single Sign-On
+- Federation Gateway
+- Single Sign-Out
+
+- Json Web Token:
+    - Audience
+    - Scopes
+    - Claims
+
+- OAuth 2.0:
+    - Resource Owner
+    - Client
+    - Resource Server
+    - Authorization Server
+
+
+
+

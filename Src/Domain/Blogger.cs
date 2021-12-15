@@ -15,6 +15,8 @@ namespace Blog.Domain
 
         public List<Post> Posts { get; set; }
 
+        public List<Network> Networks { get; set; }
+
         public Blogger(
             string name,
             string resume,
