@@ -3,14 +3,15 @@ using Blog.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
-namespace Bolg.Services
+namespace Blog.Services
 {
     public static class IdentityConfigurations
     {
         public static IServiceCollection AddIdentityConfigurations(this IServiceCollection services)
         {
             services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<BlogContext>();
+                .AddEntityFrameworkStores<BlogContext>()
+                .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {

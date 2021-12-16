@@ -1,4 +1,4 @@
-namespace Bolg.Services
+namespace Blog.Services
 {
     public static class CorsConfigurations
     {

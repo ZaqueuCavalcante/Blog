@@ -12,6 +12,8 @@ namespace Blog.Domain
 
         public DateTime CreatedAt { get; set; }
 
+        public int? PinnedCommentId { get; set; }
+
         public List<Blogger> Authors { get; set; }
 
         public List<Comment> Comments { get; set; }
@@ -24,6 +26,15 @@ namespace Blog.Domain
                 return 0;
 
             return (byte) (Comments.Sum(c => c.PostRating) / Comments.Count);
+        }
+
+        public void PinComment(int commentId)
+        {
+            if (Comments == null || !Comments.Any())
+                return;
+
+            if (Comments.FirstOrDefault(c => c.Id == commentId) != null)
+                PinnedCommentId = commentId;
         }
     }
 }

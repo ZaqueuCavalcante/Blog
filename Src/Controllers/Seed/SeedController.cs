@@ -1,4 +1,5 @@
-﻿using Blog.Database;
+﻿using System.Security.Claims;
+using Blog.Database;
 using Blog.Domain;
 using Blog.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -12,13 +13,16 @@ namespace Blog.Controllers.Bloggers
     {
         private readonly BlogContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
 
         public SeedController(
             BlogContext context,
-            UserManager<User> userManager
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager
         ) {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -26,6 +30,21 @@ namespace Blog.Controllers.Bloggers
         {
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
+
+            #region Roles and Claims
+
+            var readerRole = new Role { Name = "Reader" };
+            var bloggerRole = new Role { Name = "Blogger" };
+            var adminRole = new Role { Name = "Admin" };
+
+            await _roleManager.CreateAsync(readerRole);
+            await _roleManager.CreateAsync(bloggerRole);
+            await _roleManager.CreateAsync(adminRole);
+
+            await _roleManager.AddClaimAsync(adminRole, new Claim("pinner", "true"));
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
             #region Users
 
@@ -40,6 +59,14 @@ namespace Blog.Controllers.Bloggers
             await _userManager.CreateAsync(darleneUser, "Test@123");
             await _userManager.CreateAsync(tyrelUser, "Test@123");
             await _userManager.CreateAsync(angelaUser, "Test@123");
+
+            await _userManager.AddToRoleAsync(samUser, "Admin");
+            await _userManager.AddToRoleAsync(elliotUser, "Blogger");
+            await _userManager.AddToRoleAsync(darleneUser, "Reader");
+            await _userManager.AddToRoleAsync(tyrelUser, "Reader");
+            await _userManager.AddToRoleAsync(angelaUser, "Reader");
+
+            await _userManager.AddClaimAsync(elliotUser, new Claim("pinner", "true"));
 
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

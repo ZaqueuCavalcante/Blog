@@ -37,7 +37,12 @@ namespace Blog.Database.Configurations.Domain
                     joinEntityName: "Categorizations",
                     configureRight: b => b.HasOne<Tag>().WithMany().HasForeignKey("Name"),
                     configureLeft: b => b.HasOne<Post>().WithMany().HasForeignKey("PostId"))
-                .Property("Name").HasColumnName("tag_name");  
+                .Property("Name").HasColumnName("tag_name");
+
+            post.HasOne<Comment>()
+                .WithOne()
+                .HasForeignKey<Post>(p => p.PinnedCommentId)
+                .IsRequired(false);
         }
     }
 }

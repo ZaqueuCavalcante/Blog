@@ -6,6 +6,8 @@ namespace Blog.Controllers.Posts
         public string Resume { get; set; }
         public string Body { get; set; }
 
+        public string Category { get; set; }
+
         public List<int> Authors { get; set; }
 
         public List<string> Tags { get; set; }

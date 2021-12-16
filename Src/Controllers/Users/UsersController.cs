@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Controllers.Users
 {
@@ -13,15 +14,18 @@ namespace Blog.Controllers.Users
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private IConfiguration _configuration { get; }
 
         public UsersController(
             UserManager<User> userManager,
+            RoleManager<Role> roleManager,
             SignInManager<User> signInManager,
             IConfiguration configuration
         ) {
             _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
             _configuration = configuration;
         }
@@ -89,10 +93,31 @@ namespace Blog.Controllers.Users
         private async Task<string> GetJwt(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            var claims = await _userManager.GetClaimsAsync(user);
 
+            var claims = new List<Claim>();
             claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+
+            var roleNames = await _userManager.GetRolesAsync(user);
+            foreach (var role in roleNames)
+            {
+                claims.Add(new Claim("role", role));
+            }
+
+            var roles = await _roleManager.Roles.Where(r => roleNames.Contains(r.Name)).ToListAsync();
+            if (roles != null && roles.Any())
+            {
+                foreach (var role in roles)
+                {
+                    var roleClaims = await _roleManager.GetClaimsAsync(role);
+                    if (roleClaims != null && roleClaims.Any())
+                        claims.AddRange(roleClaims);
+                }
+            }
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            if (userClaims != null && userClaims.Any())
+                claims.AddRange(userClaims);
 
             var identityClaims = new ClaimsIdentity();
             identityClaims.AddClaims(claims);

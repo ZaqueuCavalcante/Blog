@@ -83,8 +83,11 @@ Other simple project, with Authentication and Authorization.
 
 ## 10 - Using Roles and Claims
 
-- Roles differentiate **groups of users** to create **authorization policies**.
-- Claims are used to represent any data known about a user.
+- **Roles** are commonly used to create fine-grained authorization policies that differentiate between different signed-in users.
+- **Claims** are a general-purpose approach to describing any data that is known about a user and allow custom data to be added to the Identity user store.
+
+- **Roles** differentiate **groups of users** to create **authorization policies**.
+- **Claims** are used to represent any **data** known about a user.
 
 
 

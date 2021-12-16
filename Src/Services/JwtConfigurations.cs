@@ -1,8 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Bolg.Services
+namespace Blog.Services
 {
     public static class JwtConfigurations
     {
@@ -10,6 +11,8 @@ namespace Bolg.Services
             this IServiceCollection services,
             IConfiguration configuration
         ) {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,7 +36,9 @@ namespace Bolg.Services
                     ValidAudience = configuration["Jwt:Audience"],
 
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+
+                    RoleClaimType = "role"
                 };
             });
 

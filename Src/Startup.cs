@@ -1,7 +1,7 @@
 using Blog.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Blog.Database;
-using Bolg.Services;
+using Blog.Services;
 
 namespace Blog
 {
@@ -36,6 +36,8 @@ namespace Blog
             services.AddIdentityConfigurations();
 
             services.AddJwtConfigurations(Configuration);
+
+            services.AddAuthorization();
         }
 
         public void Configure(

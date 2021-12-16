@@ -1,4 +1,5 @@
-﻿using Blog.Database;
+﻿using System.Security.Claims;
+using Blog.Database;
 using Blog.Domain;
 using Blog.Exceptions;
 using Blog.Filters;
@@ -10,7 +11,6 @@ namespace Blog.Controllers.Posts
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
     public class PostsController : ControllerBase
     {
         private readonly BlogContext _context;
@@ -23,20 +23,29 @@ namespace Blog.Controllers.Posts
         [HttpPost]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
-            var authors = await _context.Bloggers.Where(x => dto.Authors.Contains(x.Id)).ToListAsync();
-            if (authors.Count == 0)
-                throw new DomainException("Author not found.");
+            var userId = int.Parse(User.FindFirstValue("sub"));
+            var mainAuthor = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == userId);
 
-            var tags = await _context.Tags.Where(x => dto.Tags.Contains(x.Name)).ToListAsync();
-            var newTags = dto.Tags.Except(tags.Select(x => x.Name))
-                .Select(x => new Tag { Name = x, CreatedAt = DateTime.Now }).ToList();
-            tags.AddRange(newTags);
+            var authors = new List<Blogger>();
+            if (dto.Authors != null && dto.Authors.Any())
+                authors = await _context.Bloggers.Where(x => dto.Authors.Contains(x.Id)).ToListAsync();
+
+            authors.Add(mainAuthor);
+
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.Category);
+            if (category == null)
+                return NotFound("Category not found.");
+
+            List<Tag>? tags = null;
+            if (dto.Tags != null && dto.Tags.Any())
+                tags = await _context.Tags.Where(x => dto.Tags.Contains(x.Name)).ToListAsync();
 
             var post = new Post
             {
                 Title = dto.Title,
                 Resume = dto.Resume,
                 Body = dto.Body,
+                Category = category.Name,
                 CreatedAt = DateTime.Now,
                 Authors = authors,
                 Tags = tags
@@ -78,6 +87,32 @@ namespace Blog.Controllers.Posts
             await _context.SaveChangesAsync();
 
             return Created($"/posts/{post.Id}", new PostOut(post));
+        }
+
+        [ClaimsAuthorize("pinner", "true")]
+        [HttpPut("{postId}/comments/{commentId}/pins")]
+        public async Task<IActionResult> PostCommentPin(int postId, int commentId)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post is null)
+                throw new DomainException("Post not found.");
+
+            var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
+            if (comment is null)
+                throw new DomainException("Comment not found.");
+
+            if (post.PinnedCommentId == null || post.PinnedCommentId != comment.Id)
+            {
+                post.PinnedCommentId = comment.Id;
+            }
+            else
+            {
+                post.PinnedCommentId = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [HttpPost("{postId}/comments/{commentId}/replies")]
@@ -169,6 +204,7 @@ namespace Blog.Controllers.Posts
             return Ok("Like added.");
         }
 
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<PostOut>> GetPost(int id)
         {
@@ -188,8 +224,8 @@ namespace Blog.Controllers.Posts
             return Ok(new PostOut(post));
         }
 
+        [Authorize]
         [HttpGet]
-        // [ClaimsAuthorize("auth", "yes")]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
         {
             var posts = await _context.Posts
