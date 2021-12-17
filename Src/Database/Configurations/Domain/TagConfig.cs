@@ -10,7 +10,10 @@ namespace Blog.Database.Configurations.Domain
         {
             tag.ToTable("tags");
 
-            tag.HasKey(t => t.Name);
+            tag.HasKey(t => t.Id);
+
+            tag.Property(t => t.Name).IsRequired();
+            tag.HasIndex(t => t.Name).IsUnique();
 
             tag.Property(t => t.CreatedAt).IsRequired();
         }

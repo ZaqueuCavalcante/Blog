@@ -14,6 +14,7 @@ namespace Blog.Database.Configurations.Domain
             blogger.HasKey(b => b.Id);
 
             blogger.Property(b => b.Name).IsRequired();
+
             blogger.Property(b => b.Resume).IsRequired();
 
             blogger.Property(b => b.CreatedAt).IsRequired();
@@ -21,11 +22,6 @@ namespace Blog.Database.Configurations.Domain
             blogger.HasOne<User>()
                 .WithOne()
                 .HasForeignKey<Blogger>(b => b.UserId)
-                .IsRequired();
-
-            blogger.HasMany<Network>(b => b.Networks)
-                .WithOne()
-                .HasForeignKey(n => n.BloggerId)
                 .IsRequired();
         }
     }

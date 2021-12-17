@@ -29,6 +29,8 @@ namespace Blog.Controllers.Categories
             if (category is null)
                 return NotFound("Category not found.");
 
+            category.Posts = category.Posts.OrderByDescending(p => p.CreatedAt).ToList();
+
             return Ok(new CategoryOut(category));
         }
 
@@ -41,6 +43,8 @@ namespace Blog.Controllers.Categories
             var categories = await _context.Categories
                 .Include(c => c.Posts)
                 .ToListAsync();
+
+            categories.ForEach(c => c.Posts = c.Posts.OrderByDescending(p => p.CreatedAt).ToList());
 
             return Ok(categories.Select(c => new CategoryOut(c)).ToList());
         }

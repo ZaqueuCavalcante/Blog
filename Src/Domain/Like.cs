@@ -6,8 +6,7 @@ namespace Blog.Domain
 
         public int CommentId { get; set; }
 
-        public int? ReaderId { get; set; }
-        public int? BloggerId { get; set; }
+        public int UserId { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

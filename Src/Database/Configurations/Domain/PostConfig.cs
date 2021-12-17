@@ -13,7 +13,9 @@ namespace Blog.Database.Configurations.Domain
             post.HasKey(p => p.Id);
 
             post.Property(p => p.Title).IsRequired();
+
             post.Property(p => p.Resume).IsRequired();
+
             post.Property(p => p.Body).IsRequired();
 
             post.Property(p => p.CreatedAt).IsRequired();
@@ -35,9 +37,8 @@ namespace Blog.Database.Configurations.Domain
                 .WithMany(t => t.Posts)
                 .UsingEntity<Dictionary<string, object>>(
                     joinEntityName: "Categorizations",
-                    configureRight: b => b.HasOne<Tag>().WithMany().HasForeignKey("Name"),
-                    configureLeft: b => b.HasOne<Post>().WithMany().HasForeignKey("PostId"))
-                .Property("Name").HasColumnName("tag_name");
+                    configureRight: b => b.HasOne<Tag>().WithMany().HasForeignKey("TagId"),
+                    configureLeft: b => b.HasOne<Post>().WithMany().HasForeignKey("PostId"));
 
             post.HasOne<Comment>()
                 .WithOne()

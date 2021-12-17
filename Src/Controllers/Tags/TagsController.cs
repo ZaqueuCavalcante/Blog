@@ -29,6 +29,8 @@ namespace Blog.Controllers.Tags
             if (tag is null)
                 return NotFound("Tag not found.");
 
+            tag.Posts = tag.Posts.OrderByDescending(p => p.CreatedAt).ToList();
+
             return Ok(new TagOut(tag));
         }
 
@@ -41,6 +43,8 @@ namespace Blog.Controllers.Tags
             var tags = await _context.Tags
                 .Include(c => c.Posts)
                 .ToListAsync();
+
+            tags.ForEach(t => t.Posts = t.Posts.OrderByDescending(p => p.CreatedAt).ToList());
 
             return Ok(tags.Select(t => new TagOut(t)).ToList());
         }

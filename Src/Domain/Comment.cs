@@ -7,14 +7,14 @@ namespace Blog.Domain
         public int Id { get; set; }
 
         public int PostId { get; set; }
+
+        public int UserId { get; set; }
+
         public byte PostRating { get; set; }
 
         public string Body { get; set; }
+
         public DateTime CreatedAt { get; set; }
-
-        public int? ReaderId { get; set; }
-
-        public int? BloggerId { get; set; }
 
         public List<Reply> Replies { get; set; }
 

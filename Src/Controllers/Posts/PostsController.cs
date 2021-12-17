@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Blog.Database;
 using Blog.Domain;
-using Blog.Exceptions;
 using Blog.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +20,7 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpPost]
+        [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
             var userId = int.Parse(User.FindFirstValue("sub"));
@@ -45,7 +45,7 @@ namespace Blog.Controllers.Posts
                 Title = dto.Title,
                 Resume = dto.Resume,
                 Body = dto.Body,
-                Category = category.Name,
+                CategoryId = category.Id,
                 CreatedAt = DateTime.Now,
                 Authors = authors,
                 Tags = tags
@@ -58,29 +58,22 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpPost("{postId}/comments")]
+        [Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostComment(int postId, CommentIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
-                throw new DomainException("Post not found.");
+                return NotFound("Post not found.");
 
-            var reader = await _context.Readers.FirstOrDefaultAsync(r => r.Id == dto.ReaderId);
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == dto.BloggerId);
-            if (reader is null && blogger is null)
-                throw new DomainException("Commenter not found.");
-
-            if (reader is not null && blogger is not null)
-                throw new DomainException("A comment must have a single commenter.");
+            var userId = int.Parse(User.FindFirstValue("sub"));
 
             var comment = new Comment
             {
                 PostId = postId,
                 Body = dto.Body,
                 CreatedAt = DateTime.Now,
-                ReaderId = (reader == null) ? null : reader.Id,
-                BloggerId = (blogger == null) ? null : blogger.Id
+                UserId = userId
             };
-
             comment.SetPostRating(dto.PostRating);
 
             _context.Comments.Add(comment);
@@ -89,26 +82,20 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}", new PostOut(post));
         }
 
-        [ClaimsAuthorize("pinner", "true")]
         [HttpPut("{postId}/comments/{commentId}/pins")]
+        [Authorize(Roles = "Blogger")]
+        [ClaimsAuthorize("pinner", "true")]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
-                throw new DomainException("Post not found.");
+                return NotFound("Post not found.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)
-                throw new DomainException("Comment not found.");
+                return NotFound("Comment not found.");
 
-            if (post.PinnedCommentId == null || post.PinnedCommentId != comment.Id)
-            {
-                post.PinnedCommentId = comment.Id;
-            }
-            else
-            {
-                post.PinnedCommentId = null;
-            }
+            post.PinnedCommentId = (post.PinnedCommentId == comment.Id) ? null : comment.Id;
 
             await _context.SaveChangesAsync();
 
@@ -116,31 +103,25 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpPost("{postId}/comments/{commentId}/replies")]
+        [Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostCommentReply(int postId, int commentId, ReplyIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
-                throw new DomainException("Post not found.");
+                return NotFound("Post not found.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)
-                throw new DomainException("Comment not found.");
+                return NotFound("Comment not found.");
 
-            var reader = await _context.Readers.FirstOrDefaultAsync(r => r.Id == dto.ReaderId);
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == dto.BloggerId);
-            if (reader is null && blogger is null)
-                throw new DomainException("Replier not found.");
-
-            if (reader is not null && blogger is not null)
-                throw new DomainException("A reply must have a single replier.");
+            var userId = int.Parse(User.FindFirstValue("sub"));
 
             var reply = new Reply
             {
                 CommentId = comment.Id,
                 Body = dto.Body,
                 CreatedAt = DateTime.Now,
-                ReaderId = reader?.Id,
-                BloggerId = blogger?.Id
+                UserId = userId
             };
 
             _context.Replies.Add(reply);
@@ -150,40 +131,22 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpPost("{postId}/comments/{commentId}/likes")]
-        public async Task<IActionResult> PostCommentLike(int postId, int commentId, LikeIn dto)
+        [Authorize(Roles = "Reader, Blogger")]
+        public async Task<IActionResult> PostCommentLike(int postId, int commentId)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
-                throw new DomainException("Post not found.");
+                return NotFound("Post not found.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)
-                throw new DomainException("Comment not found.");
+                return NotFound("Comment not found.");
 
-            var reader = await _context.Readers.FirstOrDefaultAsync(r => r.Id == dto.ReaderId);
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == dto.BloggerId);
-            if (reader is null && blogger is null)
-                throw new DomainException("Liker not found.");
+            var userId = int.Parse(User.FindFirstValue("sub"));
 
-            if (reader is not null && blogger is not null)
-                throw new DomainException("A like must have a single liker.");
+            var like = await _context.Likes.FirstOrDefaultAsync(l => l.CommentId == commentId && l.UserId == userId);
 
-            Like like;
-
-            if (reader is not null)
-            {
-                like = await _context.Likes.FirstOrDefaultAsync(
-                    l => l.CommentId == commentId && l.ReaderId == reader.Id
-                );
-            }
-            else
-            {
-                like = await _context.Likes.FirstOrDefaultAsync(
-                    l => l.CommentId == commentId && l.BloggerId == blogger.Id
-                );
-            }
-
-            if (like is not null)
+            if (like != null)
             {
                 _context.Likes.Remove(like);
                 await _context.SaveChangesAsync();
@@ -194,8 +157,7 @@ namespace Blog.Controllers.Posts
             {
                 CommentId = comment.Id,
                 CreatedAt = DateTime.Now,
-                ReaderId = reader?.Id,
-                BloggerId = blogger?.Id
+                UserId = userId
             };
 
             _context.Likes.Add(like);
@@ -204,8 +166,8 @@ namespace Blog.Controllers.Posts
             return Ok("Like added.");
         }
 
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<PostOut>> GetPost(int id)
         {
             var post = await _context.Posts
@@ -224,8 +186,8 @@ namespace Blog.Controllers.Posts
             return Ok(new PostOut(post));
         }
 
-        [Authorize]
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
         {
             var posts = await _context.Posts

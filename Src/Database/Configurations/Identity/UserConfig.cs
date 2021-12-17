@@ -1,3 +1,4 @@
+using Blog.Domain;
 using Blog.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,12 @@ namespace Blog.Database.Configurations.Identity
             // Indexes for normalized username and email, to allow efficient lookups.
             user.HasIndex(u => u.NormalizedUserName).HasDatabaseName("normalized_user_name_unique_index").IsUnique();
             user.HasIndex(u => u.NormalizedEmail).HasDatabaseName("normalized_email_index");
+
+            // Custom blog configurations.
+            user.HasMany<Network>(u => u.Networks)
+                .WithOne()
+                .HasForeignKey(n => n.UserId)
+                .IsRequired();
         }
     }
 }

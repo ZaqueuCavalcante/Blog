@@ -16,6 +16,7 @@ namespace Blog.Database
         public DbSet<Category> Categories { get; set; }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Network> Networks { get; set; }
 
         public BlogContext(DbContextOptions<BlogContext> options) : base(options) {}
 

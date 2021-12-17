@@ -1,6 +1,7 @@
 ﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +26,8 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Register a new blogger.
         /// </summary>
-        /// <returns>The registered blogger.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostBlogger(BloggerIn dto)
         {
             var user = new User
@@ -53,16 +54,17 @@ namespace Blog.Controllers.Bloggers
         /// Returns a blogger.
         /// </summary>
         /// <param name="id">The id of blogger.</param>
-        /// <returns>A blogger.</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
         {
             var blogger = await _context.Bloggers
-                .Include(b => b.Networks)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
             if (blogger is null)
                 return NotFound("Blogger not found.");
+
+            var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
 
             return Ok(new BloggerOut(blogger));
         }
@@ -70,7 +72,6 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Returns all the bloggers.
         /// </summary>
-        /// <returns>A list of bloggers.</returns>
         [HttpGet]
         public async Task<ActionResult<List<BloggerOut>>> GetBloggers()
         {

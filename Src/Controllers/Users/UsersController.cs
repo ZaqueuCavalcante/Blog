@@ -73,7 +73,7 @@ namespace Blog.Controllers.Users
             return Ok("Logout succeeded");
         }
 
-        [HttpPost("change-password")]
+        [HttpPut("change-password")]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
             var user = await _userManager.GetUserAsync(User);

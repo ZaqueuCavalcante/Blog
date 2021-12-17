@@ -13,6 +13,7 @@ namespace Blog.Database.Configurations.Domain
             network.HasKey(n => n.Id);
 
             network.Property(n => n.Name).IsRequired();
+
             network.Property(n => n.Uri).IsRequired();
         }
     }

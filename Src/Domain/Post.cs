@@ -4,15 +4,17 @@ namespace Blog.Domain
     {
         public int Id { get; set; }
 
-        public string Title { get; set; }
-        public string Resume { get; set; }
-        public string Body { get; set; }
-
-        public string Category { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        public int CategoryId { get; set; }
 
         public int? PinnedCommentId { get; set; }
+
+        public string Title { get; set; }
+
+        public string Resume { get; set; }
+
+        public string Body { get; set; }
+
+        public DateTime CreatedAt { get; set; }
 
         public List<Blogger> Authors { get; set; }
 

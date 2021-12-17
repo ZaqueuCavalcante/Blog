@@ -10,7 +10,10 @@ namespace Blog.Database.Configurations.Domain
         {
             category.ToTable("categories");
 
-            category.HasKey(c => c.Name);
+            category.HasKey(c => c.Id);
+
+            category.Property(c => c.Name).IsRequired();
+            category.HasIndex(c => c.Name).IsUnique();
 
             category.Property(c => c.Description).IsRequired();
 
@@ -18,8 +21,7 @@ namespace Blog.Database.Configurations.Domain
 
             category.HasMany<Post>(c => c.Posts)
                 .WithOne()
-                .HasPrincipalKey(c => c.Name)
-                .HasForeignKey(p => p.Category)
+                .HasForeignKey(p => p.CategoryId)
                 .IsRequired(); 
         }
     }

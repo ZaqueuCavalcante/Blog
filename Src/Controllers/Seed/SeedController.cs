@@ -51,19 +51,19 @@ namespace Blog.Controllers.Bloggers
             var samUser = new User { UserName = "sam@blog.com", Email = "sam@blog.com" };
             var elliotUser = new User { UserName = "elliot@blog.com", Email = "elliot@blog.com" };
             var darleneUser = new User { UserName = "darlene@blog.com", Email = "darlene@blog.com" };
-            var tyrelUser = new User { UserName = "tyrel@blog.com", Email = "tyrel@blog.com" };
+            var tyrellUser = new User { UserName = "tyrell@blog.com", Email = "tyrell@blog.com" };
             var angelaUser = new User { UserName = "angela@blog.com", Email = "angela@blog.com" };
 
             await _userManager.CreateAsync(samUser, "Test@123");
             await _userManager.CreateAsync(elliotUser, "Test@123");
             await _userManager.CreateAsync(darleneUser, "Test@123");
-            await _userManager.CreateAsync(tyrelUser, "Test@123");
+            await _userManager.CreateAsync(tyrellUser, "Test@123");
             await _userManager.CreateAsync(angelaUser, "Test@123");
 
             await _userManager.AddToRoleAsync(samUser, "Admin");
             await _userManager.AddToRoleAsync(elliotUser, "Blogger");
             await _userManager.AddToRoleAsync(darleneUser, "Reader");
-            await _userManager.AddToRoleAsync(tyrelUser, "Reader");
+            await _userManager.AddToRoleAsync(tyrellUser, "Reader");
             await _userManager.AddToRoleAsync(angelaUser, "Reader");
 
             await _userManager.AddClaimAsync(elliotUser, new Claim("pinner", "true"));
@@ -75,7 +75,7 @@ namespace Blog.Controllers.Bloggers
             var samBlogger = new Blogger("Sam Esmail", "A TV show blogger...", samUser.Id);
             var elliotBlogger = new Blogger("Sam Sepiol", "A tech blogger...", elliotUser.Id);
 
-            samBlogger.Networks = new List<Network>
+            samUser.Networks = new List<Network>
             {
                 new Network { Name = "YouTube", Uri = "https://www.youtube.com/sam" },
                 new Network { Name = "Twitter", Uri = "https://twitter.com/sam" }
@@ -99,12 +99,15 @@ namespace Blog.Controllers.Bloggers
                 CreatedAt = DateTime.Now
             };
 
+            await _context.Categories.AddRangeAsync(linuxCategory, mrRobotCategory);
+            await _context.SaveChangesAsync();
+
             var mrRobotpost = new Post
             {
                 Title = "Mr. Robot - End explained",
                 Resume = "A very short blog post resume.",
                 Body = "A blog post with many informations...",
-                Category = mrRobotCategory.Name,
+                CategoryId = mrRobotCategory.Id,
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ samBlogger, elliotBlogger },
                 Tags = new List<Tag>{ seriesTag, hackingTag }
@@ -115,14 +118,13 @@ namespace Blog.Controllers.Bloggers
                 Title = "Linux and hacking",
                 Resume = "A other very short blog post resume.",
                 Body = "A other blog post with many informations...",
-                Category = linuxCategory.Name,
+                CategoryId = linuxCategory.Id,
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ elliotBlogger },
                 Tags = new List<Tag>{ techTag, hackingTag }
             };
 
             await _context.Bloggers.AddRangeAsync(samBlogger, elliotBlogger);
-            await _context.Categories.AddRangeAsync(linuxCategory, mrRobotCategory);
             await _context.Posts.AddRangeAsync(mrRobotpost, linuxPost);
             await _context.SaveChangesAsync();
 
@@ -132,7 +134,7 @@ namespace Blog.Controllers.Bloggers
 
             var elliotReader = new Reader("Elliot Alderson", elliotUser.Id);
             var darleneReader = new Reader("Darlene", darleneUser.Id);
-            var tyrellReader = new Reader("Tyrell Wellick", tyrelUser.Id);
+            var tyrellReader = new Reader("Tyrell Wellick", tyrellUser.Id);
             var angelaReader = new Reader("Angela Moss", angelaUser.Id);
 
             await _context.Readers.AddRangeAsync(elliotReader, darleneReader, tyrellReader, angelaReader);
@@ -148,7 +150,7 @@ namespace Blog.Controllers.Bloggers
                 PostRating = 5,
                 Body = "Great first season.",
                 CreatedAt = DateTime.Now,
-                ReaderId = darleneReader.Id
+                UserId = darleneUser.Id
             };
 
             var mrRobotPostComment02 = new Comment
@@ -157,7 +159,7 @@ namespace Blog.Controllers.Bloggers
                 PostRating = 4,
                 Body = "Amazing.",
                 CreatedAt = DateTime.Now,
-                ReaderId = tyrellReader.Id
+                UserId = tyrellUser.Id
             };
 
             var mrRobotPostComment03 = new Comment
@@ -166,7 +168,7 @@ namespace Blog.Controllers.Bloggers
                 PostRating = 3,
                 Body = "More tath a hacker show.",
                 CreatedAt = DateTime.Now,
-                ReaderId = angelaReader.Id
+                UserId = angelaUser.Id
             };
 
             var linuxPostComment01 = new Comment
@@ -175,7 +177,7 @@ namespace Blog.Controllers.Bloggers
                 PostRating = 5,
                 Body = "Very useful.",
                 CreatedAt = DateTime.Now,
-                ReaderId = tyrellReader.Id
+                UserId = tyrellUser.Id
             };
 
             var linuxPostComment02 = new Comment
@@ -184,7 +186,7 @@ namespace Blog.Controllers.Bloggers
                 PostRating = 5,
                 Body = "Interesting...",
                 CreatedAt = DateTime.Now,
-                BloggerId = samBlogger.Id
+                UserId = samUser.Id
             };
 
             await _context.Comments.AddRangeAsync(mrRobotPostComment01, mrRobotPostComment02, mrRobotPostComment03, linuxPostComment01, linuxPostComment02);
@@ -199,7 +201,7 @@ namespace Blog.Controllers.Bloggers
                 CommentId = mrRobotPostComment01.Id,
                 Body = "A comment reply...",
                 CreatedAt = DateTime.Now,
-                BloggerId = samBlogger.Id
+                UserId = samUser.Id
             };
 
             var reply02 = new Reply
@@ -207,7 +209,7 @@ namespace Blog.Controllers.Bloggers
                 CommentId = mrRobotPostComment01.Id,
                 Body = "A other comment reply...",
                 CreatedAt = DateTime.Now,
-                BloggerId = elliotBlogger.Id
+                UserId = elliotUser.Id
             };
 
             var reply03 = new Reply
@@ -215,7 +217,7 @@ namespace Blog.Controllers.Bloggers
                 CommentId = mrRobotPostComment02.Id,
                 Body = "A reply lalala...",
                 CreatedAt = DateTime.Now,
-                ReaderId = angelaReader.Id
+                UserId = angelaUser.Id
             };
 
             await _context.Replies.AddRangeAsync(reply01, reply02, reply03);
@@ -229,42 +231,42 @@ namespace Blog.Controllers.Bloggers
             {
                 CommentId = mrRobotPostComment01.Id,
                 CreatedAt = DateTime.Now,
-                ReaderId = darleneReader.Id
+                UserId = darleneUser.Id
             };
 
             var like02 = new Like
             {
                 CommentId = mrRobotPostComment01.Id,
                 CreatedAt = DateTime.Now,
-                ReaderId = tyrellReader.Id
+                UserId = tyrellUser.Id
             };
 
             var like03 = new Like
             {
                 CommentId = mrRobotPostComment01.Id,
                 CreatedAt = DateTime.Now,
-                ReaderId = angelaReader.Id
+                UserId = angelaUser.Id
             };
 
             var like04 = new Like
             {
                 CommentId = mrRobotPostComment02.Id,
                 CreatedAt = DateTime.Now,
-                ReaderId = tyrellReader.Id
+                UserId = tyrellUser.Id
             };
 
             var like05 = new Like
             {
                 CommentId = linuxPostComment01.Id,
                 CreatedAt = DateTime.Now,
-                BloggerId = samBlogger.Id
+                UserId = samUser.Id
             };
 
             var like06 = new Like
             {
                 CommentId = linuxPostComment02.Id,
                 CreatedAt = DateTime.Now,
-                BloggerId = elliotBlogger.Id
+                UserId = elliotUser.Id
             };
 
             await _context.Likes.AddRangeAsync(like01, like02, like03, like04, like05, like06);
