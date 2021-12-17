@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Extensions;
 
 namespace Blog.Controllers.Posts
 {
@@ -16,7 +17,7 @@ namespace Blog.Controllers.Posts
         {
             Id = reply.Id;
             Body = reply.Body;
-            CreatedAt = reply.CreatedAt.ToString("dd/MM/yyyy HH:mm");;
+            CreatedAt = reply.CreatedAt.Format();;
             UserId = reply.UserId;
         }
     }

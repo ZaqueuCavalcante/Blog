@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Extensions;
 
 namespace Blog.Controllers.Posts
 {
@@ -21,7 +22,7 @@ namespace Blog.Controllers.Posts
             Resume = post.Resume;
             Body = post.Body;
             Rating = post.GetRating();
-            CreatedAt = post.CreatedAt.ToString("dd/MM/yyyy HH:mm");
+            CreatedAt = post.CreatedAt.Format();
             Authors = post.Authors?.Select(b => b.Name).ToList();
             Comments = post.Comments?.Select(c => new CommentOut(c)).ToList();
             Tags = post.Tags?.Select(c => c.Name).ToList();

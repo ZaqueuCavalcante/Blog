@@ -1,6 +1,8 @@
-﻿using Blog.Database;
+﻿using System.Security.Claims;
+using Blog.Database;
 using Blog.Domain;
 using Blog.Identity;
+using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +68,7 @@ namespace Blog.Controllers.Bloggers
 
             var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
 
-            return Ok(new BloggerOut(blogger));
+            return Ok(new BloggerOut(blogger, networks));
         }
 
         /// <summary>
@@ -117,6 +119,39 @@ namespace Blog.Controllers.Bloggers
             await _userManager.DeleteAsync(user);
 
             return Ok();
+        }
+
+
+
+
+        [HttpGet("stats")]
+        [Authorize(Roles = "Blogger")]
+        public async Task<ActionResult<List<BloggerOut>>> GetStats()
+        {
+            var userId = int.Parse(User.FindFirstValue("sub"));
+            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
+
+            var publishedPosts = await _context.Posts
+                .Where(p => p.Authors.Contains(blogger))
+                .Select(p => p.Id)
+                .ToListAsync();
+            var draftPosts = 0;
+
+            var latestComments = await _context.Comments
+                .Where(c => publishedPosts.Contains(c.PostId))
+                .OrderByDescending(c => c.CreatedAt)
+                .Take(5)
+                .ToListAsync();
+
+            var response = new
+            {
+                PublishedPosts = publishedPosts.Count,
+                DraftPosts = draftPosts,
+                LatestComments = latestComments
+                    .Select(c => new { Date = c.CreatedAt.Format(), Body = c.Body }).ToList()
+            };
+
+            return Ok(response);
         }
     }
 }

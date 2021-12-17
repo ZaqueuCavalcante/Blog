@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Extensions;
 
 namespace Blog.Controllers.Tags
 {
@@ -13,9 +14,9 @@ namespace Blog.Controllers.Tags
         public TagOut(Tag tag)
         {
             Name = tag.Name;
-            CreatedAt = tag.CreatedAt.ToString("dd/MM/yyyy HH:mm");
+            CreatedAt = tag.CreatedAt.Format();
             Posts = tag.Posts?
-                .Select(p => (object) new { Date = p.CreatedAt.ToString("dd/MM/yyyy HH:mm"), Title = p.Title })
+                .Select(p => (object) new { Date = p.CreatedAt.Format(), Title = p.Title })
                     .ToList();
         }
     }

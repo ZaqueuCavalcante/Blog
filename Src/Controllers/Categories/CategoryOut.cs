@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Extensions;
 
 namespace Blog.Controllers.Categories
 {
@@ -14,9 +15,9 @@ namespace Blog.Controllers.Categories
         {
             Name = category.Name;
             Description = category.Description;
-            CreatedAt = category.CreatedAt.ToString("dd/MM/yyyy HH:mm");
+            CreatedAt = category.CreatedAt.Format();
             Posts = category.Posts?
-                .Select(p => (object) new { Date = p.CreatedAt.ToString("dd/MM/yyyy HH:mm"), Title = p.Title })
+                .Select(p => (object) new { Date = p.CreatedAt.Format(), Title = p.Title })
                 .ToList();
         }
     }

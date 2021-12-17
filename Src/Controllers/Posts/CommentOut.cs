@@ -1,4 +1,5 @@
 using Blog.Domain;
+using Blog.Extensions;
 
 namespace Blog.Controllers.Posts
 {
@@ -25,7 +26,7 @@ namespace Blog.Controllers.Posts
             PostRating = comment.PostRating;
             Likes = comment.GetLikes();
             Body = comment.Body;
-            CreatedAt = comment.CreatedAt.ToString("dd/MM/yyyy HH:mm");
+            CreatedAt = comment.CreatedAt.Format();
             Replies = comment.Replies?.Select(b => new ReplyOut(b)).ToList();
         }
     }
