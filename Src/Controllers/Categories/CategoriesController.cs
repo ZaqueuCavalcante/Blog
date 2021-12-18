@@ -33,13 +33,14 @@ namespace Blog.Controllers.Categories
 
             category.Posts = category.Posts.OrderByDescending(p => p.CreatedAt).ToList();
 
-            return Ok(new CategoryOut(category));
+            return Ok(CategoryOut.New(category));
         }
 
         /// <summary>
         /// Returns all categories.
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<CategoryOut>>> GetCategories()
         {
             var categories = await _context.Categories
@@ -48,7 +49,7 @@ namespace Blog.Controllers.Categories
 
             categories.ForEach(c => c.Posts = c.Posts.OrderByDescending(p => p.CreatedAt).ToList());
 
-            return Ok(categories.Select(c => new CategoryOut(c)).ToList());
+            return Ok(categories.Select(c => CategoryOut.New(c)).ToList());
         }
     }
 }

@@ -11,14 +11,17 @@ namespace Blog.Controllers.Categories
 
         public List<object> Posts { get; set; }
 
-        public CategoryOut(Category category)
+        public static CategoryOut New(Category category)
         {
-            Name = category.Name;
-            Description = category.Description;
-            CreatedAt = category.CreatedAt.Format();
-            Posts = category.Posts?
-                .Select(p => (object) new { Date = p.CreatedAt.Format(), Title = p.Title })
-                .ToList();
+            return new CategoryOut
+            {
+                Name = category.Name,
+                Description = category.Description,
+                CreatedAt = category.CreatedAt.Format(),
+                Posts = category.Posts?
+                    .Select(p => (object) new { Date = p.CreatedAt.Format(), Title = p.Title })
+                    .ToList()
+            };
         }
     }
 }

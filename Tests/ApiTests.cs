@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Blog.Controllers.Bloggers;
+using Blog.Controllers.Categories;
+using Blog.Controllers.Posts;
 using Blog.Controllers.Users;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -152,7 +154,89 @@ namespace Blog.Tests
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         #region Categories
 
-        
+        [Test]
+        [TestCase("Linux", "The Linux category description...")]
+        [TestCase("Mr. Robot", "The Mr. Robot category description...")]
+        public async Task Get_a_category(string name, string description)
+        {
+            var response = await _client.GetAsync($"/categories/{name}");
+
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+            var category = JsonConvert.DeserializeObject<CategoryOut>(await response.Content.ReadAsStringAsync());
+
+            category.Name.ShouldBe(name);
+            category.Description.ShouldBe(description);
+            category.CreatedAt.ShouldNotBeNullOrEmpty();
+            category.Posts.Count.ShouldBe(1);
+        }
+
+        [Test]
+        public async Task Get_all_categories()
+        {
+            var response = await _client.GetAsync("/categories");
+
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+            var categories = JsonConvert.DeserializeObject<List<CategoryOut>>(await response.Content.ReadAsStringAsync());
+
+            categories.Count.ShouldBe(2);
+            categories.ShouldContain(c => c.Name == "Linux");
+            categories.ShouldContain(c => c.Name == "Mr. Robot");
+        }
+
+        #endregion
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        #region Posts
+
+        [Test]
+        public async Task Try_create_a_new_post_without_authorization()
+        {
+            var postIn = new PostIn
+            {
+                Title = "A nex blog post",
+                Resume = "A resume of the new blog post...",
+                Body = "The body of the new blog post...",
+                Category = "Linux",
+                Tags = new List<string>{ "Tech" }
+            };
+
+            var response = await _client.PostAsync("/posts", postIn.ToStringContent());
+
+            response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        }
+
+        [Test]
+        public async Task Create_a_new_post()
+        {
+            await Login("elliot@blog.com", "Test@123");
+
+            var postIn = new PostIn
+            {
+                Title = "A nex blog post",
+                Resume = "A resume of the new blog post...",
+                Body = "The body of the new blog post...",
+                Category = "Linux",
+                Authors = new List<int>{},
+                Tags = new List<string>{ "Tech" }
+            };
+
+            var response = await _client.PostAsync("/posts", postIn.ToStringContent());
+            response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+            var post = JsonConvert.DeserializeObject<PostOut>(await response.Content.ReadAsStringAsync());
+
+            post.Title.ShouldBe(postIn.Title);
+            post.Resume.ShouldBe(postIn.Resume);
+            post.Body.ShouldBe(postIn.Body);
+            post.Authors.Count.ShouldBe(1);
+            post.Authors.ShouldContain(a => a == "Sam Sepiol");
+            post.Tags.ShouldContain(t => t == "Tech");
+        }
+
+
+
+
 
         #endregion
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

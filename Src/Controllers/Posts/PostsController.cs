@@ -54,7 +54,7 @@ namespace Blog.Controllers.Posts
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}", new PostOut(post));
+            return Created($"/posts/{post.Id}", PostOut.New(post));
         }
 
         [HttpPost("{postId}/comments")]
@@ -79,7 +79,7 @@ namespace Blog.Controllers.Posts
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}", new PostOut(post));
+            return Created($"/posts/{post.Id}", PostOut.New(post));
         }
 
         [HttpPut("{postId}/comments/{commentId}/pins")]
@@ -127,7 +127,7 @@ namespace Blog.Controllers.Posts
             _context.Replies.Add(reply);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}", new PostOut(post));
+            return Created($"/posts/{post.Id}", PostOut.New(post));
         }
 
         [HttpPost("{postId}/comments/{commentId}/likes")]
@@ -183,7 +183,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            return Ok(new PostOut(post));
+            return Ok(PostOut.New(post));
         }
 
         [HttpGet]
@@ -202,7 +202,7 @@ namespace Blog.Controllers.Posts
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            return Ok(posts.Select(x => new PostOut(x)).ToList());
+            return Ok(posts.Select(x => PostOut.New(x)).ToList());
         }
     }
 }

@@ -15,17 +15,20 @@ namespace Blog.Controllers.Posts
         public List<CommentOut> Comments { get; set; }
         public List<string> Tags { get; set; }
 
-        public PostOut(Post post)
+        public static PostOut New(Post post)
         {
-            Id = post.Id;
-            Title = post.Title;
-            Resume = post.Resume;
-            Body = post.Body;
-            Rating = post.GetRating();
-            CreatedAt = post.CreatedAt.Format();
-            Authors = post.Authors?.Select(b => b.Name).ToList();
-            Comments = post.Comments?.Select(c => new CommentOut(c)).ToList();
-            Tags = post.Tags?.Select(c => c.Name).ToList();
+            return new PostOut
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Resume = post.Resume,
+                Body = post.Body,
+                Rating = post.GetRating(),
+                CreatedAt = post.CreatedAt.Format(),
+                Authors = post.Authors?.Select(b => b.Name).ToList(),
+                Comments = post.Comments?.Select(c => new CommentOut(c)).ToList(),
+                Tags = post.Tags?.Select(c => c.Name).ToList()
+            };
         }
     }
 }

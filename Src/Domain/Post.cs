@@ -22,21 +22,12 @@ namespace Blog.Domain
 
         public List<Tag> Tags { get; set; }
 
-        public byte GetRating()
+        public byte GetRating()  // TODO: refactor this to use Dapper
         {
             if (Comments == null || !Comments.Any())
                 return 0;
 
             return (byte) (Comments.Sum(c => c.PostRating) / Comments.Count);
-        }
-
-        public void PinComment(int commentId)
-        {
-            if (Comments == null || !Comments.Any())
-                return;
-
-            if (Comments.FirstOrDefault(c => c.Id == commentId) != null)
-                PinnedCommentId = commentId;
         }
     }
 }
