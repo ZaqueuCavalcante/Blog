@@ -9,12 +9,15 @@ namespace Blog.Controllers.Bloggers
         public string Resume { get; set; }
         public List<object> Networks { get; set; }
 
-        public BloggerOut(Blogger blogger, List<Network>? networks = null)
+        public static BloggerOut New(Blogger blogger, List<Network>? networks = null)
         {
-            Id = blogger.Id;
-            Name = blogger.Name;
-            Resume = blogger.Resume;
-            Networks = networks?.Select(n => (object) new { Name = n.Name, Uri = n.Uri }).ToList();
+            return new BloggerOut
+            {
+                Id = blogger.Id,
+                Name = blogger.Name,
+                Resume = blogger.Resume,
+                Networks = networks?.Select(n => (object) new { Name = n.Name, Uri = n.Uri }).ToList()
+            };
         }
     }
 }

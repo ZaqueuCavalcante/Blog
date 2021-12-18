@@ -49,7 +49,7 @@ namespace Blog.Controllers.Bloggers
             _context.Bloggers.Add(blogger);
             await _context.SaveChangesAsync();
 
-            return Created($"/bloggers/{blogger.Id}", new BloggerOut(blogger));
+            return Created($"/bloggers/{blogger.Id}", BloggerOut.New(blogger));
         }
 
         /// <summary>
@@ -68,32 +68,33 @@ namespace Blog.Controllers.Bloggers
 
             var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
 
-            return Ok(new BloggerOut(blogger, networks));
+            return Ok(BloggerOut.New(blogger, networks));
         }
 
         /// <summary>
         /// Returns all the bloggers.
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<BloggerOut>>> GetBloggers()
         {
             var bloggers = await _context.Bloggers
                 .ToListAsync();
 
-            return Ok(bloggers.Select(x => new BloggerOut(x)).ToList());
+            return Ok(bloggers.Select(x => BloggerOut.New(x)).ToList());
         }
 
         /// <summary>
         /// Update a blogger.
         /// </summary>
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Authorize(Roles = "Blogger")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
-        public async Task<IActionResult> UpdateBlogger(int id, BloggerUpdateIn dto)
+        public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn dto)
         {
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == id);
+            var userId = int.Parse(User.FindFirstValue("sub"));
 
-            if (blogger == null)
-                return NotFound("Blogger not found.");
+            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == userId);
 
             blogger.Update(dto.Name, dto.Resume);
 

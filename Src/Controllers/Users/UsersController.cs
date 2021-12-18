@@ -42,7 +42,8 @@ namespace Blog.Controllers.Users
 
             if (result.Succeeded)
             {
-                var response = new {
+                var response = new LoginOut
+                {
                     AccessToken = await GetJwt(dto.Email),
                     TokenType = "Bearer",
                     ExpiresIn = _configuration["Jwt:ExpirationTimeInSeconds"],
