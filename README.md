@@ -5,6 +5,10 @@ Stack:
 - EF Core
 - PostgreSQL
 
+- TODOS:
+    - Add Striker.NET to tests
+    - Add Respawn to tests
+
 ## References:
     - https://github.com/madskristensen/Miniblog.Core
     - https://pinchofyum.com/

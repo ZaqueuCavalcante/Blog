@@ -2,7 +2,6 @@
 using Blog.Database;
 using Blog.Domain;
 using Blog.Identity;
-using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -104,30 +103,9 @@ namespace Blog.Controllers.Bloggers
             return NoContent();
         }
 
-        /// <summary>
-        /// Delete a blogger.
-        /// </summary>
-        [HttpDelete("{id}")]
-        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
-        public async Task<IActionResult> DeleteBlogger(int id)
-        {
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.Id == id);
-
-            if (blogger == null)
-                return NotFound("Blogger not found.");
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == blogger.UserId);
-            await _userManager.DeleteAsync(user);
-
-            return Ok();
-        }
-
-
-
-
         [HttpGet("stats")]
         [Authorize(Roles = "Blogger")]
-        public async Task<ActionResult<List<BloggerOut>>> GetStats()
+        public async Task<ActionResult> GetStats()
         {
             var userId = int.Parse(User.FindFirstValue("sub"));
             var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
@@ -144,13 +122,11 @@ namespace Blog.Controllers.Bloggers
                 .Take(5)
                 .ToListAsync();
 
-            var response = new
-            {
-                PublishedPosts = publishedPosts.Count,
-                DraftPosts = draftPosts,
-                LatestComments = latestComments
-                    .Select(c => new { Date = c.CreatedAt.Format(), Body = c.Body }).ToList()
-            };
+            var response = BloggerStatsOut.New(
+                publishedPosts.Count,
+                draftPosts,
+                latestComments
+            );
 
             return Ok(response);
         }

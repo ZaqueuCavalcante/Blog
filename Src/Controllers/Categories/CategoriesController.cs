@@ -1,4 +1,5 @@
 ﻿using Blog.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ namespace Blog.Controllers.Categories
         /// Returns a category.
         /// </summary>
         [HttpGet("{name}")]
+        [AllowAnonymous]
         public async Task<ActionResult<CategoryOut>> GetCategory(string name)
         {
             var category = await _context.Categories
@@ -35,7 +37,7 @@ namespace Blog.Controllers.Categories
         }
 
         /// <summary>
-        /// Returns all the categories.
+        /// Returns all categories.
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<CategoryOut>>> GetCategories()

@@ -27,6 +27,19 @@ namespace Blog.Tests
             await _client.GetAsync("/seed");  // TODO: refactor this
         }
 
+        private async Task Login(string email, string password)
+        {
+            var userIn = new UserIn
+            {
+                Email = email,
+                Password = password
+            };
+            var loginResponse = await _client.PostAsync("users/login", userIn.ToStringContent());
+            loginResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+            var loginOut = JsonConvert.DeserializeObject<LoginOut>(await loginResponse.Content.ReadAsStringAsync());
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginOut.AccessToken);    
+        }
+
         #region Bloggers
 
         [Test]
@@ -48,16 +61,7 @@ namespace Blog.Tests
         [Test]
         public async Task Register_a_new_blogger()
         {
-            var userIn = new UserIn
-            {
-                Email = "sam@blog.com",
-                Password = "Test@123"
-            };
-            var loginResponse = await _client.PostAsync("users/login", userIn.ToStringContent());
-            loginResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var loginOut = JsonConvert.DeserializeObject<LoginOut>(await loginResponse.Content.ReadAsStringAsync());
-
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginOut.AccessToken);
+            await Login("sam@blog.com", "Test@123");
 
             var bloggerIn = new BloggerIn
             {
@@ -103,16 +107,7 @@ namespace Blog.Tests
         [Test]
         public async Task Update_a_blogger_data()
         {
-            var userIn = new UserIn
-            {
-                Email = "elliot@blog.com",
-                Password = "Test@123"
-            };
-            var loginResponse = await _client.PostAsync("users/login", userIn.ToStringContent());
-            loginResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
-            var loginOut = JsonConvert.DeserializeObject<LoginOut>(await loginResponse.Content.ReadAsStringAsync());
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginOut.AccessToken);
-
+            await Login("elliot@blog.com", "Test@123");
 
             var responseBefore = await _client.GetAsync($"/bloggers/1");
             responseBefore.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -138,6 +133,26 @@ namespace Blog.Tests
             bloggerAfter.Name.ShouldBe("Zaqueu C.");
             bloggerAfter.Resume.ShouldBe("A .Net Core Blogger...");
         }
+
+        [Test]
+        public async Task Get_blogger_stats()
+        {
+            await Login("elliot@blog.com", "Test@123");
+
+            var response = await _client.GetAsync("/bloggers/stats");
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            var stats = JsonConvert.DeserializeObject<BloggerStatsOut>(await response.Content.ReadAsStringAsync());
+
+            stats.PublishedPosts.ShouldBe(2);
+            stats.DraftPosts.ShouldBe(0);
+            stats.LatestComments.Count.ShouldBe(5);
+        }
+
+        #endregion
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        #region Categories
+
+        
 
         #endregion
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

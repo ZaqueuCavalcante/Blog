@@ -5,6 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>1591;8618;8601;8602</NoWarn>
+    <MSBuildWarningsAsMessages>
+      $(MSBuildWarningsAsMessages);MSB3274;MSB3277;
+    </MSBuildWarningsAsMessages>
   </PropertyGroup>
 
   <ItemGroup>
