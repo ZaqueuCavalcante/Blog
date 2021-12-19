@@ -10,6 +10,7 @@ Stack:
     - Add Respawn to tests
     - OAuth2 and OpenApi things
     - Identity features
+    - Add GitHub Actions CI
 
 ## References:
     - https://github.com/madskristensen/Miniblog.Core
