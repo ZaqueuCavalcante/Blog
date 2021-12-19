@@ -73,7 +73,12 @@ namespace Blog.Controllers.Bloggers
             #region Bloggers, Tags, Categories and Posts
 
             var samBlogger = new Blogger("Sam Esmail", "A TV show blogger...", samUser.Id);
+            await _context.Bloggers.AddAsync(samBlogger);
+            await _context.SaveChangesAsync();
+
             var elliotBlogger = new Blogger("Sam Sepiol", "A tech blogger...", elliotUser.Id);
+            await _context.Bloggers.AddAsync(elliotBlogger);
+            await _context.SaveChangesAsync();
 
             samUser.Networks = new List<Network>
             {
@@ -113,6 +118,9 @@ namespace Blog.Controllers.Bloggers
                 Tags = new List<Tag>{ seriesTag, hackingTag }
             };
 
+            await _context.Posts.AddAsync(mrRobotpost);
+            await _context.SaveChangesAsync();
+
             var linuxPost = new Post
             {
                 Title = "Linux and hacking",
@@ -124,8 +132,7 @@ namespace Blog.Controllers.Bloggers
                 Tags = new List<Tag>{ techTag, hackingTag }
             };
 
-            await _context.Bloggers.AddRangeAsync(samBlogger, elliotBlogger);
-            await _context.Posts.AddRangeAsync(mrRobotpost, linuxPost);
+            await _context.Posts.AddAsync(linuxPost);
             await _context.SaveChangesAsync();
 
             #endregion
@@ -133,11 +140,19 @@ namespace Blog.Controllers.Bloggers
             #region Readers
 
             var elliotReader = new Reader("Elliot Alderson", elliotUser.Id);
-            var darleneReader = new Reader("Darlene", darleneUser.Id);
-            var tyrellReader = new Reader("Tyrell Wellick", tyrellUser.Id);
-            var angelaReader = new Reader("Angela Moss", angelaUser.Id);
+            await _context.Readers.AddAsync(elliotReader);
+            await _context.SaveChangesAsync();
 
-            await _context.Readers.AddRangeAsync(elliotReader, darleneReader, tyrellReader, angelaReader);
+            var darleneReader = new Reader("Darlene", darleneUser.Id);
+            await _context.Readers.AddAsync(darleneReader);
+            await _context.SaveChangesAsync();
+
+            var tyrellReader = new Reader("Tyrell Wellick", tyrellUser.Id);
+            await _context.Readers.AddAsync(tyrellReader);
+            await _context.SaveChangesAsync();
+
+            var angelaReader = new Reader("Angela Moss", angelaUser.Id);
+            await _context.Readers.AddAsync(angelaReader);
             await _context.SaveChangesAsync();
 
             #endregion
@@ -171,6 +186,9 @@ namespace Blog.Controllers.Bloggers
                 UserId = angelaUser.Id
             };
 
+            await _context.Comments.AddRangeAsync(mrRobotPostComment01, mrRobotPostComment02, mrRobotPostComment03);
+            await _context.SaveChangesAsync();
+
             var linuxPostComment01 = new Comment
             {
                 PostId = linuxPost.Id,
@@ -189,7 +207,7 @@ namespace Blog.Controllers.Bloggers
                 UserId = samUser.Id
             };
 
-            await _context.Comments.AddRangeAsync(mrRobotPostComment01, mrRobotPostComment02, mrRobotPostComment03, linuxPostComment01, linuxPostComment02);
+            await _context.Comments.AddRangeAsync(linuxPostComment01, linuxPostComment02);
             await _context.SaveChangesAsync();
 
             #endregion

@@ -10,7 +10,7 @@ namespace Blog.Database.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<User> user)
         {
-            user.ToTable("users", "entity");
+            user.ToTable("users", "identity");
 
             user.HasKey(u => u.Id);
 

@@ -8,7 +8,7 @@ namespace Blog.Database.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<IdentityUserClaim<int>> userClaim)
         {
-            userClaim.ToTable("user_claims", "entity");
+            userClaim.ToTable("user_claims", "identity");
 
             userClaim.HasKey(uc => uc.Id);
         }

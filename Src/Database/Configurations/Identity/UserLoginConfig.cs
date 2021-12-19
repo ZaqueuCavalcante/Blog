@@ -8,7 +8,7 @@ namespace Blog.Database.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<IdentityUserLogin<int>> userLogin)
         {
-            userLogin.ToTable("user_logins", "entity");
+            userLogin.ToTable("user_logins", "identity");
 
             // Composite primary key consisting of the LoginProvider and the key to use with that provider.
             userLogin.HasKey(ul => new { ul.LoginProvider, ul.ProviderKey });

@@ -9,7 +9,7 @@ namespace Blog.Database.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<Role> role)
         {
-            role.ToTable("roles", "entity");
+            role.ToTable("roles", "identity");
 
             role.HasKey(r => r.Id);
 

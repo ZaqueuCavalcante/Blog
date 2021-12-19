@@ -8,7 +8,7 @@ namespace Blog.Database.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<IdentityRoleClaim<int>> roleClaim)
         {
-            roleClaim.ToTable("role_claims", "entity");
+            roleClaim.ToTable("role_claims", "identity");
 
             roleClaim.HasKey(rc => rc.Id);
         }

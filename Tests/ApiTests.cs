@@ -102,8 +102,8 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase(2, "Sam Esmail", "A TV show blogger...")]
-        [TestCase(1, "Sam Sepiol", "A tech blogger...")]
+        [TestCase(1, "Sam Esmail", "A TV show blogger...")]
+        [TestCase(2, "Sam Sepiol", "A tech blogger...")]
         public async Task Get_a_blogger(int id, string name, string resume)
         {
             var response = await _client.GetAsync($"/bloggers/{id}");
@@ -115,6 +115,14 @@ namespace Blog.Tests
             blogger.Id.ShouldBe(id);
             blogger.Name.ShouldBe(name);
             blogger.Resume.ShouldBe(resume);
+        }
+
+        [Test]
+        public async Task Try_get_a_non_existent_blogger()
+        {
+            var bloggerId = 42; 
+            var response = await _client.GetAsync($"/bloggers/{bloggerId}");
+            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
         [Test]
@@ -134,10 +142,10 @@ namespace Blog.Tests
         {
             await Login("elliot@blog.com", "Test@123");
 
-            var responseBefore = await _client.GetAsync($"/bloggers/1");
+            var responseBefore = await _client.GetAsync($"/bloggers/2");
             responseBefore.StatusCode.ShouldBe(HttpStatusCode.OK);
             var bloggerBefore = JsonConvert.DeserializeObject<BloggerOut>(await responseBefore.Content.ReadAsStringAsync());
-            bloggerBefore.Id.ShouldBe(1);
+            bloggerBefore.Id.ShouldBe(2);
             bloggerBefore.Name.ShouldBe("Sam Sepiol");
             bloggerBefore.Resume.ShouldBe("A tech blogger...");
 
@@ -151,10 +159,10 @@ namespace Blog.Tests
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
 
-            var responseAfter = await _client.GetAsync($"/bloggers/1");
+            var responseAfter = await _client.GetAsync($"/bloggers/2");
             responseAfter.StatusCode.ShouldBe(HttpStatusCode.OK);
             var bloggerAfter = JsonConvert.DeserializeObject<BloggerOut>(await responseAfter.Content.ReadAsStringAsync());
-            bloggerAfter.Id.ShouldBe(1);
+            bloggerAfter.Id.ShouldBe(2);
             bloggerAfter.Name.ShouldBe("Zaqueu C.");
             bloggerAfter.Resume.ShouldBe("A .Net Core Blogger...");
         }
@@ -258,8 +266,8 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase("darlene@blog.com", 3)]
         [TestCase("elliot@blog.com", 2)]
+        [TestCase("darlene@blog.com", 3)]
         public async Task Create_a_new_comment(string email, int userId)
         {
             await Login(email, "Test@123");
@@ -322,18 +330,20 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase("darlene@blog.com", 3)]
         [TestCase("elliot@blog.com", 2)]
+        [TestCase("darlene@blog.com", 3)]
         public async Task Create_a_new_comment_reply(string email, int userId)
         {
             await Login(email, "Test@123");
 
+            var postId = 1;
+            var commentId = 3;
             var replyIn = new ReplyIn
             {
                 Body = "A new comment reply..."
             };
 
-            var response = await _client.PostAsync("/posts/1/comments/3/replies", replyIn.ToStringContent());
+            var response = await _client.PostAsync($"/posts/{postId}/comments/{commentId}/replies", replyIn.ToStringContent());
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
             var reply = JsonConvert.DeserializeObject<ReplyOut>(await response.Content.ReadAsStringAsync());
@@ -344,14 +354,14 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase("darlene@blog.com", 3)]
         [TestCase("elliot@blog.com", 2)]
+        [TestCase("darlene@blog.com", 3)]
         public async Task Like_a_comment(string email, int userId)
         {
             await Login(email, "Test@123");
 
             var postId = 1;
-            var commentId = 3;
+            var commentId = 2;
 
             var response = await _client.PostAsync($"/posts/{postId}/comments/{commentId}/likes", null);
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -414,9 +424,10 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase(1, "Angela Moss")]
-        [TestCase(2, "Tyrell Wellick")]
-        [TestCase(3, "Darlene")]
+        [TestCase(1, "Elliot Alderson")]
+        [TestCase(2, "Darlene")]
+        [TestCase(3, "Tyrell Wellick")]
+        [TestCase(4, "Angela Moss")]
         public async Task Get_a_reader(int id, string name)
         {
             var response = await _client.GetAsync($"/readers/{id}");

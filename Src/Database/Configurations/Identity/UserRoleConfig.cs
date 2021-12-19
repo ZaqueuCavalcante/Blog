@@ -8,7 +8,7 @@ namespace Blog.Database.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<int>> userRole)
         {
-            userRole.ToTable("user_roles", "entity");
+            userRole.ToTable("user_roles", "identity");
 
             userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
         }
