@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blog", "Src\Blog.csproj", "{9B2240C7-24CF-4032-9E8D-56289AF6DBF6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog", "Src\Blog.csproj", "{9B2240C7-24CF-4032-9E8D-56289AF6DBF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{4169A938-FD87-44B2-B2AE-196D1BE7CD58}"
 EndProject
