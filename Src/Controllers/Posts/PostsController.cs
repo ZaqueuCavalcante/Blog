@@ -79,7 +79,7 @@ namespace Blog.Controllers.Posts
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}", PostOut.New(post));
+            return Created($"/posts/{post.Id}/comments/{comment.Id}", CommentOut.New(comment));
         }
 
         [HttpPut("{postId}/comments/{commentId}/pins")]
@@ -127,7 +127,7 @@ namespace Blog.Controllers.Posts
             _context.Replies.Add(reply);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}", PostOut.New(post));
+            return Created($"/posts/{post.Id}/comments/{comment.Id}/replies/{reply.Id}", ReplyOut.New(reply));
         }
 
         [HttpPost("{postId}/comments/{commentId}/likes")]
@@ -163,7 +163,7 @@ namespace Blog.Controllers.Posts
             _context.Likes.Add(like);
             await _context.SaveChangesAsync();
 
-            return Ok("Like added.");
+            return Created($"/posts/{post.Id}/comments/{comment.Id}/likes/{like.Id}", LikeOut.New(comment.Id, userId));
         }
 
         [HttpGet("{id}")]

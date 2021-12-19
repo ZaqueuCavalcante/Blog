@@ -6,6 +6,7 @@ namespace Blog.Controllers.Posts
     public class PostOut
     {
         public int Id { get; set; }
+        public int? PinnedCommentId { get; set; }
         public string Title { get; set; }
         public string Resume { get; set; }
         public string Body { get; set; }
@@ -20,13 +21,14 @@ namespace Blog.Controllers.Posts
             return new PostOut
             {
                 Id = post.Id,
+                PinnedCommentId = post.PinnedCommentId,
                 Title = post.Title,
                 Resume = post.Resume,
                 Body = post.Body,
                 Rating = post.GetRating(),
                 CreatedAt = post.CreatedAt.Format(),
                 Authors = post.Authors?.Select(b => b.Name).ToList(),
-                Comments = post.Comments?.Select(c => new CommentOut(c)).ToList(),
+                Comments = post.Comments?.Select(c => CommentOut.New(c)).ToList(),
                 Tags = post.Tags?.Select(c => c.Name).ToList()
             };
         }

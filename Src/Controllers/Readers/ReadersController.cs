@@ -1,6 +1,7 @@
 ﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ namespace Blog.Controllers.Readers
         /// </summary>
         /// <returns>The registered reader.</returns>
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> PostReader(ReaderIn dto)
         {
             var user = new User
@@ -46,15 +48,14 @@ namespace Blog.Controllers.Readers
             _context.Readers.Add(reader);
             await _context.SaveChangesAsync();
 
-            return Created($"/readers/{reader.Id}", new ReaderOut(reader));
+            return Created($"/readers/{reader.Id}", ReaderOut.New(reader));
         }
 
         /// <summary>
         /// Returns a reader, given your id.
         /// </summary>
-        /// <param name="id">The id of reader.</param>
-        /// <returns>A reader.</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ReaderOut>> GetReader(int id)
         {
             var reader = await _context.Readers
@@ -63,20 +64,20 @@ namespace Blog.Controllers.Readers
             if (reader is null)
                 return NotFound("Reader not found.");
 
-            return Ok(new ReaderOut(reader));
+            return Ok(ReaderOut.New(reader));
         }
 
         /// <summary>
         /// Returns all the readers.
         /// </summary>
-        /// <returns>A list of readers.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<ReaderOut>>> GetReaders()
         {
             var readers = await _context.Readers
                 .ToListAsync();
 
-            return Ok(readers.Select(x => new ReaderOut(x)).ToList());
+            return Ok(readers.Select(r => ReaderOut.New(r)).ToList());
         }
     }
 }

@@ -8,6 +8,8 @@ Stack:
 - TODOS:
     - Add Striker.NET to tests
     - Add Respawn to tests
+    - OAuth2 and OpenApi things
+    - Identity features
 
 ## References:
     - https://github.com/madskristensen/Miniblog.Core

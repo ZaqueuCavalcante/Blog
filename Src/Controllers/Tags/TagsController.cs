@@ -1,4 +1,5 @@
 ﻿using Blog.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,8 @@ namespace Blog.Controllers.Tags
         /// Returns a tag.
         /// </summary>
         [HttpGet("{name}")]
-        public async Task<ActionResult<TagOut>> GetTag(string name)
+        [AllowAnonymous]
+        public async Task<ActionResult> GetTag(string name)
         {
             var tag = await _context.Tags
                 .Include(c => c.Posts)
@@ -31,13 +33,14 @@ namespace Blog.Controllers.Tags
 
             tag.Posts = tag.Posts.OrderByDescending(p => p.CreatedAt).ToList();
 
-            return Ok(new TagOut(tag));
+            return Ok(TagOut.New(tag));
         }
 
         /// <summary>
         /// Returns all the tags.
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<TagOut>>> GetTags()
         {
             var tags = await _context.Tags
@@ -46,7 +49,7 @@ namespace Blog.Controllers.Tags
 
             tags.ForEach(t => t.Posts = t.Posts.OrderByDescending(p => p.CreatedAt).ToList());
 
-            return Ok(tags.Select(t => new TagOut(t)).ToList());
+            return Ok(tags.Select(t => TagOut.New(t)).ToList());
         }
     }
 }

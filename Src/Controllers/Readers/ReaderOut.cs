@@ -5,13 +5,15 @@ namespace Blog.Controllers.Readers
     public class ReaderOut
     {
         public int Id { get; set; }
-
         public string Name { get; set; }
 
-        public ReaderOut(Reader reader)
+        public static ReaderOut New(Reader reader)
         {
-            Id = reader.Id;
-            Name = reader.Name;
+            return new ReaderOut
+            {
+                Id = reader.Id,
+                Name = reader.Name
+            };
         }
     }
 }

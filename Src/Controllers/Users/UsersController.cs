@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers.Users
 {
@@ -31,6 +32,7 @@ namespace Blog.Controllers.Users
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult> Login(UserIn dto)
         {
             var result = await _signInManager.PasswordSignInAsync(
@@ -67,17 +69,20 @@ namespace Blog.Controllers.Users
         }
 
         [HttpPost("logout")]
+        [Authorize]
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             
-            return Ok("Logout succeeded");
+            return Ok("Logout succeeded.");
         }
 
         [HttpPut("change-password")]
+        [Authorize]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = int.Parse(User.FindFirstValue("sub"));
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             var result = await _userManager.ChangePasswordAsync(
                 user,
