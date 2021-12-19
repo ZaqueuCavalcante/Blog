@@ -18,8 +18,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore Src\Blog.csproj
-      run: dotnet restore Tests\Tests.csproj
+      run: dotnet restore Src\Blog.csproj && dotnet restore Tests\Tests.csproj
     - name: Build
       run: dotnet build --no-restore
     - name: Test
