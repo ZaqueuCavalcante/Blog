@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
 
 namespace Blog.Controllers.Users
 {
@@ -38,7 +39,7 @@ namespace Blog.Controllers.Users
             var result = await _signInManager.PasswordSignInAsync(
                 userName: dto.Email,
                 password: dto.Password,
-                isPersistent: true,
+                isPersistent: false,
                 lockoutOnFailure: true
             );
 
@@ -95,6 +96,25 @@ namespace Blog.Controllers.Users
 
             return Ok("Password not changed.");
         }
+
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        public async Task<ActionResult> RefreshToken()
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == 1);
+
+            return Ok("Not implemented.");
+        }
+
+		private string GetRefreshToken()
+		{
+			var randomNumber = new byte[42];
+			using (var rng = RandomNumberGenerator.Create())
+			{
+				rng.GetBytes(randomNumber);
+				return Convert.ToBase64String(randomNumber);
+			}
+		}
 
         private async Task<string> GetJwt(string email)
         {

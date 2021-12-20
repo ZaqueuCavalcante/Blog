@@ -15,8 +15,7 @@ namespace Blog.Services
 
             services.Configure<IdentityOptions>(options =>
             {
-                options.User.AllowedUserNameCharacters += "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
             });
 
             services.Configure<IdentityOptions>(options =>
@@ -32,7 +31,7 @@ namespace Blog.Services
             services.Configure<IdentityOptions>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);  // The amount of time a user is locked out when a lockout occurs.
-                options.Lockout.MaxFailedAccessAttempts = 5;  // The number of failed access attempts until a user is locked out, if lockout is enabled.
+                options.Lockout.MaxFailedAccessAttempts = 3;  // The number of failed access attempts until a user is locked out, if lockout is enabled.
                 options.Lockout.AllowedForNewUsers = true;  // Determines if a new user can be locked out.
             });
 

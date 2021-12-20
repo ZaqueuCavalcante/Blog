@@ -6,5 +6,10 @@ namespace Blog.Extensions
         {
             return date.ToString("dd/MM/yyyy HH:mm");
         }
+
+        public static string GetRoot(this HttpRequest request)
+        {
+            return request.Scheme + "://" + request.Host.Value + "/";
+        }
     }
 }

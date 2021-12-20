@@ -11,6 +11,8 @@ Stack:
     - OAuth2 and OpenApi things
     - Identity features
     - Add GitHub Actions CI
+    - Add HATEOAS
+    - Add RefreshToken and what it is?
 
 ## References:
     - https://github.com/madskristensen/Miniblog.Core

@@ -8,7 +8,6 @@ namespace Blog.Controllers.Categories
         public string Name { get; set; }
         public string Description { get; set; }
         public string CreatedAt { get; set; }
-
         public List<object> Posts { get; set; }
 
         public static CategoryOut New(Category category)

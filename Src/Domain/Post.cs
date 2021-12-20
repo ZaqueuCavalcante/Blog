@@ -22,7 +22,7 @@ namespace Blog.Domain
 
         public List<Tag> Tags { get; set; }
 
-        public byte GetRating()  // TODO: refactor this to use Dapper
+        public byte GetRating()
         {
             if (Comments == null || !Comments.Any())
                 return 0;

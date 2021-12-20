@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Blog.Database;
 using Blog.Domain;
+using Blog.Extensions;
 using Blog.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,13 +16,16 @@ namespace Blog.Controllers.Bloggers
     {
         private readonly BlogContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IWebHostEnvironment _env;
 
         public BloggersController(
             BlogContext context,
-            UserManager<User> userManager
+            UserManager<User> userManager,
+            IWebHostEnvironment env
         ) {
             _context = context;
             _userManager = userManager;
+            _env = env;
         }
 
         /// <summary>
@@ -60,6 +64,7 @@ namespace Blog.Controllers.Bloggers
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
         {
             var blogger = await _context.Bloggers
+                .Include(b => b.Posts)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
             if (blogger is null)
@@ -67,7 +72,7 @@ namespace Blog.Controllers.Bloggers
 
             var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
 
-            return Ok(BloggerOut.New(blogger, networks));
+            return Ok(BloggerOut.New(blogger, networks, Request.GetRoot()));
         }
 
         /// <summary>
