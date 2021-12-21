@@ -186,11 +186,11 @@ namespace Blog.Tests
         #region Categories
 
         [Test]
-        [TestCase("Linux", "The Linux category description...")]
-        [TestCase("Mr. Robot", "The Mr. Robot category description...")]
-        public async Task Get_a_category(string name, string description)
+        [TestCase(1, "Linux", "The Linux category description...")]
+        [TestCase(2, "Mr. Robot", "The Mr. Robot category description...")]
+        public async Task Get_a_category(int id, string name, string description)
         {
-            var response = await _client.GetAsync($"/categories/{name}");
+            var response = await _client.GetAsync($"/categories/{id}");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -457,12 +457,12 @@ namespace Blog.Tests
         #region Tags
 
         [Test]
-        [TestCase("Series", 1)]
-        [TestCase("Hacking", 2)]
-        [TestCase("Tech", 1)]
-        public async Task Get_a_tag(string name, int posts)
+        [TestCase(1, "Tech", 1)]
+        [TestCase(2, "Series", 1)]
+        [TestCase(3, "Hacking", 2)]
+        public async Task Get_a_tag(int id, string name, int posts)
         {
-            var response = await _client.GetAsync($"/tags/{name}");
+            var response = await _client.GetAsync($"/tags/{id}");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 

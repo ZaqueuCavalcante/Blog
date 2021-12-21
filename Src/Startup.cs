@@ -37,7 +37,7 @@ namespace Blog
 
             services.AddJwtConfigurations(Configuration);
 
-            services.AddAuthorization();
+            services.AddAuthorizationConfigurations();
         }
 
         public void Configure(

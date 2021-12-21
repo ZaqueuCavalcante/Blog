@@ -106,7 +106,7 @@
 
 - OpenID Connect + OAuth2
 
-## 1 - Segurança no ASP>NET Core
+## 1 - Segurança no ASP.NET Core
 
 - ClaimsPrincipal e ClaimsIdentity
 - Herdam das respectivas interfaces:

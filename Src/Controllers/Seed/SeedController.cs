@@ -87,8 +87,14 @@ namespace Blog.Controllers.Bloggers
             };
 
             var techTag = new Tag { Name = "Tech", CreatedAt = DateTime.Now };
+            await _context.Tags.AddAsync(techTag);
+            await _context.SaveChangesAsync();
             var seriesTag = new Tag { Name = "Series", CreatedAt = DateTime.Now };
+            await _context.Tags.AddAsync(seriesTag);
+            await _context.SaveChangesAsync();
             var hackingTag = new Tag { Name = "Hacking", CreatedAt = DateTime.Now };
+            await _context.Tags.AddAsync(hackingTag);
+            await _context.SaveChangesAsync();
 
             var linuxCategory = new Category
             {
@@ -97,6 +103,9 @@ namespace Blog.Controllers.Bloggers
                 CreatedAt = DateTime.Now
             };
 
+            await _context.Categories.AddAsync(linuxCategory);
+            await _context.SaveChangesAsync();
+
             var mrRobotCategory = new Category
             {
                 Name = "Mr. Robot",
@@ -104,7 +113,7 @@ namespace Blog.Controllers.Bloggers
                 CreatedAt = DateTime.Now
             };
 
-            await _context.Categories.AddRangeAsync(linuxCategory, mrRobotCategory);
+            await _context.Categories.AddAsync(mrRobotCategory);
             await _context.SaveChangesAsync();
 
             var mrRobotpost = new Post

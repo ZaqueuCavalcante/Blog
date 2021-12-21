@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Blog.Database;
 using Blog.Domain;
-using Blog.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -83,8 +82,7 @@ namespace Blog.Controllers.Posts
         }
 
         [HttpPut("{postId}/comments/{commentId}/pins")]
-        [Authorize(Roles = "Blogger")]
-        [ClaimsAuthorize("pinner", "true")]
+        [Authorize(Policy = "CommentPinPolicy")]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
