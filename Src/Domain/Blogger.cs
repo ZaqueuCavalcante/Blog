@@ -9,6 +9,7 @@ namespace Blog.Domain
         public int UserId { get; set; }
 
         public string Name { get; set; }
+
         public string Resume { get; set; }
 
         public DateTime CreatedAt { get; set; }

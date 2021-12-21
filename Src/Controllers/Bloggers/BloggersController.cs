@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Controllers.Bloggers
 {
+    /// <summary>
+    /// Makes blogger operations.
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class BloggersController : ControllerBase
