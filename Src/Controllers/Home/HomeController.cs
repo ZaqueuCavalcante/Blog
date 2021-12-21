@@ -3,7 +3,6 @@ using Blog.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Blog.Controllers.Bloggers;
 
 namespace Blog.Controllers.Home
 {
@@ -28,39 +27,25 @@ namespace Blog.Controllers.Home
             var lastPosts = await _context.Posts
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
-            var lastPostsOut = lastPosts.Select(p => new {
-                Id = p.Id,
-                Title = p.Title,
-                Date = p.CreatedAt.Format(),
-                Resume = p.Resume
-            }).ToList();
-
+            var lastPostsOut = lastPosts.Select(p => HomePostOut.New(p, url)).ToList();
+ 
             var bloggers = await _context.Bloggers
                 .ToListAsync();
-            var bloggersOut = new List<BloggerOut>();
+            var bloggersOut = new List<HomeBloggerOut>();
             foreach (var blogger in bloggers)
             {
                 var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
-                var bloggerOut = BloggerOut.New(blogger, networks);
-                bloggerOut.Link = url + "bloggers/" + blogger.Id;
-                bloggersOut.Add(bloggerOut);
+                bloggersOut.Add(HomeBloggerOut.New(blogger, networks, url));
             }
 
             var categories = await _context.Categories
                 .Include(c => c.Posts)
                 .ToListAsync();
-            var categoriesOut = categories.Select(c => new {
-                Id = c.Id,
-                Name = c.Name,
-                Posts = c.Posts.Count
-            });
+            var categoriesOut = categories.Select(c => HomeCategoryOut.New(c, url));
 
             var tags = await _context.Tags
                 .ToListAsync();
-            var tagsOut = tags.Select(t => new {
-                Id = t.Id,
-                Name = t.Name
-            });
+            var tagsOut = tags.Select(t => HomeTagOut.New(t, url));
 
             var response = new
             {
@@ -70,7 +55,8 @@ namespace Blog.Controllers.Home
                     Bloggers = url + "bloggers",
                     Posts = url + "posts",
                     Categories = url + "categories",
-                    Tags = url + "tags"
+                    Tags = url + "tags",
+                    Login = url + "users/login"
                 },
                 LastPosts = lastPostsOut,
                 Bloggers = bloggersOut,

@@ -1,4 +1,5 @@
 ﻿using Blog.Database;
+using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,20 +21,20 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Returns a category.
         /// </summary>
-        [HttpGet("{name}")]
+        [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<CategoryOut>> GetCategory(string name)
+        public async Task<ActionResult<CategoryOut>> GetCategory(int id)
         {
             var category = await _context.Categories
                 .Include(c => c.Posts)
-                .FirstOrDefaultAsync(c => c.Name == name);
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (category is null)
                 return NotFound("Category not found.");
 
             category.Posts = category.Posts.OrderByDescending(p => p.CreatedAt).ToList();
 
-            return Ok(CategoryOut.New(category));
+            return Ok(CategoryOut.New(category, Request.GetRoot()));
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace Blog.Controllers.Categories
 
             categories.ForEach(c => c.Posts = c.Posts.OrderByDescending(p => p.CreatedAt).ToList());
 
-            return Ok(categories.Select(c => CategoryOut.New(c)).ToList());
+            return Ok(categories.Select(c => CategoryOut.New(c, Request.GetRoot())).ToList());
         }
     }
 }

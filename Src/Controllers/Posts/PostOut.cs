@@ -6,7 +6,6 @@ namespace Blog.Controllers.Posts
     public class PostOut
     {
         public int Id { get; set; }
-        public string Link { get; set; }
         public int? PinnedCommentId { get; set; }
         public string Title { get; set; }
         public string Resume { get; set; }

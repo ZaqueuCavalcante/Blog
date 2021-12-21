@@ -1,43 +1,14 @@
-body {
-    background-color: rgb(56, 194, 212);
+* {
     border: 2px solid powderblue;
+    margin: 20px;
+    padding: 10px;
 }
-h1 {
+
+
+
+header {
     color: blue;
     font-family: verdana;
     font-size: 300%;
-    border: 2px solid powderblue;
-    padding: 10px;
-    margin: 20px;
-}
-
-h2 {
-    color: blue;
-    font-family: verdana;
-    border: 2px solid powderblue;
-    padding: 10px;
-    margin: 20px;
-}
-
-a {
-    background-color: rgb(56, 194, 212);
-    border: 2px solid powderblue;
-    padding: 10px;
-    margin: 10px;
-}
-
-p {
-    color: red;
-    font-family: courier;
-    font-size: 160%;
-    border: 2px solid powderblue;
-    padding: 30px;
-    margin: 10px;
-}
-
-div {
-    color: red;
-    border: 5px solid powderblue;
-    padding: 20px;
-    margin: 50px;
+    font-weight: bold;
 }

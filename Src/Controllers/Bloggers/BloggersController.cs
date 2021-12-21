@@ -85,7 +85,7 @@ namespace Blog.Controllers.Bloggers
             var bloggers = await _context.Bloggers
                 .ToListAsync();
 
-            return Ok(bloggers.Select(x => BloggerOut.New(x)).ToList());
+            return Ok(bloggers.Select(x => BloggerOut.New(x, null, Request.GetRoot())).ToList());
         }
 
         /// <summary>

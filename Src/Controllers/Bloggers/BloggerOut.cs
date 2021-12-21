@@ -17,6 +17,7 @@ namespace Blog.Controllers.Bloggers
             return new BloggerOut
             {
                 Id = blogger.Id,
+                Link = root + "bloggers/" + blogger.Id,
                 Name = blogger.Name,
                 Resume = blogger.Resume,
                 Networks = networks?.Select(n => (object) new { Name = n.Name, Uri = n.Uri }).ToList(),
@@ -25,7 +26,7 @@ namespace Blog.Controllers.Bloggers
                     Id = p.Id,
                     Link = root + $"posts/{p.Id}",
                     Title = p.Title,
-                    Date = p.CreatedAt.Format(),
+                    CreatedAt = p.CreatedAt.Format(),
                     Resume = p.Resume
                 }).ToList()
             };
