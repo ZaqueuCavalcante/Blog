@@ -56,6 +56,26 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}", PostOut.New(post));
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Blogger")]
+        public async Task<IActionResult> EditPost(int id, EditPostIn dto)
+        {
+            var userId = int.Parse(User.FindFirstValue("sub"));
+
+            var post = await _context.Posts.Include(p => p.Authors).FirstOrDefaultAsync(p => p.Id == id);
+            if (post is null)
+                return NotFound("Post not found.");
+
+            if (!post.Authors.Any(a => a.UserId == userId))
+                return Forbid();
+
+            post.Edit(dto.Title, dto.Resume, dto.Body);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(PostOut.New(post));
+        }
+
         [HttpPost("{postId}/comments")]
         [Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostComment(int postId, CommentIn dto)

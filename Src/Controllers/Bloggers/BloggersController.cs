@@ -19,16 +19,13 @@ namespace Blog.Controllers.Bloggers
     {
         private readonly BlogContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly IWebHostEnvironment _env;
 
         public BloggersController(
             BlogContext context,
-            UserManager<User> userManager,
-            IWebHostEnvironment env
+            UserManager<User> userManager
         ) {
             _context = context;
             _userManager = userManager;
-            _env = env;
         }
 
         /// <summary>

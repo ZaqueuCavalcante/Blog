@@ -2,7 +2,7 @@ namespace Blog.Domain
 {
     public class Post
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
 
         public int CategoryId { get; set; }
 
@@ -28,6 +28,16 @@ namespace Blog.Domain
                 return 0;
 
             return (byte) (Comments.Sum(c => c.PostRating) / Comments.Count);
+        }
+
+        public void Edit(
+            string title,
+            string resume,
+            string body
+        ) {
+            Title = title;
+            Resume = resume;
+            Body = body;
         }
     }
 }
