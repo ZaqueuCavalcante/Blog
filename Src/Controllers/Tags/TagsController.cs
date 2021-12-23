@@ -1,4 +1,5 @@
 ﻿using Blog.Database;
+using Blog.Domain;
 using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,25 @@ namespace Blog.Controllers.Tags
             BlogContext context
         ) {
             _context = context;
+        }
+
+        /// <summary>
+        /// Register a new tag.
+        /// </summary>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PostTag(string name)
+        {
+            var tag = new Tag
+            {
+                Name = name,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Tags.Add(tag);
+            await _context.SaveChangesAsync();
+
+            return Created($"/tags/{tag.Id}", TagOut.New(tag, Request.GetRoot()));
         }
 
         /// <summary>

@@ -68,7 +68,7 @@ namespace Blog.Controllers.Posts
                 return NotFound("Post not found.");
 
             if (!post.Authors.Any(a => a.UserId == userId))
-                return Forbid();
+                return BadRequest("You must be one of the post authors to be able to edit it.");
 
             post.Edit(dto.Title, dto.Resume, dto.Body);
 
@@ -106,9 +106,13 @@ namespace Blog.Controllers.Posts
         [Authorize(Policy = "CommentPinPolicy")]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            var post = await _context.Posts.Include(p => p.Authors).FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
                 return NotFound("Post not found.");
+
+            var userId = int.Parse(User.FindFirstValue("sub"));
+            if (!post.Authors.Any(a => a.UserId == userId))
+                return BadRequest("You must be one of the post authors to be able to pin a comment.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)

@@ -1,4 +1,5 @@
 ﻿using Blog.Database;
+using Blog.Domain;
 using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,26 @@ namespace Blog.Controllers.Categories
             BlogContext context
         ) {
             _context = context;
+        }
+
+        /// <summary>
+        /// Register a new category.
+        /// </summary>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PostCategory(CategoryIn dto)
+        {
+            var category = new Category
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+
+            return Created($"/categories/{category.Id}", CategoryOut.New(category, Request.GetRoot()));
         }
 
         /// <summary>

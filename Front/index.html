@@ -9,14 +9,32 @@
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <header> MangueBit </header>
-
-        <nav>
-            <a href="#"> Bloggers </a>
-            <a href="#"> Posts </a>
-            <a href="#"> Categories </a>
-            <a href="#"> Tags </a>
-            <a href="#"> Login </a>
+        <nav class="navbar">
+            <div class="navbar_container">
+                <a href="#home" id="navbar_logo"> MangueBit </a>
+                <div class="navbar_toggle" id="mobile_menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+                <ul class="navbar_menu">
+                    <li class="navbar_item">
+                        <a href="#bloggers" class="navbar_links" id="bloggers_page"> Bloggers </a>
+                    </li>
+                    <li class="navbar_item">
+                        <a href="#posts" class="navbar_links" id="posts_page"> Posts </a>
+                    </li>
+                    <li class="navbar_item">
+                        <a href="#categories" class="navbar_links" id="categories_page"> Categories </a>
+                    </li>
+                    <li class="navbar_item">
+                        <a href="#tags" class="navbar_links" id="tags_page"> Tags </a>
+                    </li>
+                    <li class="navbar_button">
+                        <a href="#login" class="button" id="login_page"> Login </a>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
         <article>

@@ -93,12 +93,10 @@ namespace Blog.Controllers.Bloggers
         /// </summary>
         [HttpPut]
         [Authorize(Roles = "Blogger")]
-        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
         public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn dto)
         {
             var userId = int.Parse(User.FindFirstValue("sub"));
-
-            var blogger = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == userId);
+            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
 
             blogger.Update(dto.Name, dto.Resume);
 
