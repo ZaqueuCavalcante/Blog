@@ -1,8 +1,0 @@
-# Testes
-
-## Unitários
-
-## Integração
-
-## Funcionais
-

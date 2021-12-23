@@ -5,14 +5,32 @@ Stack:
 - EF Core
 - PostgreSQL
 
+- Blog features:
+    - Full Text Search:
+        - Bloggers, Posts, Categories, Tags
+    - Front-end
+    - Hospedagem no Azure:
+        - https://youtu.be/7VLGFtoH6r0
+    - Controle de acesso completo
+
 - TODOS:
-    - Add Striker.NET to tests
-    - Add Respawn to tests
     - OAuth2 and OpenApi things
     - Identity features
     - Add GitHub Actions CI
     - Add HATEOAS
     - Add RefreshToken and what it is?
+    - Logs? Feature Flags?
+    - Injeção de Dependência
+
+- .Net topics:
+    - Caching / Redis
+    - Log / Serilog
+    - Real-Time / SignalR
+    - Task Scheduling / HangFire
+    - Micro-Services
+
+- YouTube:
+    - https://www.youtube.com/c/RawCoding/videos
 
 ## References:
     - https://github.com/madskristensen/Miniblog.Core

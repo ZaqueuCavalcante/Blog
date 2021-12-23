@@ -261,8 +261,8 @@ namespace Blog.Tests
             post.Resume.ShouldBe(postIn.Resume);
             post.Body.ShouldBe(postIn.Body);
             post.Authors.Count.ShouldBe(1);
-            post.Authors.ShouldContain(a => a == "Sam Sepiol");
-            post.Tags.ShouldContain(t => t == "Tech");
+            post.Authors.ShouldContain(a => a.Name == "Sam Sepiol");
+            post.Tags.ShouldContain(t => t.Name == "Tech");
         }
 
         [Test]

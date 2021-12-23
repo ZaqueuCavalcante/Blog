@@ -24,10 +24,23 @@
 
 Dependency Injection, Configurations, EF Core, Identity and Deploy. 
 
-## 10 - Dependency Injection
+## 10 - Service configuration with dependency injection
 
+- Criar vínculos entre classes usando Interfaces, para poder variar a implementação em tempo de execução.
+- As dependências são abstrações, não coisas concretas.
+- Promove o desacoplamento, torna o código facilmente extensível e possibilita a criação de mocks nos testes.
 
+- Lifetimes:
+    - Singleton:
+        - Uma única instância para toda a aplicação.
+        - Todos os requests usam a mesma instância.
+    - Scoped:
+        - Para cada request é criado uma instância, que é usada ao longo de todo o pipeline da requisição.
+        - Ao final do request, ela é destruída.
+    - Transient:
+        - Uma nova instância é criada sob demanda.
 
+- Autofac
 
 ## 15 - Authorization: Securing your application
 

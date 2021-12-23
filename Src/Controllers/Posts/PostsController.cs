@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Blog.Database;
 using Blog.Domain;
+using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -201,7 +202,9 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            return Ok(PostOut.New(post));
+            var category = await _context.Categories.FirstAsync(c => c.Id == post.CategoryId);
+
+            return Ok(PostOut.New(post, category, Request.GetRoot()));
         }
 
         [HttpGet]
@@ -210,17 +213,15 @@ namespace Blog.Controllers.Posts
         {
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
+                .Include(p => p.Category)
                 .Include(l => l.Authors)
-                .Include(l => l.Comments)
-                    .ThenInclude(c => c.Replies)
-                .Include(l => l.Comments)
-                    .ThenInclude(c => c.Likes)
+                .Include(l => l.Comments)  // To calculate the post rating...
                 .Include(l => l.Tags)
                 .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            return Ok(posts.Select(x => PostOut.New(x)).ToList());
+            return Ok(posts.Select(x => PostOut.NewWithoutComments(x, x.Category, Request.GetRoot())).ToList());
         }
     }
 }

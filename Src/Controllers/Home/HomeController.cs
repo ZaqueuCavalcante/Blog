@@ -52,6 +52,7 @@ namespace Blog.Controllers.Home
                 Links = new
                 {
                     Home = url,
+                    Search = url + "search",
                     Bloggers = url + "bloggers",
                     Posts = url + "posts",
                     Categories = url + "categories",

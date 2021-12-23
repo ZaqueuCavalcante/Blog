@@ -1,6 +1,4 @@
 using Blog.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using Blog.Database;
 using Blog.Services;
 
 namespace Blog
@@ -23,13 +21,7 @@ namespace Blog
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
-            services.AddDbContext<BlogContext>(options =>
-            {
-                options.UseNpgsql(Configuration.GetConnectionString("Connection"));
-                options.UseSnakeCaseNamingConvention();
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
-            });
+            services.AddEfCoreConfigurations(Configuration);
 
             services.AddCorsConfigurations();
 

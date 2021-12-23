@@ -20,7 +20,7 @@ namespace Blog.Database.Configurations.Domain
             category.Property(c => c.CreatedAt).IsRequired();
 
             category.HasMany<Post>(c => c.Posts)
-                .WithOne()
+                .WithOne(p => p.Category)
                 .HasForeignKey(p => p.CategoryId)
                 .IsRequired(); 
         }
