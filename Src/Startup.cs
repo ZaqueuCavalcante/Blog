@@ -1,4 +1,4 @@
-using Blog.Exceptions;
+using Blog.Extensions;
 using Blog.Services;
 
 namespace Blog
@@ -58,7 +58,7 @@ namespace Blog
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMiddleware<DomainExceptionMiddleware>();
+            app.UseDomainExceptionMiddleware();
 
             app.UseEndpoints(endpoints =>
             {

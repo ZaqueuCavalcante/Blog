@@ -1,3 +1,5 @@
+using Blog.Exceptions;
+
 namespace Blog.Extensions
 {
     public static class Extensions
@@ -10,6 +12,12 @@ namespace Blog.Extensions
         public static string GetRoot(this HttpRequest request)
         {
             return request.Scheme + "://" + request.Host.Value + "/";
+        }
+
+        public static IApplicationBuilder UseDomainExceptionMiddleware(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<DomainExceptionMiddleware>();
+            return app;
         }
     }
 }

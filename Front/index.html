@@ -9,44 +9,31 @@
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <nav class="navbar">
-            <div class="navbar_container">
-                <a href="#home" id="navbar_logo"> MangueBit </a>
-                <div class="navbar_toggle" id="mobile_menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </div>
-                <ul class="navbar_menu">
-                    <li class="navbar_item">
-                        <a href="#bloggers" class="navbar_links" id="bloggers_page"> Bloggers </a>
-                    </li>
-                    <li class="navbar_item">
-                        <a href="#posts" class="navbar_links" id="posts_page"> Posts </a>
-                    </li>
-                    <li class="navbar_item">
-                        <a href="#categories" class="navbar_links" id="categories_page"> Categories </a>
-                    </li>
-                    <li class="navbar_item">
-                        <a href="#tags" class="navbar_links" id="tags_page"> Tags </a>
-                    </li>
-                    <li class="navbar_button">
-                        <a href="#login" class="button" id="login_page"> Login </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <ul id="navbar">
+            <li><a class="navbar_item" href="#home"> MangueBit </a></li>
+            <li><a class="navbar_item" href="https://localhost:7292/bloggers"> Bloggers </a></li>
+            <li><a class="navbar_item" href="https://localhost:7292/posts"> Posts </a></li>
+            <li><a class="navbar_item" href="https://localhost:7292/categories"> Categories </a></li>
+            <li><a class="navbar_item" href="https://localhost:7292/tags"> Tags </a></li>
+            <li><a class="navbar_item" href="#login"> Login </a></li>
+        </ul>
 
-        <article>
-            Post01
+        <article >
+            <h2> Relacionamentos no Entity Framework Core </h2>
+            <div class="post_date"> 22/12/2021 </div>
+            <h4> Neste post, veremos como configurar todos os tipos de relacionamentos entre tabelas no EF Core. </h4>
         </article>
 
         <article>
-            Post02
+            <h2> Autorização no ASP.NET Identity Core </h2>
+            <div class="post_date"> 19/12/2021 </div>
+            <h4> Neste post, veremos como trabalhar com Policies, Roles e Claims para aumentar a segurança do seu sistema. </h4>
         </article>
 
         <article>
-            Post03
+            <h2> Autenticação no ASP.NET Identity Core </h2>
+            <div class="post_date"> 15/12/2021 </div>
+            <h4> Neste post, veremos como configurar uma simples autenticação utilizando JWT. </h4>
         </article>
 
         <aside>
