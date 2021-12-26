@@ -52,7 +52,7 @@ namespace Blog.Controllers.Readers
         }
 
         /// <summary>
-        /// Returns a reader, given your id.
+        /// Returns a reader.
         /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]

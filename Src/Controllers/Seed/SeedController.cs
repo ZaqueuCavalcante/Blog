@@ -31,7 +31,7 @@ namespace Blog.Controllers.Bloggers
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
 
-            #region Roles and Claims
+            #region Roles
 
             var readerRole = new Role { Name = "Reader" };
             var bloggerRole = new Role { Name = "Blogger" };
@@ -41,44 +41,61 @@ namespace Blog.Controllers.Bloggers
             await _roleManager.CreateAsync(bloggerRole);
             await _roleManager.CreateAsync(adminRole);
 
-            await _roleManager.AddClaimAsync(adminRole, new Claim("pinner", "true"));
-
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
             #region Users
 
             var samUser = new User { UserName = "sam@blog.com", Email = "sam@blog.com" };
             var elliotUser = new User { UserName = "elliot@blog.com", Email = "elliot@blog.com" };
+            var irvingUser = new User { UserName = "irving@blog.com", Email = "irving@blog.com" };
             var darleneUser = new User { UserName = "darlene@blog.com", Email = "darlene@blog.com" };
             var tyrellUser = new User { UserName = "tyrell@blog.com", Email = "tyrell@blog.com" };
             var angelaUser = new User { UserName = "angela@blog.com", Email = "angela@blog.com" };
+            var domUser = new User { UserName = "dom@blog.com", Email = "dom@blog.com" };
 
             await _userManager.CreateAsync(samUser, "Test@123");
             await _userManager.CreateAsync(elliotUser, "Test@123");
+            await _userManager.CreateAsync(irvingUser, "Test@123");
             await _userManager.CreateAsync(darleneUser, "Test@123");
             await _userManager.CreateAsync(tyrellUser, "Test@123");
             await _userManager.CreateAsync(angelaUser, "Test@123");
+            await _userManager.CreateAsync(domUser, "Test@123");
 
-            await _userManager.AddToRoleAsync(samUser, "Admin");
+            await _userManager.AddToRolesAsync(samUser, new [] { "Admin", "Blogger" });
             await _userManager.AddToRoleAsync(elliotUser, "Blogger");
+            await _userManager.AddToRoleAsync(irvingUser, "Blogger");
             await _userManager.AddToRoleAsync(darleneUser, "Reader");
             await _userManager.AddToRoleAsync(tyrellUser, "Reader");
             await _userManager.AddToRoleAsync(angelaUser, "Reader");
-
-            await _userManager.AddClaimAsync(elliotUser, new Claim("pinner", "true"));
+            await _userManager.AddToRoleAsync(domUser, "Reader");
 
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            #region Bloggers, Tags, Categories and Posts
+            #region Claims
 
-            var samBlogger = new Blogger("Sam Esmail", "A TV show blogger...", samUser.Id);
+            await _userManager.AddClaimAsync(elliotUser, new Claim("pinner", "true"));
+            await _userManager.AddClaimAsync(irvingUser, new Claim("liker", "true"));
+            await _userManager.AddClaimAsync(darleneUser, new Claim("liker", "true"));
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Bloggers
+            
+            var samBlogger = new Blogger("Sam Esmail", "Writes about ASP.NET Core, DevOps and TV Shows.", samUser.Id);
             await _context.Bloggers.AddAsync(samBlogger);
             await _context.SaveChangesAsync();
 
-            var elliotBlogger = new Blogger("Sam Sepiol", "A tech blogger...", elliotUser.Id);
+            var elliotBlogger = new Blogger("Elliot Alderson", "Writes about Linux, Hacking and Computers.", elliotUser.Id);
             await _context.Bloggers.AddAsync(elliotBlogger);
             await _context.SaveChangesAsync();
+
+            var irvingBlogger = new Blogger("Irving", "A used-car salesman, that writes novels.", irvingUser.Id);
+            await _context.Bloggers.AddAsync(irvingBlogger);
+            await _context.SaveChangesAsync();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Networks
 
             samUser.Networks = new List<Network>
             {
@@ -86,73 +103,109 @@ namespace Blog.Controllers.Bloggers
                 new Network { Name = "Twitter", Uri = "https://twitter.com/sam" }
             };
 
+            irvingUser.Networks = new List<Network>
+            {
+                new Network { Name = "YouTube", Uri = "https://www.youtube.com/irving" },
+                new Network { Name = "Twitter", Uri = "https://twitter.com/irving" }
+            };
+
+            await _context.SaveChangesAsync();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Tags
+
             var techTag = new Tag { Name = "Tech", CreatedAt = DateTime.Now };
             await _context.Tags.AddAsync(techTag);
             await _context.SaveChangesAsync();
+
             var seriesTag = new Tag { Name = "Series", CreatedAt = DateTime.Now };
             await _context.Tags.AddAsync(seriesTag);
             await _context.SaveChangesAsync();
+
             var hackingTag = new Tag { Name = "Hacking", CreatedAt = DateTime.Now };
             await _context.Tags.AddAsync(hackingTag);
             await _context.SaveChangesAsync();
 
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Categories
+
             var linuxCategory = new Category
             {
                 Name = "Linux",
-                Description = "The Linux category description...",
+                Description = "The Linux category description.",
                 CreatedAt = DateTime.Now
             };
-
             await _context.Categories.AddAsync(linuxCategory);
             await _context.SaveChangesAsync();
 
             var mrRobotCategory = new Category
             {
                 Name = "Mr. Robot",
-                Description = "The Mr. Robot category description...",
+                Description = "The Mr. Robot category description.",
                 CreatedAt = DateTime.Now
             };
-
             await _context.Categories.AddAsync(mrRobotCategory);
             await _context.SaveChangesAsync();
+
+            var efCoreCategory = new Category
+            {
+                Name = "EF Core",
+                Description = "The EF Core category description.",
+                CreatedAt = DateTime.Now
+            };
+            await _context.Categories.AddAsync(efCoreCategory);
+            await _context.SaveChangesAsync();
+
+            #endregion
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            #region Posts
 
             var mrRobotpost = new Post
             {
                 Title = "Mr. Robot - End explained",
-                Resume = "A very short blog post resume.",
-                Body = "A blog post with many informations...",
+                Resume = "The Mr. Robot series finale features a stunning, emotional twist that recontextualizes the entire series.",
+                Body = "Obviously he is a fictional character given that he exists on the television program Mr. Robot. But even within the reality of the show, Elliot at times more closely resembled a hacker archetype than a living, breathing, bleeding human being.",
                 CategoryId = mrRobotCategory.Id,
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ samBlogger, elliotBlogger },
                 Tags = new List<Tag>{ seriesTag, hackingTag }
             };
-
             await _context.Posts.AddAsync(mrRobotpost);
             await _context.SaveChangesAsync();
 
             var linuxPost = new Post
             {
                 Title = "Linux and hacking",
-                Resume = "A other very short blog post resume.",
-                Body = "A other blog post with many informations...",
+                Resume = "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
+                Body = "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them. Topics include Linux command line basics, filesystems, networking, BASH basics, package management, logging, and the Linux kernel and drivers.",
                 CategoryId = linuxCategory.Id,
                 CreatedAt = DateTime.Now,
                 Authors = new List<Blogger>{ elliotBlogger },
                 Tags = new List<Tag>{ techTag, hackingTag }
             };
-
             await _context.Posts.AddAsync(linuxPost);
+            await _context.SaveChangesAsync();
+
+            var efCorePost = new Post
+            {
+                Title = "EF Core - Code First",
+                Resume = "Code first approach offers most control over the final appearance of the application code and the resulting database.",
+                Body = "In EF Core, the DbContext has a virtual method called onConfiguring which will get called internally by EF Core, and it will also pass in an optionsBuilder instance, and you can use that optionsBuilder to configure options for the DbContext.",
+                CategoryId = efCoreCategory.Id,
+                CreatedAt = DateTime.Now,
+                Authors = new List<Blogger>{ irvingBlogger },
+                Tags = new List<Tag>{ techTag }
+            };
+            await _context.Posts.AddAsync(efCorePost);
             await _context.SaveChangesAsync();
 
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Readers
 
-            var elliotReader = new Reader("Elliot Alderson", elliotUser.Id);
-            await _context.Readers.AddAsync(elliotReader);
-            await _context.SaveChangesAsync();
-
-            var darleneReader = new Reader("Darlene", darleneUser.Id);
+            var darleneReader = new Reader("Darlene Alderson", darleneUser.Id);
             await _context.Readers.AddAsync(darleneReader);
             await _context.SaveChangesAsync();
 
@@ -162,6 +215,10 @@ namespace Blog.Controllers.Bloggers
 
             var angelaReader = new Reader("Angela Moss", angelaUser.Id);
             await _context.Readers.AddAsync(angelaReader);
+            await _context.SaveChangesAsync();
+
+            var domReader = new Reader("Dominique DiPierro", domUser.Id);
+            await _context.Readers.AddAsync(domReader);
             await _context.SaveChangesAsync();
 
             #endregion
@@ -226,7 +283,7 @@ namespace Blog.Controllers.Bloggers
             var reply01 = new Reply
             {
                 CommentId = mrRobotPostComment01.Id,
-                Body = "A comment reply...",
+                Body = "A comment reply.",
                 CreatedAt = DateTime.Now,
                 UserId = samUser.Id
             };
@@ -234,7 +291,7 @@ namespace Blog.Controllers.Bloggers
             var reply02 = new Reply
             {
                 CommentId = mrRobotPostComment01.Id,
-                Body = "A other comment reply...",
+                Body = "A other comment reply.",
                 CreatedAt = DateTime.Now,
                 UserId = elliotUser.Id
             };
@@ -242,7 +299,7 @@ namespace Blog.Controllers.Bloggers
             var reply03 = new Reply
             {
                 CommentId = mrRobotPostComment02.Id,
-                Body = "A reply lalala...",
+                Body = "A reply lalala.",
                 CreatedAt = DateTime.Now,
                 UserId = angelaUser.Id
             };

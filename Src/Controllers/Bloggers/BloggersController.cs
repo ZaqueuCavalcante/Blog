@@ -10,9 +10,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Controllers.Bloggers
 {
-    /// <summary>
-    /// Makes blogger operations.
-    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class BloggersController : ControllerBase
@@ -58,7 +55,6 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Returns a blogger.
         /// </summary>
-        /// <param name="id">The id of blogger.</param>
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
@@ -106,6 +102,9 @@ namespace Blog.Controllers.Bloggers
             return NoContent();
         }
 
+        /// <summary>
+        /// Return statistics about the blogger.
+        /// </summary>
         [HttpGet("stats")]
         [Authorize(Roles = "Blogger")]
         public async Task<ActionResult> GetStats()

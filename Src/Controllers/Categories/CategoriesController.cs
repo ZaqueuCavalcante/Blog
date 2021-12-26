@@ -59,7 +59,7 @@ namespace Blog.Controllers.Categories
         }
 
         /// <summary>
-        /// Returns all categories.
+        /// Returns all the categories.
         /// </summary>
         [HttpGet]
         [AllowAnonymous]

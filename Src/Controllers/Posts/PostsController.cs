@@ -5,6 +5,7 @@ using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Blog.Services.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Posts
 {
@@ -19,6 +20,9 @@ namespace Blog.Controllers.Posts
             _context = context;
         }
 
+        /// <summary>
+        /// Create a new blog post.
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> PostPost(PostIn dto)
@@ -57,6 +61,9 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}", PostOut.New(post));
         }
 
+        /// <summary>
+        /// Update a blog post.
+        /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> EditPost(int id, EditPostIn dto)
@@ -77,6 +84,9 @@ namespace Blog.Controllers.Posts
             return Ok(PostOut.New(post));
         }
 
+        /// <summary>
+        /// Comment on a blog post.
+        /// </summary>
         [HttpPost("{postId}/comments")]
         [Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostComment(int postId, CommentIn dto)
@@ -102,8 +112,11 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}/comments/{comment.Id}", CommentOut.New(comment));
         }
 
+        /// <summary>
+        /// Pins a comment to a blog post.
+        /// </summary>
         [HttpPut("{postId}/comments/{commentId}/pins")]
-        [Authorize(Policy = "CommentPinPolicy")]
+        [Authorize(Policy = CommentPinPolicy)]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
             var post = await _context.Posts.Include(p => p.Authors).FirstOrDefaultAsync(p => p.Id == postId);
@@ -125,6 +138,9 @@ namespace Blog.Controllers.Posts
             return Ok();
         }
 
+        /// <summary>
+        /// Reply to a comment on a blog post.
+        /// </summary>
         [HttpPost("{postId}/comments/{commentId}/replies")]
         [Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostCommentReply(int postId, int commentId, ReplyIn dto)
@@ -153,8 +169,11 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}/comments/{comment.Id}/replies/{reply.Id}", ReplyOut.New(reply));
         }
 
+        /// <summary>
+        /// Like a comment on a blog post.
+        /// </summary>
         [HttpPost("{postId}/comments/{commentId}/likes")]
-        [Authorize(Roles = "Reader, Blogger")]
+        [Authorize(Policy = CommentLikePolicy)]
         public async Task<IActionResult> PostCommentLike(int postId, int commentId)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
@@ -189,6 +208,9 @@ namespace Blog.Controllers.Posts
             return Created($"/posts/{post.Id}/comments/{comment.Id}/likes/{like.Id}", LikeOut.New(comment.Id, userId));
         }
 
+        /// <summary>
+        /// Returns a post.
+        /// </summary>
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<PostOut>> GetPost(int id)
@@ -211,6 +233,9 @@ namespace Blog.Controllers.Posts
             return Ok(PostOut.New(post, category, Request.GetRoot()));
         }
 
+        /// <summary>
+        /// Returns all the posts.
+        /// </summary>
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)

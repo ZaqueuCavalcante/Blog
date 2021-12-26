@@ -267,7 +267,7 @@ namespace Blog.Tests
 
         [Test]
         [TestCase("elliot@blog.com", 2)]
-        [TestCase("darlene@blog.com", 3)]
+        [TestCase("darlene@blog.com", 4)]
         public async Task Create_a_new_comment(string email, int userId)
         {
             await Login(email, "Test@123");
@@ -331,7 +331,7 @@ namespace Blog.Tests
 
         [Test]
         [TestCase("elliot@blog.com", 2)]
-        [TestCase("darlene@blog.com", 3)]
+        [TestCase("darlene@blog.com", 4)]
         public async Task Create_a_new_comment_reply(string email, int userId)
         {
             await Login(email, "Test@123");
@@ -354,8 +354,8 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase("elliot@blog.com", 2)]
-        [TestCase("darlene@blog.com", 3)]
+        [TestCase("irving@blog.com", 3)]
+        [TestCase("darlene@blog.com", 4)]
         public async Task Like_a_comment(string email, int userId)
         {
             await Login(email, "Test@123");

@@ -18,6 +18,9 @@ namespace Blog.Controllers.Home
             _context = context;
         }
 
+        /// <summary>
+        /// Returns all informations about the blog home page.
+        /// </summary>
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult> GetHome()

@@ -19,6 +19,9 @@ namespace Blog.Controllers.Search
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Search for something on the blog.
+        /// </summary>
         [HttpGet("{thing}")]
         [AllowAnonymous]
         public async Task<ActionResult> Search(string thing)
@@ -28,11 +31,13 @@ namespace Blog.Controllers.Search
             var bloggersSql = @"
                 SELECT id, name FROM blog.bloggers
                 WHERE name ILIKE '%' || @Thing || '%' OR resume ILIKE '%' || @Thing || '%'
+                ORDER BY name
             ";
 
             var categoriesSql = @"
                 SELECT id, name FROM blog.categories
                 WHERE name ILIKE '%' || @Thing || '%' OR description ILIKE '%' || @Thing || '%'
+                ORDER BY name
             ";
 
             var postsSql = @"
@@ -44,6 +49,7 @@ namespace Blog.Controllers.Search
             var tagsSql = @"
                 SELECT id, name FROM blog.tags
                 WHERE name ILIKE '%' || @Thing || '%'
+                ORDER BY name
             ";
 
             using (var connection = new NpgsqlConnection(_configuration.GetConnectionString("Connection")))
@@ -58,7 +64,7 @@ namespace Blog.Controllers.Search
                 posts.ForEach(p => { p.Link = url + "posts/" + p.Id; });
                 tags.ForEach(t => { t.Link = url + "tags/" + t.Id; });
 
-                return Ok(new { Bloggers = bloggers, Categories = categories, Posts = posts, Tags = tags });
+                return Ok(new { bloggers, categories, posts, tags });
             }
         }
     }

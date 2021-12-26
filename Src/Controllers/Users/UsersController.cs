@@ -32,6 +32,9 @@ namespace Blog.Controllers.Users
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Login into blog.
+        /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<ActionResult> Login(UserIn dto)
@@ -58,17 +61,20 @@ namespace Blog.Controllers.Users
             }
 
             if (result.IsLockedOut)
-                return Ok("Account Locked");
+                return Ok("Account locked.");
 
             if (result.IsNotAllowed)
-                return Ok("Login Not Allowed");
+                return Ok("Login not allowed.");
 
             if (result.RequiresTwoFactor)
-                return Ok("Requires Two Factor");
+                return Ok("Requires two factor.");
             
-            return Ok("Login Failed");
+            return Ok("Login failed.");
         }
 
+        /// <summary>
+        /// Logout of the blog.
+        /// </summary>
         [HttpPost("logout")]
         [Authorize]
         public async Task<ActionResult> Logout()
@@ -78,6 +84,9 @@ namespace Blog.Controllers.Users
             return Ok("Logout succeeded.");
         }
 
+        /// <summary>
+        /// Change user password.
+        /// </summary>
         [HttpPut("change-password")]
         [Authorize]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
@@ -97,6 +106,9 @@ namespace Blog.Controllers.Users
             return Ok("Password not changed.");
         }
 
+        /// <summary>
+        /// Refresh a access token.
+        /// </summary>
         [HttpPost("refresh-token")]
         [AllowAnonymous]
         public async Task<ActionResult> RefreshToken()
