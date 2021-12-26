@@ -5,10 +5,18 @@ namespace Blog.Controllers.Bloggers
 {
     public class BloggerOut
     {
+        /// <example>42</example>
         public int Id { get; set; }
+
+        /// <example>xyz/bloggers/42</example>
         public string Link { get; set; }
+
+        /// <example>Bob</example>
         public string Name { get; set; }
+
+        /// <example>I write about things.</example>
         public string Resume { get; set; }
+
         public List<object> Networks { get; set; }
         public List<object> Posts { get; set; }
 

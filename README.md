@@ -18,7 +18,7 @@ Stack:
     - CDNs
     - Cache
     - Finite State Machine
-    - 
+    - https://github.com/domaindrivendev/Swashbuckle.AspNetCore#enable-oauth20-flows
 
 - YouTube:
     - https://www.youtube.com/c/RawCoding/videos

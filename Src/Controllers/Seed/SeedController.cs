@@ -45,13 +45,13 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Users
 
-            var samUser = new User { UserName = "sam@blog.com", Email = "sam@blog.com" };
-            var elliotUser = new User { UserName = "elliot@blog.com", Email = "elliot@blog.com" };
-            var irvingUser = new User { UserName = "irving@blog.com", Email = "irving@blog.com" };
-            var darleneUser = new User { UserName = "darlene@blog.com", Email = "darlene@blog.com" };
-            var tyrellUser = new User { UserName = "tyrell@blog.com", Email = "tyrell@blog.com" };
-            var angelaUser = new User { UserName = "angela@blog.com", Email = "angela@blog.com" };
-            var domUser = new User { UserName = "dom@blog.com", Email = "dom@blog.com" };
+            var samUser = Blog.Identity.User.New("sam@blog.com");
+            var elliotUser = Blog.Identity.User.New("elliot@blog.com");
+            var irvingUser = Blog.Identity.User.New("irving@blog.com");
+            var darleneUser = Blog.Identity.User.New("darlene@blog.com");
+            var tyrellUser = Blog.Identity.User.New("tyrell@blog.com");
+            var angelaUser = Blog.Identity.User.New("angela@blog.com");
+            var domUser = Blog.Identity.User.New("dom@blog.com");
 
             await _userManager.CreateAsync(samUser, "Test@123");
             await _userManager.CreateAsync(elliotUser, "Test@123");
@@ -131,30 +131,15 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Categories
 
-            var linuxCategory = new Category
-            {
-                Name = "Linux",
-                Description = "The Linux category description.",
-                CreatedAt = DateTime.Now
-            };
+            var linuxCategory = new Category("Linux", "The Linux category description.");
             await _context.Categories.AddAsync(linuxCategory);
             await _context.SaveChangesAsync();
 
-            var mrRobotCategory = new Category
-            {
-                Name = "Mr. Robot",
-                Description = "The Mr. Robot category description.",
-                CreatedAt = DateTime.Now
-            };
+            var mrRobotCategory = new Category("Mr. Robot", "The Mr. Robot category description.");
             await _context.Categories.AddAsync(mrRobotCategory);
             await _context.SaveChangesAsync();
 
-            var efCoreCategory = new Category
-            {
-                Name = "EF Core",
-                Description = "The EF Core category description.",
-                CreatedAt = DateTime.Now
-            };
+            var efCoreCategory = new Category("EF Core", "The EF Core category description.");
             await _context.Categories.AddAsync(efCoreCategory);
             await _context.SaveChangesAsync();
 

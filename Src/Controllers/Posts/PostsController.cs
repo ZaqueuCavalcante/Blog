@@ -217,6 +217,7 @@ namespace Blog.Controllers.Posts
         {
             var post = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
+                .Include(p => p.Category)
                 .Include(l => l.Authors)
                 .Include(l => l.Comments)
                     .ThenInclude(c => c.Replies)
@@ -228,9 +229,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            var category = await _context.Categories.FirstAsync(c => c.Id == post.CategoryId);
-
-            return Ok(PostOut.New(post, category, Request.GetRoot()));
+            return Ok(PostOut.New(post, Request.GetRoot()));
         }
 
         /// <summary>
@@ -250,7 +249,7 @@ namespace Blog.Controllers.Posts
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            return Ok(posts.Select(x => PostOut.NewWithoutComments(x, x.Category, Request.GetRoot())).ToList());
+            return Ok(posts.Select(p => PostOut.NewWithoutComments(p, Request.GetRoot())).ToList());
         }
     }
 }

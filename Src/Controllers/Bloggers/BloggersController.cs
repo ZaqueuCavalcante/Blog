@@ -30,13 +30,11 @@ namespace Blog.Controllers.Bloggers
         /// </summary>
         [HttpPost]
         [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(BloggerOut), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(IEnumerable<IdentityError>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PostBlogger(BloggerIn dto)
         {
-            var user = new User
-            {
-                UserName = dto.Email,
-                Email = dto.Email
-            };
+            var user = Blog.Identity.User.New(dto.Email);
 
             var blogger = new Blogger(dto.Name, dto.Resume, user.Id);
 

@@ -31,11 +31,7 @@ namespace Blog.Controllers.Readers
         [AllowAnonymous]
         public async Task<IActionResult> PostReader(ReaderIn dto)
         {
-            var user = new User
-            {
-                UserName = dto.Email,
-                Email = dto.Email
-            };
+            var user = Blog.Identity.User.New(dto.Email);
 
             var reader = new Reader(dto.Name, user.Id);
 

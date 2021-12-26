@@ -27,7 +27,7 @@ namespace Blog.Domain
             CreatedAt = DateTime.Now;
         }
 
-        public void SetName(string name)
+        private void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Blogger's name cannot be empty.");
@@ -38,7 +38,7 @@ namespace Blog.Domain
             Name = name;
         }
 
-        public void SetResume(string resume)
+        private void SetResume(string resume)
         {
             if (string.IsNullOrWhiteSpace(resume))
                 throw new DomainException("Blogger's resume cannot be empty.");
