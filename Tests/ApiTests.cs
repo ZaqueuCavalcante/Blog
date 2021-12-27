@@ -58,7 +58,7 @@ namespace Blog.Tests
 
             loginOut.AccessToken.ShouldNotBeNullOrEmpty();
             loginOut.ExpiresInMinutes.ShouldBe("5");
-            loginOut.RefreshToken.ShouldBe("");
+            loginOut.RefreshToken.ShouldNotBeNullOrEmpty();
             loginOut.Scope.ShouldBe("create");
             loginOut.TokenType.ShouldBe("Bearer");
         }
@@ -102,8 +102,8 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase(1, "Sam Esmail", "A TV show blogger...")]
-        [TestCase(2, "Sam Sepiol", "A tech blogger...")]
+        [TestCase(1, "Sam Esmail", "Writes about ASP.NET Core, DevOps and TV Shows.")]
+        [TestCase(2, "Elliot Alderson", "Writes about Linux, Hacking and Computers.")]
         public async Task Get_a_blogger(int id, string name, string resume)
         {
             var response = await _client.GetAsync($"/bloggers/{id}");
@@ -134,7 +134,7 @@ namespace Blog.Tests
 
             var bloggers = JsonConvert.DeserializeObject<List<BloggerOut>>(await response.Content.ReadAsStringAsync());
 
-            bloggers.Count.ShouldBe(2);
+            bloggers.Count.ShouldBe(3);
         }
 
         [Test]
@@ -146,8 +146,8 @@ namespace Blog.Tests
             responseBefore.StatusCode.ShouldBe(HttpStatusCode.OK);
             var bloggerBefore = JsonConvert.DeserializeObject<BloggerOut>(await responseBefore.Content.ReadAsStringAsync());
             bloggerBefore.Id.ShouldBe(2);
-            bloggerBefore.Name.ShouldBe("Sam Sepiol");
-            bloggerBefore.Resume.ShouldBe("A tech blogger...");
+            bloggerBefore.Name.ShouldBe("Elliot Alderson");
+            bloggerBefore.Resume.ShouldBe("Writes about Linux, Hacking and Computers.");
 
 
             var bloggerUpdateIn = new BloggerUpdateIn
@@ -155,7 +155,7 @@ namespace Blog.Tests
                 Name = "Zaqueu C.",
                 Resume = "A .Net Core Blogger..."
             };
-            var response = await _client.PutAsync("/bloggers", bloggerUpdateIn.ToStringContent());
+            var response = await _client.PatchAsync("/bloggers", bloggerUpdateIn.ToStringContent());
             response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
 
@@ -176,9 +176,9 @@ namespace Blog.Tests
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
             var stats = JsonConvert.DeserializeObject<BloggerStatsOut>(await response.Content.ReadAsStringAsync());
 
-            stats.PublishedPosts.ShouldBe(2);
+            stats.PublishedPosts.ShouldBe(1);
             stats.DraftPosts.ShouldBe(0);
-            stats.LatestComments.Count.ShouldBe(5);
+            stats.LatestComments.Count.ShouldBe(2);
         }
 
         #endregion
@@ -186,8 +186,8 @@ namespace Blog.Tests
         #region Categories
 
         [Test]
-        [TestCase(1, "Linux", "The Linux category description...")]
-        [TestCase(2, "Mr. Robot", "The Mr. Robot category description...")]
+        [TestCase(1, "Linux", "The Linux category description.")]
+        [TestCase(2, "Mr. Robot", "The Mr. Robot category description.")]
         public async Task Get_a_category(int id, string name, string description)
         {
             var response = await _client.GetAsync($"/categories/{id}");
@@ -211,7 +211,7 @@ namespace Blog.Tests
 
             var categories = JsonConvert.DeserializeObject<List<CategoryOut>>(await response.Content.ReadAsStringAsync());
 
-            categories.Count.ShouldBe(2);
+            categories.Count.ShouldBe(3);
             categories.ShouldContain(c => c.Name == "Linux");
             categories.ShouldContain(c => c.Name == "Mr. Robot");
         }
@@ -228,8 +228,8 @@ namespace Blog.Tests
                 Title = "A nex blog post",
                 Resume = "A resume of the new blog post...",
                 Body = "The body of the new blog post...",
-                Category = "Linux",
-                Tags = new List<string>{ "Tech" }
+                CategoryId = 1,
+                Tags = new List<int>{ 1 }
             };
 
             var response = await _client.PostAsync("/posts", postIn.ToStringContent());
@@ -244,12 +244,11 @@ namespace Blog.Tests
 
             var postIn = new PostIn
             {
-                Title = "A nex blog post",
+                Title = "A new blog post",
                 Resume = "A resume of the new blog post...",
                 Body = "The body of the new blog post...",
-                Category = "Linux",
-                Authors = new List<int>{},
-                Tags = new List<string>{ "Tech" }
+                CategoryId = 1,
+                Tags = new List<int>{ 1 }
             };
 
             var response = await _client.PostAsync("/posts", postIn.ToStringContent());
@@ -260,8 +259,7 @@ namespace Blog.Tests
             post.Title.ShouldBe(postIn.Title);
             post.Resume.ShouldBe(postIn.Resume);
             post.Body.ShouldBe(postIn.Body);
-            post.Authors.Count.ShouldBe(1);
-            post.Authors.ShouldContain(a => a.Name == "Sam Sepiol");
+            post.Author.Name.ShouldBe("Elliot Alderson");
             post.Tags.ShouldContain(t => t.Name == "Tech");
         }
 
@@ -295,15 +293,15 @@ namespace Blog.Tests
         {
             await Login("elliot@blog.com", "Test@123");
 
-            var postId = 1;
-            var commentId = 3;
+            var postId = 2;
+            var commentId = 4;
 
             var postBeforeResponse = await _client.GetAsync($"/posts/{postId}");
             postBeforeResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
             var postBefore = JsonConvert.DeserializeObject<PostOut>(await postBeforeResponse.Content.ReadAsStringAsync());
             postBefore.PinnedCommentId.ShouldBe(null);
 
-            var response = await _client.PutAsync($"/posts/{postId}/comments/{commentId}/pins", null);
+            var response = await _client.PatchAsync($"/posts/{postId}/comments/{commentId}/pins", null);
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
             var postAfterResponse = await _client.GetAsync($"/posts/{postId}");
@@ -317,10 +315,10 @@ namespace Blog.Tests
         {
             await Pin_a_comment();
             
-            var postId = 1;
-            var commentId = 3;
+            var postId = 2;
+            var commentId = 4;
 
-            var response = await _client.PutAsync($"/posts/{postId}/comments/{commentId}/pins", null);
+            var response = await _client.PatchAsync($"/posts/{postId}/comments/{commentId}/pins", null);
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
             var postAfterResponse = await _client.GetAsync($"/posts/{postId}");
@@ -397,7 +395,7 @@ namespace Blog.Tests
 
             var posts = JsonConvert.DeserializeObject<List<PostOut>>(await response.Content.ReadAsStringAsync());
 
-            posts.Count.ShouldBe(2);
+            posts.Count.ShouldBe(3);
         }
 
         #endregion
@@ -424,10 +422,10 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase(1, "Elliot Alderson")]
-        [TestCase(2, "Darlene")]
-        [TestCase(3, "Tyrell Wellick")]
-        [TestCase(4, "Angela Moss")]
+        [TestCase(1, "Darlene Alderson")]
+        [TestCase(2, "Tyrell Wellick")]
+        [TestCase(3, "Angela Moss")]
+        [TestCase(4, "Dominique DiPierro")]
         public async Task Get_a_reader(int id, string name)
         {
             var response = await _client.GetAsync($"/readers/{id}");
@@ -457,7 +455,7 @@ namespace Blog.Tests
         #region Tags
 
         [Test]
-        [TestCase(1, "Tech", 1)]
+        [TestCase(1, "Tech", 2)]
         [TestCase(2, "Series", 1)]
         [TestCase(3, "Hacking", 2)]
         public async Task Get_a_tag(int id, string name, int posts)

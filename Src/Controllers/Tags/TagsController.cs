@@ -72,5 +72,23 @@ namespace Blog.Controllers.Tags
 
             return Ok(tags.Select(t => TagOut.New(t, Request.GetRoot())).ToList());
         }
+
+        /// <summary>
+        /// Delete a tag.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> DeleteTag(int id)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
+
+            if (tag is null)
+                return NotFound("Tag not found.");
+
+            _context.Remove(tag);
+            await _context.SaveChangesAsync();
+
+            return Ok(TagOut.New(tag, Request.GetRoot()));
+        }
     }
 }

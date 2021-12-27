@@ -5,8 +5,7 @@ namespace Blog.Controllers.Posts
         public string Title { get; set; }
         public string Resume { get; set; }
         public string Body { get; set; }
-        public string Category { get; set; }
-        public List<int> Authors { get; set; }
-        public List<string> Tags { get; set; }
+        public int CategoryId { get; set; }
+        public List<int>? Tags { get; set; }
     }
 }

@@ -20,13 +20,10 @@ namespace Blog.Database.Configurations.Domain
 
             post.Property(p => p.CreatedAt).IsRequired();
 
-            post.HasMany<Blogger>(p => p.Authors)
+            post.HasOne<Blogger>(p => p.Author)
                 .WithMany(b => b.Posts)
-                .UsingEntity<Dictionary<string, object>>(
-                    joinEntityName: "Publications",
-                    configureRight: b => b.HasOne<Blogger>().WithMany().HasForeignKey("BloggerId"),
-                    configureLeft: b => b.HasOne<Post>().WithMany().HasForeignKey("PostId")
-            );
+                .HasForeignKey(p => p.AuthorId)
+                .IsRequired();
 
             post.HasMany<Comment>(p => p.Comments)
                 .WithOne()

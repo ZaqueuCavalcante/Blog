@@ -26,22 +26,15 @@ namespace Blog.Controllers.Posts
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
-            var userId = User.GetId();
-            var mainAuthor = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == userId);
+            var author = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == User.GetId());
 
-            var authors = new List<Blogger>();
-            if (dto.Authors != null && dto.Authors.Any())
-                authors = await _context.Bloggers.Where(x => dto.Authors.Contains(x.Id)).ToListAsync();
-
-            authors.Add(mainAuthor);
-
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.Category);
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == dto.CategoryId);
             if (category == null)
                 return NotFound("Category not found.");
 
             List<Tag>? tags = null;
             if (dto.Tags != null && dto.Tags.Any())
-                tags = await _context.Tags.Where(x => dto.Tags.Contains(x.Name)).ToListAsync();
+                tags = await _context.Tags.Where(t => dto.Tags.Contains(t.Id)).ToListAsync();
 
             var post = new Post
             {
@@ -50,7 +43,7 @@ namespace Blog.Controllers.Posts
                 Body = dto.Body,
                 CategoryId = category.Id,
                 CreatedAt = DateTime.Now,
-                Authors = authors,
+                Author = author,
                 Tags = tags
             };
 
@@ -67,20 +60,18 @@ namespace Blog.Controllers.Posts
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> EditPost(int id, EditPostIn dto)
         {
-            var userId = User.GetId();
-
-            var post = await _context.Posts.Include(p => p.Authors).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
                 return NotFound("Post not found.");
 
-            if (!post.Authors.Any(a => a.UserId == userId))
-                return BadRequest("You must be one of the post authors to be able to edit it.");
+            if (post.Author.UserId != User.GetId())
+                return BadRequest("You must be the post author to be able to edit it.");
 
             post.Edit(dto.Title, dto.Resume, dto.Body);
 
             await _context.SaveChangesAsync();
 
-            return Ok(PostOut.New(post));
+            return Ok(PostOut.NewWithoutComments(post));
         }
 
         /// <summary>
@@ -112,19 +103,18 @@ namespace Blog.Controllers.Posts
         }
 
         /// <summary>
-        /// Pins a comment to a blog post.
+        /// Pins a comment to a blog post. If the comment already is pinned, it will be unpinned.
         /// </summary>
         [HttpPatch("{postId}/comments/{commentId}/pins")]
         [Authorize(Policy = CommentPinPolicy)]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
-            var post = await _context.Posts.Include(p => p.Authors).FirstOrDefaultAsync(p => p.Id == postId);
+            var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
                 return NotFound("Post not found.");
 
-            var userId = User.GetId();
-            if (!post.Authors.Any(a => a.UserId == userId))
-                return BadRequest("You must be one of the post authors to be able to pin a comment.");
+            if (post.Author.UserId != User.GetId())
+                return BadRequest("You must be the post author to be able to pin a comment.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)
@@ -217,7 +207,7 @@ namespace Blog.Controllers.Posts
             var post = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Category)
-                .Include(l => l.Authors)
+                .Include(l => l.Author)
                 .Include(l => l.Comments)
                     .ThenInclude(c => c.Replies)
                 .Include(l => l.Comments)
@@ -241,12 +231,12 @@ namespace Blog.Controllers.Posts
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Category)
-                .Include(l => l.Authors)
-                .Include(l => l.Comments)  // To calculate the post rating...
+                .Include(l => l.Author)
+                .Include(l => l.Comments)  // TODO: calculate the post rating without get all comments...
                 .Include(l => l.Tags)
                 .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))
                 .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
+                .ToListAsync();  // TODO: add pagination to get only the last 5 posts... 
 
             return Ok(posts.Select(p => PostOut.NewWithoutComments(p, Request.GetRoot())).ToList());
         }

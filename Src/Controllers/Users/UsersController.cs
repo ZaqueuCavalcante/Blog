@@ -78,7 +78,7 @@ namespace Blog.Controllers.Users
         [Authorize]
         public async Task<ActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();  // TODO: O token continua válido né?
+            await _signInManager.SignOutAsync();
             
             return Ok("Logout succeeded.");
         }
@@ -86,7 +86,7 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Change user password.
         /// </summary>
-        [HttpPut("change-password")]
+        [HttpPatch("change-password")]
         [Authorize]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
@@ -102,7 +102,7 @@ namespace Blog.Controllers.Users
             if (result.Succeeded)
                 return Ok("Password changed.");
 
-            return Ok("Password not changed.");
+            return BadRequest("Password not changed.");
         }
 
         /// <summary>

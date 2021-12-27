@@ -110,7 +110,7 @@ namespace Blog.Controllers.Bloggers
             var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
 
             var publishedPosts = await _context.Posts
-                .Where(p => p.Authors.Contains(blogger))
+                .Where(p => p.AuthorId == blogger.Id)
                 .Select(p => p.Id)
                 .ToListAsync();
             var draftPosts = 0;

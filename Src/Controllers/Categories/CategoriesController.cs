@@ -28,6 +28,11 @@ namespace Blog.Controllers.Categories
         {
             var category = new Category(dto.Name, dto.Description);
 
+            var categoryAlreadyExists = await _context.Categories.AnyAsync(
+                c => c.Name.ToLower() == dto.Name.ToLower());
+
+            if (categoryAlreadyExists) return BadRequest("Category already exists.");
+
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 

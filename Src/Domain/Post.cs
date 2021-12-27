@@ -4,6 +4,9 @@ namespace Blog.Domain
     {
         public int Id { get; private set; }
 
+        public int AuthorId { get; set; }
+        public Blogger Author { get; set; }
+
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
@@ -13,11 +16,11 @@ namespace Blog.Domain
 
         public string Resume { get; set; }
 
-        public string Body { get; set; }
+        public string Body { get; set; }  // TODO: how add images, code and visual things here? Like a Markdown file...
 
         public DateTime CreatedAt { get; set; }
 
-        public List<Blogger> Authors { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public List<Comment> Comments { get; set; }
 
@@ -39,6 +42,7 @@ namespace Blog.Domain
             Title = title;
             Resume = resume;
             Body = body;
+            UpdatedAt = DateTime.Now;
         }
     }
 }

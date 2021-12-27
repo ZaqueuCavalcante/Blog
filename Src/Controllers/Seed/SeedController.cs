@@ -154,7 +154,7 @@ namespace Blog.Controllers.Bloggers
                 Body = "Obviously he is a fictional character given that he exists on the television program Mr. Robot. But even within the reality of the show, Elliot at times more closely resembled a hacker archetype than a living, breathing, bleeding human being.",
                 CategoryId = mrRobotCategory.Id,
                 CreatedAt = DateTime.Now,
-                Authors = new List<Blogger>{ samBlogger, elliotBlogger },
+                Author = samBlogger,
                 Tags = new List<Tag>{ seriesTag, hackingTag }
             };
             await _context.Posts.AddAsync(mrRobotpost);
@@ -167,7 +167,7 @@ namespace Blog.Controllers.Bloggers
                 Body = "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them. Topics include Linux command line basics, filesystems, networking, BASH basics, package management, logging, and the Linux kernel and drivers.",
                 CategoryId = linuxCategory.Id,
                 CreatedAt = DateTime.Now,
-                Authors = new List<Blogger>{ elliotBlogger },
+                Author = elliotBlogger,
                 Tags = new List<Tag>{ techTag, hackingTag }
             };
             await _context.Posts.AddAsync(linuxPost);
@@ -180,7 +180,7 @@ namespace Blog.Controllers.Bloggers
                 Body = "In EF Core, the DbContext has a virtual method called onConfiguring which will get called internally by EF Core, and it will also pass in an optionsBuilder instance, and you can use that optionsBuilder to configure options for the DbContext.",
                 CategoryId = efCoreCategory.Id,
                 CreatedAt = DateTime.Now,
-                Authors = new List<Blogger>{ irvingBlogger },
+                Author = irvingBlogger,
                 Tags = new List<Tag>{ techTag }
             };
             await _context.Posts.AddAsync(efCorePost);

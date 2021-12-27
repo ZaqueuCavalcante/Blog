@@ -13,10 +13,11 @@ namespace Blog.Controllers.Posts
         public string Body { get; set; }
         public byte Rating { get; set; }
         public string CreatedAt { get; set; }
-        public List<PostAuthorOut> Authors { get; set; }
+        public PostAuthorOut Author { get; set; }
         public List<CommentOut> Comments { get; set; }
         public PostCategoryOut Category { get; set; }
-        public List<PostTagOut> Tags { get; set; }
+        public List<PostTagOut>? Tags { get; set; }
+        public List<RelatedPostOut>? RelatedPosts { get; set; }  // TODO: implement this someday...
 
         public static PostOut New(Post post, string? url = null)
         {
@@ -30,7 +31,7 @@ namespace Blog.Controllers.Posts
                 Body = post.Body,
                 Rating = post.GetRating(),
                 CreatedAt = post.CreatedAt.Format(),
-                Authors = post.Authors?.Select(b => new PostAuthorOut{ Name = b.Name, Link = url + "bloggers/" + b.Id }).ToList(),
+                Author = new PostAuthorOut{ Name = post.Author?.Name, Link = url + "bloggers/" + post.Author?.Id },
                 Comments = post.Comments?.Select(c => CommentOut.New(c)).ToList(),
                 Category = new PostCategoryOut{ Name = post.Category?.Name, Link = url + "categories/" + post.Category?.Id },
                 Tags = post.Tags?.Select(t => new PostTagOut{ Name = t.Name, Link = url + "tags/" + t.Id }).ToList()
@@ -60,6 +61,12 @@ namespace Blog.Controllers.Posts
     public class PostTagOut
     {
         public string Name { get; set; }
+        public string Link { get; set; }
+    }
+
+    public class RelatedPostOut
+    {
+        public string Title { get; set; }
         public string Link { get; set; }
     }
 }
