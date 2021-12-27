@@ -7,6 +7,8 @@ namespace Blog.Identity
     {
         public List<Network> Networks { get; set; }
 
+        public List<RefreshToken> RefreshTokens { get; set; }
+
         public static User New(string email)
         {
             return new User

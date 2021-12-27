@@ -50,6 +50,11 @@ namespace Blog.Database.Configurations.Identity
                 .WithOne()
                 .HasForeignKey(n => n.UserId)
                 .IsRequired();
+
+            user.HasMany<RefreshToken>(u => u.RefreshTokens)
+                .WithOne()
+                .HasForeignKey(rt => rt.UserId)
+                .IsRequired();
         }
     }
 }

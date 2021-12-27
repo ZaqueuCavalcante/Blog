@@ -4,7 +4,7 @@ using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static Blog.Services.AuthorizationConfigurations;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Posts
 {

@@ -1,5 +1,5 @@
 using Blog.Extensions;
-using Blog.Services;
+using Blog.Configurations;
 
 namespace Blog
 {

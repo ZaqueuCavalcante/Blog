@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
 using Blog.Extensions;
+using Blog.Database;
 
 namespace Blog.Controllers.Users
 {
@@ -19,18 +20,23 @@ namespace Blog.Controllers.Users
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly SignInManager<User> _signInManager;
-        private IConfiguration _configuration { get; }
+        private readonly BlogContext _context;
+        private IConfiguration _configuration;
+        private TokenValidationParameters _tokenValidationParameters;
 
         public UsersController(
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             SignInManager<User> signInManager,
+            BlogContext context,
             IConfiguration configuration
         ) {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _context = context;
             _configuration = configuration;
+            SetTokenValidationParameters();
         }
 
         /// <summary>
@@ -49,15 +55,7 @@ namespace Blog.Controllers.Users
 
             if (result.Succeeded)
             {
-                var response = new LoginOut
-                {
-                    AccessToken = await GetJwt(dto.Email),
-                    TokenType = "Bearer",
-                    ExpiresIn = _configuration["Jwt:ExpirationTimeInSeconds"],
-                    RefreshToken = "",
-                    Scope = "create"
-                };
-
+                var response = await GenerateLoginResponse(dto.Email);
                 return Ok(response);
             }
 
@@ -112,11 +110,101 @@ namespace Blog.Controllers.Users
         /// </summary>
         [HttpPost("refresh-token")]
         [AllowAnonymous]
-        public async Task<ActionResult> RefreshToken()
+        public async Task<ActionResult> RefreshToken(RefreshTokenIn dto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == 1);
+            var response = await VerifyToken(dto);
 
-            return Ok("Not implemented.");
+            if (response.Errors != null)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        private void SetTokenValidationParameters()
+        {
+            _tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(_configuration["Jwt:SecurityKey"])
+                ),
+
+                ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
+
+                ValidateLifetime = false,
+
+                RoleClaimType = "role"
+            };
+        }
+
+        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            return dateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
+        }
+
+        private async Task<RefreshTokenOut> VerifyToken(RefreshTokenIn dto)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                var user = jwtTokenHandler.ValidateToken(dto.AccessToken, _tokenValidationParameters, out var validatedToken);
+
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                {
+                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256);
+                    if (result == false) return new RefreshTokenOut { Errors = new List<string>() { "Invalid access token algorithm." } };
+                }
+
+                var utcExpiryDate = long.Parse(user.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+                var expDate = UnixTimeStampToDateTime(utcExpiryDate);
+                if (expDate > DateTime.UtcNow)
+                    return new RefreshTokenOut { Errors = new List<string>() {"Access token has not expired."} };
+
+                var storedRefreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == dto.RefreshToken); 
+                if (storedRefreshToken == null)
+                    return new RefreshTokenOut { Errors = new List<string>() { "Refresh token doesnt exist." } };
+
+                if (storedRefreshToken.IsExpired)
+                    return new RefreshTokenOut { Errors = new List<string>() { "Refresh token has expired." } };
+
+                if (storedRefreshToken.HasAlreadyBeenUsed)
+                    return new RefreshTokenOut { Errors = new List<string>() { "Refresh token has already been used." } };
+
+                if (storedRefreshToken.IsRevoked)
+                    return new RefreshTokenOut { Errors = new List<string>() { "Refresh token has been revoked." } };
+
+                var jti = user.Claims.First(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+                if (storedRefreshToken.JwtId != jti)
+                    return new RefreshTokenOut { Errors = new List<string>() {"Access and refresh tokens do not matches."} };
+
+                storedRefreshToken.UsedAt = DateTime.UtcNow;
+
+                _context.RefreshTokens.Update(storedRefreshToken);
+                await _context.SaveChangesAsync();
+
+                var userEmail = user.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value;
+
+                var tokens = await GenerateLoginResponse(userEmail);
+
+                var response = new RefreshTokenOut
+                {
+                    AccessToken = tokens.AccessToken,
+                    RefreshToken = tokens.RefreshToken,
+                    Errors = null
+                };
+
+                return response;
+            }
+            catch
+            {
+                return new RefreshTokenOut { Errors = new List<string>() { "Invalid access token." } };
+            }
         }
 
 		private string GetRefreshToken()
@@ -129,11 +217,12 @@ namespace Blog.Controllers.Users
 			}
 		}
 
-        private async Task<string> GetJwt(string email)
+        private async Task<LoginOut> GenerateLoginResponse(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
             var claims = new List<Claim>();
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
 
@@ -164,7 +253,7 @@ namespace Blog.Controllers.Users
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:SecurityKey"]);
-            var expirationTime = double.Parse(_configuration["Jwt:ExpirationTimeInSeconds"]);
+            var expirationTime = double.Parse(_configuration["Jwt:ExpirationTimeInMinutes"]);
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
@@ -174,15 +263,40 @@ namespace Blog.Controllers.Users
             {
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
-                Expires = DateTime.UtcNow.AddSeconds(expirationTime),
+                Expires = DateTime.UtcNow.AddMinutes(expirationTime),
                 SigningCredentials = signingCredentials,
                 Subject = identityClaims
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            var encodedToken = tokenHandler.WriteToken(token);
+            var accessToken = tokenHandler.WriteToken(token);
 
-            return encodedToken;
+            // Generate the refresh token
+
+            var refreshTokenexpirationTime = double.Parse(_configuration["Jwt:RefreshTokenExpirationTimeInMinutes"]);
+
+            var refreshToken = new RefreshToken
+            {
+                UserId = user.Id,
+                Token = GetRefreshToken(),
+                JwtId = token.Id,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(refreshTokenexpirationTime),
+                UsedAt = null,
+                RevokedAt = null
+            };
+
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
+
+            return new LoginOut
+            {
+                AccessToken = accessToken,
+                TokenType = "Bearer",
+                ExpiresInMinutes = expirationTime.ToString(),
+                RefreshToken = refreshToken.Token,
+                Scope = "create"
+            };
         }
     }
 }

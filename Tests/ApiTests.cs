@@ -57,7 +57,7 @@ namespace Blog.Tests
             var loginOut = JsonConvert.DeserializeObject<LoginOut>(await loginResponse.Content.ReadAsStringAsync());
 
             loginOut.AccessToken.ShouldNotBeNullOrEmpty();
-            loginOut.ExpiresIn.ShouldBe("3600");
+            loginOut.ExpiresInMinutes.ShouldBe("5");
             loginOut.RefreshToken.ShouldBe("");
             loginOut.Scope.ShouldBe("create");
             loginOut.TokenType.ShouldBe("Bearer");
