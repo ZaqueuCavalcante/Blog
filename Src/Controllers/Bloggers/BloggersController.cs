@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Blog.Database;
+﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Extensions;
 using Blog.Identity;
@@ -85,11 +84,11 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Update a blogger.
         /// </summary>
-        [HttpPut]
+        [HttpPatch]
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn dto)
         {
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
             var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
 
             blogger.Update(dto.Name, dto.Resume);
@@ -107,7 +106,7 @@ namespace Blog.Controllers.Bloggers
         [Authorize(Roles = "Blogger")]
         public async Task<ActionResult> GetStats()
         {
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
             var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
 
             var publishedPosts = await _context.Posts

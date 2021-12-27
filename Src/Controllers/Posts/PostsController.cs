@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Blog.Database;
+﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +26,7 @@ namespace Blog.Controllers.Posts
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
             var mainAuthor = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == userId);
 
             var authors = new List<Blogger>();
@@ -64,11 +63,11 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Update a blog post.
         /// </summary>
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize(Roles = "Blogger")]
         public async Task<IActionResult> EditPost(int id, EditPostIn dto)
         {
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
 
             var post = await _context.Posts.Include(p => p.Authors).FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
@@ -95,7 +94,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
 
             var comment = new Comment
             {
@@ -115,7 +114,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Pins a comment to a blog post.
         /// </summary>
-        [HttpPut("{postId}/comments/{commentId}/pins")]
+        [HttpPatch("{postId}/comments/{commentId}/pins")]
         [Authorize(Policy = CommentPinPolicy)]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
@@ -123,7 +122,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
             if (!post.Authors.Any(a => a.UserId == userId))
                 return BadRequest("You must be one of the post authors to be able to pin a comment.");
 
@@ -153,7 +152,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
 
             var reply = new Reply
             {
@@ -184,7 +183,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
 
             var like = await _context.Likes.FirstOrDefaultAsync(l => l.CommentId == commentId && l.UserId == userId);
 

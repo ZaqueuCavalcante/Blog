@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Blog.Exceptions;
 
 namespace Blog.Extensions
@@ -7,6 +8,11 @@ namespace Blog.Extensions
         public static string Format(this DateTime date)
         {
             return date.ToString("dd/MM/yyyy HH:mm");
+        }
+
+        public static int GetId(this ClaimsPrincipal user)
+        {
+            return int.Parse(user.FindFirstValue("sub"));
         }
 
         public static string GetRoot(this HttpRequest request)

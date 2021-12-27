@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
+using Blog.Extensions;
 
 namespace Blog.Controllers.Users
 {
@@ -79,7 +80,7 @@ namespace Blog.Controllers.Users
         [Authorize]
         public async Task<ActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();  // TODO: O token continua válido né?
             
             return Ok("Logout succeeded.");
         }
@@ -91,7 +92,7 @@ namespace Blog.Controllers.Users
         [Authorize]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
-            var userId = int.Parse(User.FindFirstValue("sub"));
+            var userId = User.GetId();
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             var result = await _userManager.ChangePasswordAsync(

@@ -16,7 +16,7 @@ Stack:
 - Topics:
     - Web Server (NGINX)
     - CDNs
-    - Cache
+    - Cache / Headers dos requests
     - Finite State Machine
     - https://github.com/domaindrivendev/Swashbuckle.AspNetCore#enable-oauth20-flows
 
