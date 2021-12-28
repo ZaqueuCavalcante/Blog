@@ -14,12 +14,11 @@ namespace Blog
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers()
-                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = null);
+            services.AddControllersConfigurations();
 
             services.AddSwaggerConfigurations(Configuration);
 
-            services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddRoutingConfigurations();
 
             services.AddEfCoreConfigurations(Configuration);
 

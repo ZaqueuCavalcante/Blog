@@ -1,4 +1,5 @@
 using System.Reflection;
+using Blog.Filters;
 using Microsoft.OpenApi.Models;
 
 namespace Blog.Configurations
@@ -48,10 +49,15 @@ namespace Blog.Configurations
                     }
                 });
 
+                options.ParameterFilter<SwaggerParametersFilter>();
+
+                options.DescribeAllParametersInCamelCase();
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
-            });
+            })
+            .AddSwaggerGenNewtonsoftSupport();
 
             return services;
         }

@@ -26,7 +26,6 @@ namespace Blog.Controllers.Readers
         /// <summary>
         /// Register a new reader.
         /// </summary>
-        /// <returns>The registered reader.</returns>
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> PostReader(ReaderIn dto)

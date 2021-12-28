@@ -2,12 +2,21 @@ namespace Blog.Domain
 {
     public class Like
     {
-        public int Id { get; set; }
+        public int Id { get; }
 
-        public int CommentId { get; set; }
+        public int CommentId { get; }
 
-        public int UserId { get; set; }
+        public int UserId { get; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; }
+
+        public Like(
+            int commentId,
+            int userId
+        ) {
+            CommentId = commentId;
+            UserId = userId;
+            CreatedAt = DateTime.Now;
+        }
     }
 }

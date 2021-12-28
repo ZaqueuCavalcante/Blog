@@ -115,15 +115,15 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Tags
 
-            var techTag = new Tag { Name = "Tech", CreatedAt = DateTime.Now };
+            var techTag = new Tag("Tech");
             await _context.Tags.AddAsync(techTag);
             await _context.SaveChangesAsync();
 
-            var seriesTag = new Tag { Name = "Series", CreatedAt = DateTime.Now };
+            var seriesTag = new Tag("Series");
             await _context.Tags.AddAsync(seriesTag);
             await _context.SaveChangesAsync();
 
-            var hackingTag = new Tag { Name = "Hacking", CreatedAt = DateTime.Now };
+            var hackingTag = new Tag("Hacking");
             await _context.Tags.AddAsync(hackingTag);
             await _context.SaveChangesAsync();
 
@@ -147,42 +147,36 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Posts
 
-            var mrRobotpost = new Post
-            {
-                Title = "Mr. Robot - End explained",
-                Resume = "The Mr. Robot series finale features a stunning, emotional twist that recontextualizes the entire series.",
-                Body = "Obviously he is a fictional character given that he exists on the television program Mr. Robot. But even within the reality of the show, Elliot at times more closely resembled a hacker archetype than a living, breathing, bleeding human being.",
-                CategoryId = mrRobotCategory.Id,
-                CreatedAt = DateTime.Now,
-                Author = samBlogger,
-                Tags = new List<Tag>{ seriesTag, hackingTag }
-            };
+            var mrRobotpost = new Post(
+                title: "Mr. Robot - End explained",
+                resume: "The Mr. Robot series finale features a stunning, emotional twist that recontextualizes the entire series.",
+                body: "Obviously he is a fictional character given that he exists on the television program Mr. Robot. But even within the reality of the show, Elliot at times more closely resembled a hacker archetype than a living, breathing, bleeding human being.",
+                categoryId: mrRobotCategory.Id,
+                authorId: samBlogger.Id,
+                tags: new List<Tag>{ seriesTag, hackingTag }
+            );
             await _context.Posts.AddAsync(mrRobotpost);
             await _context.SaveChangesAsync();
 
-            var linuxPost = new Post
-            {
-                Title = "Linux and hacking",
-                Resume = "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
-                Body = "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them. Topics include Linux command line basics, filesystems, networking, BASH basics, package management, logging, and the Linux kernel and drivers.",
-                CategoryId = linuxCategory.Id,
-                CreatedAt = DateTime.Now,
-                Author = elliotBlogger,
-                Tags = new List<Tag>{ techTag, hackingTag }
-            };
+            var linuxPost = new Post(
+                title: "Linux and hacking",
+                resume: "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
+                body: "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them. Topics include Linux command line basics, filesystems, networking, BASH basics, package management, logging, and the Linux kernel and drivers.",
+                categoryId: linuxCategory.Id,
+                authorId: elliotBlogger.Id,
+                tags: new List<Tag>{ techTag, hackingTag }  
+            );
             await _context.Posts.AddAsync(linuxPost);
             await _context.SaveChangesAsync();
 
-            var efCorePost = new Post
-            {
-                Title = "EF Core - Code First",
-                Resume = "Code first approach offers most control over the final appearance of the application code and the resulting database.",
-                Body = "In EF Core, the DbContext has a virtual method called onConfiguring which will get called internally by EF Core, and it will also pass in an optionsBuilder instance, and you can use that optionsBuilder to configure options for the DbContext.",
-                CategoryId = efCoreCategory.Id,
-                CreatedAt = DateTime.Now,
-                Author = irvingBlogger,
-                Tags = new List<Tag>{ techTag }
-            };
+            var efCorePost = new Post(
+                title: "EF Core - Code First",
+                resume: "Code first approach offers most control over the final appearance of the application code and the resulting database.",
+                body: "In EF Core, the DbContext has a virtual method called onConfiguring which will get called internally by EF Core, and it will also pass in an optionsBuilder instance, and you can use that optionsBuilder to configure options for the DbContext.",
+                categoryId: efCoreCategory.Id,
+                authorId: irvingBlogger.Id,
+                tags: new List<Tag>{ techTag }
+            );
             await _context.Posts.AddAsync(efCorePost);
             await _context.SaveChangesAsync();
 
@@ -210,54 +204,14 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Comments
 
-            var mrRobotPostComment01 = new Comment
-            {
-                PostId = mrRobotpost.Id,
-                PostRating = 5,
-                Body = "Great first season.",
-                CreatedAt = DateTime.Now,
-                UserId = darleneUser.Id
-            };
-
-            var mrRobotPostComment02 = new Comment
-            {
-                PostId = mrRobotpost.Id,
-                PostRating = 4,
-                Body = "Amazing.",
-                CreatedAt = DateTime.Now,
-                UserId = tyrellUser.Id
-            };
-
-            var mrRobotPostComment03 = new Comment
-            {
-                PostId = mrRobotpost.Id,
-                PostRating = 3,
-                Body = "More tath a hacker show.",
-                CreatedAt = DateTime.Now,
-                UserId = angelaUser.Id
-            };
-
+            var mrRobotPostComment01 = new Comment(mrRobotpost.Id, 5, "Great first season.", darleneUser.Id);
+            var mrRobotPostComment02 = new Comment(mrRobotpost.Id, 4, "Amazing.", tyrellUser.Id);
+            var mrRobotPostComment03 = new Comment(mrRobotpost.Id, 3, "More tath a hacker show.", angelaUser.Id);
             await _context.Comments.AddRangeAsync(mrRobotPostComment01, mrRobotPostComment02, mrRobotPostComment03);
             await _context.SaveChangesAsync();
 
-            var linuxPostComment01 = new Comment
-            {
-                PostId = linuxPost.Id,
-                PostRating = 5,
-                Body = "Very useful.",
-                CreatedAt = DateTime.Now,
-                UserId = tyrellUser.Id
-            };
-
-            var linuxPostComment02 = new Comment
-            {
-                PostId = linuxPost.Id,
-                PostRating = 5,
-                Body = "Interesting...",
-                CreatedAt = DateTime.Now,
-                UserId = samUser.Id
-            };
-
+            var linuxPostComment01 = new Comment(linuxPost.Id, 5, "Very useful.", tyrellUser.Id);
+            var linuxPostComment02 = new Comment(linuxPost.Id, 5, "Interesting...", samUser.Id);
             await _context.Comments.AddRangeAsync(linuxPostComment01, linuxPostComment02);
             await _context.SaveChangesAsync();
 
@@ -265,30 +219,9 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Replies
 
-            var reply01 = new Reply
-            {
-                CommentId = mrRobotPostComment01.Id,
-                Body = "A comment reply.",
-                CreatedAt = DateTime.Now,
-                UserId = samUser.Id
-            };
-
-            var reply02 = new Reply
-            {
-                CommentId = mrRobotPostComment01.Id,
-                Body = "A other comment reply.",
-                CreatedAt = DateTime.Now,
-                UserId = elliotUser.Id
-            };
-
-            var reply03 = new Reply
-            {
-                CommentId = mrRobotPostComment02.Id,
-                Body = "A reply lalala.",
-                CreatedAt = DateTime.Now,
-                UserId = angelaUser.Id
-            };
-
+            var reply01 = new Reply(mrRobotPostComment01.Id, "A comment reply.", samUser.Id);
+            var reply02 = new Reply(mrRobotPostComment01.Id, "A other comment reply.", elliotUser.Id);
+            var reply03 = new Reply(mrRobotPostComment02.Id, "A reply lalala.", angelaUser.Id);
             await _context.Replies.AddRangeAsync(reply01, reply02, reply03);
             await _context.SaveChangesAsync();
 
@@ -296,48 +229,12 @@ namespace Blog.Controllers.Bloggers
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Likes
 
-            var like01 = new Like
-            {
-                CommentId = mrRobotPostComment01.Id,
-                CreatedAt = DateTime.Now,
-                UserId = darleneUser.Id
-            };
-
-            var like02 = new Like
-            {
-                CommentId = mrRobotPostComment01.Id,
-                CreatedAt = DateTime.Now,
-                UserId = tyrellUser.Id
-            };
-
-            var like03 = new Like
-            {
-                CommentId = mrRobotPostComment01.Id,
-                CreatedAt = DateTime.Now,
-                UserId = angelaUser.Id
-            };
-
-            var like04 = new Like
-            {
-                CommentId = mrRobotPostComment02.Id,
-                CreatedAt = DateTime.Now,
-                UserId = tyrellUser.Id
-            };
-
-            var like05 = new Like
-            {
-                CommentId = linuxPostComment01.Id,
-                CreatedAt = DateTime.Now,
-                UserId = samUser.Id
-            };
-
-            var like06 = new Like
-            {
-                CommentId = linuxPostComment02.Id,
-                CreatedAt = DateTime.Now,
-                UserId = elliotUser.Id
-            };
-
+            var like01 = new Like(mrRobotPostComment01.Id, darleneUser.Id);
+            var like02 = new Like(mrRobotPostComment01.Id, tyrellUser.Id);
+            var like03 = new Like(mrRobotPostComment01.Id, angelaUser.Id);
+            var like04 = new Like(mrRobotPostComment02.Id, tyrellUser.Id);
+            var like05 = new Like(linuxPostComment01.Id, samUser.Id);
+            var like06 = new Like(linuxPostComment02.Id, elliotUser.Id);
             await _context.Likes.AddRangeAsync(like01, like02, like03, like04, like05, like06);
             await _context.SaveChangesAsync();
 

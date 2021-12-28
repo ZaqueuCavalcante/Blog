@@ -4,13 +4,13 @@ namespace Blog.Domain
 {
     public class Reader
     {
-        public int Id { get; set; }
+        public int Id { get; }
 
         public int UserId { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; }
 
         public Reader(
             string name,
@@ -21,7 +21,7 @@ namespace Blog.Domain
             CreatedAt = DateTime.Now;
         }
 
-        public void SetName(string name)
+        private void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Readers's name cannot be empty.");

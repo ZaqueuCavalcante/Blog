@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
 using Blog.Extensions;
 using Blog.Database;
+using Blog.Domain;
 
 namespace Blog.Controllers.Users
 {
@@ -118,6 +119,39 @@ namespace Blog.Controllers.Users
                 return BadRequest(response);
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Add a new network.
+        /// </summary>
+        [HttpPost("networks")]
+        [Authorize]
+        public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)
+        {
+            var userId = User.GetId();
+
+            var network = await _context.Networks.FirstOrDefaultAsync(
+                n => n.UserId == userId && n.Name == dto.Name
+            );
+
+            if (network != null)
+            {
+                network.Uri = dto.Url;
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            network = new Network
+            {
+                UserId = userId,
+                Name = dto.Name,
+                Uri = dto.Url
+            };
+
+            await _context.Networks.AddAsync(network);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         private void SetTokenValidationParameters()

@@ -4,17 +4,17 @@ namespace Blog.Domain
 {
     public class Blogger
     {
-        public int Id { get; set; }
+        public int Id { get; }
 
         public int UserId { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        public string Resume { get; set; }
+        public string Resume { get; private set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; }
 
-        public List<Post> Posts { get; set; }
+        public List<Post> Posts { get; }
 
         public Blogger(
             string name,

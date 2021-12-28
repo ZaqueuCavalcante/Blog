@@ -36,16 +36,14 @@ namespace Blog.Controllers.Posts
             if (dto.Tags != null && dto.Tags.Any())
                 tags = await _context.Tags.Where(t => dto.Tags.Contains(t.Id)).ToListAsync();
 
-            var post = new Post
-            {
-                Title = dto.Title,
-                Resume = dto.Resume,
-                Body = dto.Body,
-                CategoryId = category.Id,
-                CreatedAt = DateTime.Now,
-                Author = author,
-                Tags = tags
-            };
+            var post = new Post(
+                title: dto.Title,
+                resume: dto.Resume,
+                body: dto.Body,
+                categoryId: category.Id,
+                authorId: author.Id,
+                tags: tags
+            );
 
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
@@ -85,16 +83,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            var userId = User.GetId();
-
-            var comment = new Comment
-            {
-                PostId = postId,
-                Body = dto.Body,
-                CreatedAt = DateTime.Now,
-                UserId = userId
-            };
-            comment.SetPostRating(dto.PostRating);
+            var comment = new Comment(postId, dto.PostRating, dto.Body, User.GetId());
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
@@ -120,7 +109,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            post.PinnedCommentId = (post.PinnedCommentId == comment.Id) ? null : comment.Id;
+            post.Pin(comment.Id);
 
             await _context.SaveChangesAsync();
 
@@ -142,15 +131,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            var userId = User.GetId();
-
-            var reply = new Reply
-            {
-                CommentId = comment.Id,
-                Body = dto.Body,
-                CreatedAt = DateTime.Now,
-                UserId = userId
-            };
+            var reply = new Reply(comment.Id, dto.Body, User.GetId());
 
             _context.Replies.Add(reply);
             await _context.SaveChangesAsync();
@@ -184,12 +165,7 @@ namespace Blog.Controllers.Posts
                 return Ok("Like removed.");
             }
 
-            like = new Like
-            {
-                CommentId = comment.Id,
-                CreatedAt = DateTime.Now,
-                UserId = userId
-            };
+            like = new Like(comment.Id, userId);
 
             _context.Likes.Add(like);
             await _context.SaveChangesAsync();

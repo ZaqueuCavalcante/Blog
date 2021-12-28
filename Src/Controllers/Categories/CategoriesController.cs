@@ -47,13 +47,11 @@ namespace Blog.Controllers.Categories
         public async Task<ActionResult<CategoryOut>> GetCategory(int id)
         {
             var category = await _context.Categories
-                .Include(c => c.Posts)
+                .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (category is null)
                 return NotFound("Category not found.");
-
-            category.Posts = category.Posts.OrderByDescending(p => p.CreatedAt).ToList();
 
             return Ok(CategoryOut.New(category, Request.GetRoot()));
         }
@@ -66,10 +64,8 @@ namespace Blog.Controllers.Categories
         public async Task<ActionResult<List<CategoryOut>>> GetCategories()
         {
             var categories = await _context.Categories
-                .Include(c => c.Posts)
+                .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
                 .ToListAsync();
-
-            categories.ForEach(c => c.Posts = c.Posts.OrderByDescending(p => p.CreatedAt).ToList());
 
             return Ok(categories.Select(c => CategoryOut.New(c, Request.GetRoot())).ToList());
         }
