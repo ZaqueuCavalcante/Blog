@@ -1,27 +1,28 @@
 # Blog
 
 - Stack:
-    - .Net Core
+    - Asp.Net Core
     - EF Core
     - PostgreSQL
 
 - User Stories:
-    - #1 - Display the latest blog posts
-    - #2 - Display posts based on category
-    - #3 - Display posts based on tag
-    - #4 - Search for something on blog
-    - #5 - Display the details of a single post
-    - #6 - Display the post categories in a widget
-    - #7 - Display the post tags in a widget
-    - #8 - Display the related posts in a widget
+    - 1 - Display the latest blog posts
+    - 2 - Display posts based on category
+    - 3 - Display posts based on tag
+    - 4 - Search for something on blog
+    - 5 - Display the details of a single post
+    - 6 - Display the post categories in a widget
+    - 7 - Display the post tags in a widget
+    - 8 - Display the related posts in a widget
 
 - TODOS:
     - OAuth2 and OpenApi things
     - Identity features
     - Add GitHub Actions CI
-    - Add RefreshToken and what it is?
     - Logs?
     - Injeção de Dependência
+    - Deploy
+    - Front-End
 
 - Topics:
     - Web Server (NGINX)

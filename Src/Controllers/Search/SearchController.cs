@@ -22,8 +22,7 @@ namespace Blog.Controllers.Search
         /// <summary>
         /// Search for something on the blog.
         /// </summary>
-        [HttpGet("{thing}")]
-        [AllowAnonymous]
+        [HttpGet("{thing}"), AllowAnonymous]
         public async Task<ActionResult> Search(string thing)
         {
             var url = Request.GetRoot();

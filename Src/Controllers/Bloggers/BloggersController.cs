@@ -27,8 +27,7 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Register a new blogger.
         /// </summary>
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [HttpPost, Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(BloggerOut), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(IEnumerable<IdentityError>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PostBlogger(BloggerIn dto)
@@ -52,8 +51,7 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Returns a blogger.
         /// </summary>
-        [HttpGet("{id}")]
-        [AllowAnonymous]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
         {
             var blogger = await _context.Bloggers
@@ -71,8 +69,7 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Returns all the bloggers.
         /// </summary>
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<BloggerOut>>> GetBloggers()
         {
             var bloggers = await _context.Bloggers
@@ -84,8 +81,7 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Update a blogger.
         /// </summary>
-        [HttpPatch]
-        [Authorize(Roles = "Blogger")]
+        [HttpPatch, Authorize(Roles = "Blogger")]
         public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn dto)
         {
             var userId = User.GetId();
@@ -102,8 +98,7 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Return statistics about the blogger.
         /// </summary>
-        [HttpGet("stats")]
-        [Authorize(Roles = "Blogger")]
+        [HttpGet("stats"), Authorize(Roles = "Blogger")]
         public async Task<ActionResult> GetStats()
         {
             var userId = User.GetId();

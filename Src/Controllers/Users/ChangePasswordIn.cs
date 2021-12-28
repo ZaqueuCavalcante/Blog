@@ -10,8 +10,7 @@ namespace Blog.Controllers.Users
         [Required]
         public string NewPassword { get; set; }
 
-        [Required]
-        [Compare(nameof(NewPassword))]
+        [Required, Compare(nameof(NewPassword))]
         public string ConfirmPassword { get; set; }
     }
 }

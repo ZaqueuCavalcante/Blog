@@ -15,6 +15,7 @@ namespace Blog.Domain
         public Tag(string name)
         {
             SetName(name);
+            CreatedAt = DateTime.Now;
         }
 
         private void SetName(string name)

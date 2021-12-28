@@ -22,8 +22,7 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Register a new category.
         /// </summary>
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostCategory(CategoryIn dto)
         {
             var category = new Category(dto.Name, dto.Description);
@@ -42,8 +41,7 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Returns a category.
         /// </summary>
-        [HttpGet("{id}")]
-        [AllowAnonymous]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<CategoryOut>> GetCategory(int id)
         {
             var category = await _context.Categories
@@ -59,8 +57,7 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Returns all the categories.
         /// </summary>
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<CategoryOut>>> GetCategories()
         {
             var categories = await _context.Categories

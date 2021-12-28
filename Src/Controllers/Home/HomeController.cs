@@ -21,8 +21,7 @@ namespace Blog.Controllers.Home
         /// <summary>
         /// Returns all informations about the blog home page.
         /// </summary>
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<ActionResult> GetHome()
         {
             var url = Request.GetRoot();

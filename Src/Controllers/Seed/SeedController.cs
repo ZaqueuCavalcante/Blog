@@ -99,14 +99,14 @@ namespace Blog.Controllers.Bloggers
 
             samUser.Networks = new List<Network>
             {
-                new Network { Name = "YouTube", Uri = "https://www.youtube.com/sam" },
-                new Network { Name = "Twitter", Uri = "https://twitter.com/sam" }
+                new Network("YouTube", "https://www.youtube.com/sam"),
+                new Network("Twitter", "https://twitter.com/sam")
             };
 
             irvingUser.Networks = new List<Network>
             {
-                new Network { Name = "YouTube", Uri = "https://www.youtube.com/irving" },
-                new Network { Name = "Twitter", Uri = "https://twitter.com/irving" }
+                new Network("YouTube", "https://www.youtube.com/irving"),
+                new Network("Twitter", "https://twitter.com/irving")
             };
 
             await _context.SaveChangesAsync();

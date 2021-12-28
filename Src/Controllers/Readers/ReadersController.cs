@@ -26,8 +26,7 @@ namespace Blog.Controllers.Readers
         /// <summary>
         /// Register a new reader.
         /// </summary>
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> PostReader(ReaderIn dto)
         {
             var user = Blog.Identity.User.New(dto.Email);
@@ -49,8 +48,7 @@ namespace Blog.Controllers.Readers
         /// <summary>
         /// Returns a reader.
         /// </summary>
-        [HttpGet("{id}")]
-        [AllowAnonymous]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<ReaderOut>> GetReader(int id)
         {
             var reader = await _context.Readers
@@ -65,8 +63,7 @@ namespace Blog.Controllers.Readers
         /// <summary>
         /// Returns all the readers.
         /// </summary>
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<ReaderOut>>> GetReaders()
         {
             var readers = await _context.Readers

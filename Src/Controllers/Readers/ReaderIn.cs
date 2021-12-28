@@ -7,8 +7,7 @@ namespace Blog.Controllers.Readers
         [Required]
         public string Name { get; set; }
 
-        [Required]
-        [EmailAddress]
+        [Required, EmailAddress]
         public string Email { get; set; }
 
         [Required]

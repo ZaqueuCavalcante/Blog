@@ -13,8 +13,7 @@ namespace Blog.Controllers.Bloggers
         public string Resume { get; set; }
 
         /// <example>bob@blog.com</example>
-        [Required]
-        [EmailAddress]
+        [Required, EmailAddress]
         public string Email { get; set; }
 
         /// <example>Test@123</example>

@@ -8,7 +8,7 @@ namespace Blog.Controllers.Users
         public string Name { get; set; }
 
         /// <example>https://github.com/ZaqueuCavalcante</example>
-        [Required]
-        public string Url { get; set; }
+        [Required, Url]
+        public string Uri { get; set; }
     }
 }

@@ -22,8 +22,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Create a new blog post.
         /// </summary>
-        [HttpPost]
-        [Authorize(Roles = "Blogger")]
+        [HttpPost, Authorize(Roles = "Blogger")]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
             var author = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == User.GetId());
@@ -54,8 +53,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Update a blog post.
         /// </summary>
-        [HttpPatch("{id}")]
-        [Authorize(Roles = "Blogger")]
+        [HttpPatch("{id}"), Authorize(Roles = "Blogger")]
         public async Task<IActionResult> EditPost(int id, EditPostIn dto)
         {
             var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
@@ -75,8 +73,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Comment on a blog post.
         /// </summary>
-        [HttpPost("{postId}/comments")]
-        [Authorize(Roles = "Reader, Blogger")]
+        [HttpPost("{postId}/comments"), Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostComment(int postId, CommentIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
@@ -94,8 +91,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Pins a comment to a blog post. If the comment already is pinned, it will be unpinned.
         /// </summary>
-        [HttpPatch("{postId}/comments/{commentId}/pins")]
-        [Authorize(Policy = CommentPinPolicy)]
+        [HttpPatch("{postId}/comments/{commentId}/pins"), Authorize(Policy = CommentPinPolicy)]
         public async Task<IActionResult> PostCommentPin(int postId, int commentId)
         {
             var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == postId);
@@ -119,8 +115,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Reply to a comment on a blog post.
         /// </summary>
-        [HttpPost("{postId}/comments/{commentId}/replies")]
-        [Authorize(Roles = "Reader, Blogger")]
+        [HttpPost("{postId}/comments/{commentId}/replies"), Authorize(Roles = "Reader, Blogger")]
         public async Task<IActionResult> PostCommentReply(int postId, int commentId, ReplyIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
@@ -142,8 +137,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Like a comment on a blog post.
         /// </summary>
-        [HttpPost("{postId}/comments/{commentId}/likes")]
-        [Authorize(Policy = CommentLikePolicy)]
+        [HttpPost("{postId}/comments/{commentId}/likes"), Authorize(Policy = CommentLikePolicy)]
         public async Task<IActionResult> PostCommentLike(int postId, int commentId)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
@@ -176,8 +170,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Returns a post.
         /// </summary>
-        [HttpGet("{id}")]
-        [AllowAnonymous]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<PostOut>> GetPost(int id)
         {
             var post = await _context.Posts
@@ -200,8 +193,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Returns all the posts.
         /// </summary>
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
         {
             var posts = await _context.Posts

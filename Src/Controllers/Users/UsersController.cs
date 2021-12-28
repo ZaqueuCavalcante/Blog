@@ -43,8 +43,7 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Login into blog.
         /// </summary>
-        [HttpPost("login")]
-        [AllowAnonymous]
+        [HttpPost("login"), AllowAnonymous]
         public async Task<ActionResult> Login(UserIn dto)
         {
             var result = await _signInManager.PasswordSignInAsync(
@@ -75,8 +74,7 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Logout of the blog.
         /// </summary>
-        [HttpPost("logout")]
-        [Authorize]
+        [HttpPost("logout"), Authorize]
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -87,8 +85,7 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Change user password.
         /// </summary>
-        [HttpPatch("change-password")]
-        [Authorize]
+        [HttpPatch("change-password"), Authorize]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
             var userId = User.GetId();
@@ -109,8 +106,7 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Refresh a access token.
         /// </summary>
-        [HttpPost("refresh-token")]
-        [AllowAnonymous]
+        [HttpPost("refresh-token"), AllowAnonymous]
         public async Task<ActionResult> RefreshToken(RefreshTokenIn dto)
         {
             var response = await VerifyToken(dto);
@@ -124,9 +120,8 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Add a new network.
         /// </summary>
-        [HttpPost("networks")]
-        [Authorize]
-        public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)
+        [HttpPost("networks"), Authorize]
+        public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)  // TODO: refactor to FromBody?
         {
             var userId = User.GetId();
 
@@ -136,23 +131,22 @@ namespace Blog.Controllers.Users
 
             if (network != null)
             {
-                network.Uri = dto.Url;
+                network.SetUri(dto.Uri);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
 
-            network = new Network
-            {
-                UserId = userId,
-                Name = dto.Name,
-                Uri = dto.Url
-            };
+            network = new Network(userId, dto.Name, dto.Uri);
 
             await _context.Networks.AddAsync(network);
             await _context.SaveChangesAsync();
 
             return Ok();
         }
+
+        #region Token things
+        // TODO: refactor moving this to a service or manager.
+        // TODO: add tests to methods.
 
         private void SetTokenValidationParameters()
         {
@@ -241,15 +235,15 @@ namespace Blog.Controllers.Users
             }
         }
 
-		private string GetRefreshToken()
-		{
-			var randomNumber = new byte[42];
-			using (var rng = RandomNumberGenerator.Create())
-			{
-				rng.GetBytes(randomNumber);
-				return Convert.ToBase64String(randomNumber);
-			}
-		}
+        private string GetRefreshToken()
+        {
+            var randomNumber = new byte[42];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
 
         private async Task<LoginOut> GenerateLoginResponse(string email)
         {
@@ -332,5 +326,7 @@ namespace Blog.Controllers.Users
                 Scope = "create"
             };
         }
+
+        #endregion
     }
 }
