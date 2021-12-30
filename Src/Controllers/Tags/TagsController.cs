@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Controllers.Tags
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class TagsController : ControllerBase
     {
         private readonly BlogContext _context;

@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Controllers.Home
 {
-    [ApiController]
-    [Route("")]
+    [ApiController, Route("")]
     public class HomeController : ControllerBase
     {
         private readonly BlogContext _context;

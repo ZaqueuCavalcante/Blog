@@ -14,7 +14,8 @@ namespace Blog.Tests
             {
                 Configuration = new ConfigurationBuilder()
                     .SetBasePath("C:\\Users\\Zaqueu\\blog\\Tests\\")  // TODO: refactor this
-                    .AddJsonFile("appsettings.Test.json").Build();
+                    .AddJsonFile("appsettings.Test.json")
+                    .Build();
 
                 config.AddConfiguration(Configuration);
             });

@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Controllers.Bloggers
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class SeedController : ControllerBase
     {
         private readonly BlogContext _context;

@@ -14,8 +14,7 @@ using Blog.Domain;
 
 namespace Blog.Controllers.Users
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;

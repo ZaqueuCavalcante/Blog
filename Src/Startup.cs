@@ -29,6 +29,8 @@ namespace Blog
             services.AddJwtConfigurations(Configuration);
 
             services.AddAuthorizationConfigurations();
+
+            services.AddCacheConfigurations();
         }
 
         public void Configure(
@@ -51,6 +53,8 @@ namespace Blog
             }
 
             app.UseHttpsRedirection();
+
+            app.UseResponseCaching();
 
             app.UseRouting();
 

@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Controllers.Bloggers
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class BloggersController : ControllerBase
     {
         private readonly BlogContext _context;

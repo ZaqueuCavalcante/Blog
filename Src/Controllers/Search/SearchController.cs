@@ -7,8 +7,7 @@ using Npgsql;
 
 namespace Blog.Controllers.Search
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class SearchController : ControllerBase
     {
         private readonly IConfiguration _configuration;

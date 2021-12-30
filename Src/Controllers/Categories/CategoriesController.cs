@@ -4,11 +4,11 @@ using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Blog.Configurations.ControllersConfigurations;
 
 namespace Blog.Controllers.Categories
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class CategoriesController : ControllerBase
     {
         private readonly BlogContext _context;
@@ -58,6 +58,7 @@ namespace Blog.Controllers.Categories
         /// Returns all the categories.
         /// </summary>
         [HttpGet, AllowAnonymous]
+        [ResponseCache(CacheProfileName = TwoMinutesCacheProfile)]
         public async Task<ActionResult<List<CategoryOut>>> GetCategories()
         {
             var categories = await _context.Categories

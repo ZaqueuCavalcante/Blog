@@ -8,8 +8,7 @@ using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Posts
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class PostsController : ControllerBase
     {
         private readonly BlogContext _context;
