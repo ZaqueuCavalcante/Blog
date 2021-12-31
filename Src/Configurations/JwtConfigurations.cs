@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Blog.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -43,6 +44,8 @@ namespace Blog.Configurations
                 options.SaveToken = true;
                 options.TokenValidationParameters = tokenValidationParameters;
             });
+
+            services.AddScoped(typeof(TokenManager));
 
             return services;
         }

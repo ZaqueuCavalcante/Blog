@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Users
+namespace Blog.Controllers.Networks
 {
     public class NetworkIn
     {

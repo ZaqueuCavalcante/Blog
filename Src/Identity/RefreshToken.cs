@@ -23,5 +23,24 @@ namespace Blog.Identity
         public bool HasAlreadyBeenUsed => UsedAt != null;
 
         public bool IsRevoked => RevokedAt != null;
+
+        public string? TryUse(string jwtId)
+        {
+            if (IsExpired)
+                return "Refresh token has expired.";
+
+            if (HasAlreadyBeenUsed)
+                return "Refresh token has already been used.";
+
+            if (IsRevoked)
+                return "Refresh token has been revoked.";
+
+            if (JwtId != jwtId)
+                return "Access and refresh tokens do not matches.";
+
+            UsedAt = DateTime.UtcNow;
+
+            return null;
+        }
     }
 }

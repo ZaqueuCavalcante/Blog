@@ -1,5 +1,5 @@
 using Blog.Controllers.Posts;
-using Blog.Controllers.Users;
+using Blog.Controllers.Networks;
 using Blog.Database;
 using Blog.Domain;
 using Microsoft.OpenApi.Any;
