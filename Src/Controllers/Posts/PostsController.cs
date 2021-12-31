@@ -108,6 +108,8 @@ namespace Blog.Controllers.Posts
 
             await _context.SaveChangesAsync();
 
+            // TODO: add info log here...
+
             return Ok();
         }
 
@@ -134,7 +136,7 @@ namespace Blog.Controllers.Posts
         }
 
         /// <summary>
-        /// Like a comment on a blog post.
+        /// Like/dislike a comment on a blog post.
         /// </summary>
         [HttpPost("{postId}/comments/{commentId}/likes"), Authorize(Policy = CommentLikePolicy)]
         public async Task<IActionResult> PostCommentLike(int postId, int commentId)
@@ -193,17 +195,28 @@ namespace Blog.Controllers.Posts
         /// Returns all the posts.
         /// </summary>
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] string? tag)
+        public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] PostParameters parameters)
         {
+            if (parameters.MinDateIsGreaterThanMaxDate())
+                return BadRequest("MinDate must be less than MaxDate.");
+
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Category)
                 .Include(l => l.Author)
                 .Include(l => l.Comments)  // TODO: calculate the post rating without get all comments...
                 .Include(l => l.Tags)
-                .Where(p => p.Tags.Any(t => t.Name == tag) || string.IsNullOrEmpty(tag))
+                .Where(p =>
+                    (p.Tags.Any(t => t.Name == parameters.Tag) || string.IsNullOrEmpty(parameters.Tag)) &&
+                    (p.CreatedAt >= parameters.MinDate || parameters.MinDate == null) &&
+                    (p.CreatedAt <= parameters.MaxDate || parameters.MaxDate == null))
                 .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();  // TODO: add pagination to get only the last 5 posts... 
+                .Page(parameters)
+                .ToListAsync();
+
+            var count = await _context.Posts.CountAsync();
+
+            Response.AddPagination(parameters, count);
 
             return Ok(posts.Select(p => PostOut.NewWithoutComments(p, Request.GetRoot())).ToList());
         }

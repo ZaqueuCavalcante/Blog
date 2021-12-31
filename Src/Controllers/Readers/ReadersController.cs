@@ -36,7 +36,7 @@ namespace Blog.Controllers.Readers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            reader.UserId = user.Id;
+            reader.UserId = user.Id;  // TODO: refactor this to use UoW Pattern...
 
             _context.Readers.Add(reader);
             await _context.SaveChangesAsync();

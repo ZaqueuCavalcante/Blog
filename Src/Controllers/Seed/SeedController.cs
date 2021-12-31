@@ -142,6 +142,14 @@ namespace Blog.Controllers.Bloggers
             await _context.Categories.AddAsync(efCoreCategory);
             await _context.SaveChangesAsync();
 
+            var identityCategory = new Category("Identity Core", "The Identity Core category description.");
+            await _context.Categories.AddAsync(identityCategory);
+            await _context.SaveChangesAsync();
+
+            var swaggerCategory = new Category("Swagger", "The Swagger category description.");
+            await _context.Categories.AddAsync(swaggerCategory);
+            await _context.SaveChangesAsync();
+
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             #region Posts

@@ -28,7 +28,7 @@ namespace Blog.Controllers.Categories
             var category = new Category(dto.Name, dto.Description);
 
             var categoryAlreadyExists = await _context.Categories.AnyAsync(
-                c => c.Name.ToLower() == dto.Name.ToLower());
+                c => c.Name.ToLower() == dto.Name.Trim().ToLower());
 
             if (categoryAlreadyExists) return BadRequest("Category already exists.");
 
@@ -57,15 +57,27 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Returns all the categories.
         /// </summary>
-        [HttpGet, AllowAnonymous]
+        [HttpGet, HttpHead, AllowAnonymous]
         [ResponseCache(CacheProfileName = TwoMinutesCacheProfile)]
-        public async Task<ActionResult<List<CategoryOut>>> GetCategories()
+        public async Task<ActionResult<List<CategoryOut>>> GetCategories([FromQuery] CategoryParameters parameters)
         {
-            var categories = await _context.Categories
+            var categories = await _context.Categories.AsNoTracking()
                 .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
+                .Page(parameters)
                 .ToListAsync();
 
+            var count = await _context.Categories.CountAsync();
+
+            Response.AddPagination(parameters, count);
+
             return Ok(categories.Select(c => CategoryOut.New(c, Request.GetRoot())).ToList());
+        }
+
+        [HttpOptions, AllowAnonymous]
+        public ActionResult GetCategoriesOptions()
+        {
+            Response.Headers.Add("Allow", "POST, GET, OPTIONS, HEAD");
+            return Ok();
         }
     }
 }

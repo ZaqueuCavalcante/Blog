@@ -24,6 +24,7 @@ namespace Blog.Controllers.Search
         [HttpGet("{thing}"), AllowAnonymous]
         public async Task<ActionResult> Search(string thing)
         {
+            // TODO: https://lucenenet.apache.org/index.html
             var url = Request.GetRoot();
 
             var bloggersSql = @"

@@ -39,7 +39,7 @@ namespace Blog.Controllers.Bloggers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            blogger.UserId = user.Id;
+            blogger.UserId = user.Id;  // TODO: refactor this to use UoW Pattern...
 
             _context.Bloggers.Add(blogger);
             await _context.SaveChangesAsync();
