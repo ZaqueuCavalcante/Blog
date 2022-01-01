@@ -4,6 +4,7 @@ using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Tags
 {
@@ -21,12 +22,18 @@ namespace Blog.Controllers.Tags
         /// <summary>
         /// Register a new tag.
         /// </summary>
-        [HttpPost, Authorize(Roles = "Admin")]
+        [HttpPost, Authorize(Roles = AdminRole)]
         public async Task<IActionResult> PostTag(string name)
         {
-            var tag = new Tag(name);
+            var tag = await _context.Tags.FirstOrDefaultAsync(
+                t => t.Name.ToLower() == name.Trim().ToLower());
 
-            _context.Tags.Add(tag);
+            if (tag != null)
+                return BadRequest("Tag already exists.");
+
+            tag = new Tag(name);
+
+            await _context.Tags.AddAsync(tag);
             await _context.SaveChangesAsync();
 
             return Created($"/tags/{tag.Id}", TagOut.New(tag, Request.GetRoot()));
@@ -52,11 +59,17 @@ namespace Blog.Controllers.Tags
         /// Returns all the tags.
         /// </summary>
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<TagOut>>> GetTags()
+        public async Task<ActionResult<List<TagOut>>> GetTags(TagsParameters parameters)
         {
-            var tags = await _context.Tags
+            var tags = await _context.Tags.AsNoTracking()
                 .Include(t => t.Posts.OrderByDescending(p => p.CreatedAt))
+                .OrderBy(t => t.Name)
+                .Page(parameters)
                 .ToListAsync();
+
+            var count = await _context.Tags.CountAsync();
+
+            Response.AddPagination(parameters, count);
 
             return Ok(tags.Select(t => TagOut.New(t, Request.GetRoot())).ToList());
         }
@@ -64,7 +77,7 @@ namespace Blog.Controllers.Tags
         /// <summary>
         /// Delete a tag.
         /// </summary>
-        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("{id}"), Authorize(Roles = AdminRole)]
         public async Task<ActionResult> DeleteTag(int id)
         {
             var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);

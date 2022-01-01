@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Bloggers
 {
@@ -26,9 +27,7 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Register a new blogger.
         /// </summary>
-        [HttpPost, Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(BloggerOut), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(IEnumerable<IdentityError>), StatusCodes.Status400BadRequest)]
+        [HttpPost, Authorize(Roles = AdminRole)]
         public async Task<IActionResult> PostBlogger(BloggerIn dto)
         {
             var user = Blog.Identity.User.New(dto.Email);
@@ -38,6 +37,8 @@ namespace Blog.Controllers.Bloggers
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
+
+            await _userManager.AddToRoleAsync(user, BloggerRole);
 
             blogger.UserId = user.Id;  // TODO: refactor this to use UoW Pattern...
 
@@ -80,15 +81,12 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Update a blogger.
         /// </summary>
-        [HttpPatch, Authorize(Roles = "Blogger")]
+        [HttpPatch, Authorize(Roles = BloggerRole)]
         public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn dto)
         {
-            var userId = User.GetId();
-            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
-
+            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == User.GetId());
             blogger.Update(dto.Name, dto.Resume);
 
-            _context.Bloggers.Update(blogger);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -97,16 +95,16 @@ namespace Blog.Controllers.Bloggers
         /// <summary>
         /// Return statistics about the blogger.
         /// </summary>
-        [HttpGet("stats"), Authorize(Roles = "Blogger")]
+        [HttpGet("stats"), Authorize(Roles = BloggerRole)]
         public async Task<ActionResult> GetStats()
         {
-            var userId = User.GetId();
-            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == userId);
+            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == User.GetId());
 
             var publishedPosts = await _context.Posts
                 .Where(p => p.AuthorId == blogger.Id)
                 .Select(p => p.Id)
                 .ToListAsync();
+
             var draftPosts = 0;
 
             var latestComments = await _context.Comments

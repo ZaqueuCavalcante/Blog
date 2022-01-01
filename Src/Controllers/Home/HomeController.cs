@@ -21,14 +21,18 @@ namespace Blog.Controllers.Home
         /// Returns all informations about the blog home page.
         /// </summary>
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult> GetHome()
+        public async Task<ActionResult> GetHome([FromQuery] HomeParameters parameters)
         {
             var url = Request.GetRoot();
 
             var lastPosts = await _context.Posts
                 .OrderByDescending(p => p.CreatedAt)
+                .Page(parameters)
                 .ToListAsync();
             var lastPostsOut = lastPosts.Select(p => HomePostOut.New(p, url)).ToList();
+
+            var count = await _context.Posts.CountAsync();
+            Response.AddPagination(parameters, count);
  
             var bloggers = await _context.Bloggers
                 .ToListAsync();

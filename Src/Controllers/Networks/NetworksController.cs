@@ -19,7 +19,7 @@ namespace Blog.Controllers.Networks
         }
 
         /// <summary>
-        /// Add a new network.
+        /// Add or update a network.
         /// </summary>
         [HttpPost("networks"), Authorize]
         public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)  // TODO: refactor to FromBody?
@@ -43,6 +43,27 @@ namespace Blog.Controllers.Networks
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Delete a network.
+        /// </summary>
+        [HttpDelete("networks"), Authorize]
+        public async Task<ActionResult> DeleteNetwork([FromQuery] DeleteNetworkIn dto)  // TODO: refactor to FromBody?
+        {
+            var userId = User.GetId();
+
+            var network = await _context.Networks.FirstOrDefaultAsync(
+                n => n.UserId == userId && n.Name == dto.Name
+            );
+
+            if (network == null)
+                return NotFound("Network not found.");
+
+            _context.Networks.Remove(network);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

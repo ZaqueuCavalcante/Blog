@@ -1,10 +1,12 @@
 ﻿using Blog.Database;
 using Blog.Domain;
+using Blog.Extensions;
 using Blog.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Readers
 {
@@ -36,6 +38,8 @@ namespace Blog.Controllers.Readers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
+            await _userManager.AddToRoleAsync(user, ReaderRole);
+
             reader.UserId = user.Id;  // TODO: refactor this to use UoW Pattern...
 
             _context.Readers.Add(reader);
@@ -63,10 +67,16 @@ namespace Blog.Controllers.Readers
         /// Returns all the readers.
         /// </summary>
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<ReaderOut>>> GetReaders()
+        public async Task<ActionResult<List<ReaderOut>>> GetReaders(ReadersParameters parameters)
         {
             var readers = await _context.Readers
+                .AsNoTracking()
+                .Page(parameters)
                 .ToListAsync();
+
+            var count = await _context.Readers.CountAsync();
+
+            Response.AddPagination(parameters, count);
 
             return Ok(readers.Select(r => ReaderOut.New(r)).ToList());
         }

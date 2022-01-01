@@ -21,7 +21,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Create a new blog post.
         /// </summary>
-        [HttpPost, Authorize(Roles = "Blogger")]
+        [HttpPost, Authorize(Roles = BloggerRole)]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
             var author = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == User.GetId());
@@ -52,7 +52,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Update a blog post.
         /// </summary>
-        [HttpPatch("{id}"), Authorize(Roles = "Blogger")]
+        [HttpPatch("{id}"), Authorize(Roles = BloggerRole)]
         public async Task<IActionResult> EditPost(int id, EditPostIn dto)
         {
             var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
@@ -72,7 +72,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Comment on a blog post.
         /// </summary>
-        [HttpPost("{postId}/comments"), Authorize(Roles = "Reader, Blogger")]
+        [HttpPost("{postId}/comments"), Authorize(Roles = $"{ReaderRole}, {BloggerRole}")]
         public async Task<IActionResult> PostComment(int postId, CommentIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
@@ -116,7 +116,7 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Reply to a comment on a blog post.
         /// </summary>
-        [HttpPost("{postId}/comments/{commentId}/replies"), Authorize(Roles = "Reader, Blogger")]
+        [HttpPost("{postId}/comments/{commentId}/replies"), Authorize(Roles = $"{ReaderRole}, {BloggerRole}")]
         public async Task<IActionResult> PostCommentReply(int postId, int commentId, ReplyIn dto)
         {
             var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);

@@ -4,6 +4,7 @@ using Blog.Domain;
 using Blog.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Bloggers
 {
@@ -32,9 +33,9 @@ namespace Blog.Controllers.Bloggers
 
             #region Roles
 
-            var readerRole = new Role { Name = "Reader" };
-            var bloggerRole = new Role { Name = "Blogger" };
-            var adminRole = new Role { Name = "Admin" };
+            var readerRole = new Role { Name = ReaderRole };
+            var bloggerRole = new Role { Name = BloggerRole };
+            var adminRole = new Role { Name = AdminRole };
 
             await _roleManager.CreateAsync(readerRole);
             await _roleManager.CreateAsync(bloggerRole);
@@ -60,13 +61,13 @@ namespace Blog.Controllers.Bloggers
             await _userManager.CreateAsync(angelaUser, "Test@123");
             await _userManager.CreateAsync(domUser, "Test@123");
 
-            await _userManager.AddToRolesAsync(samUser, new [] { "Admin", "Blogger" });
-            await _userManager.AddToRoleAsync(elliotUser, "Blogger");
-            await _userManager.AddToRoleAsync(irvingUser, "Blogger");
-            await _userManager.AddToRoleAsync(darleneUser, "Reader");
-            await _userManager.AddToRoleAsync(tyrellUser, "Reader");
-            await _userManager.AddToRoleAsync(angelaUser, "Reader");
-            await _userManager.AddToRoleAsync(domUser, "Reader");
+            await _userManager.AddToRolesAsync(samUser, new [] { AdminRole, BloggerRole });
+            await _userManager.AddToRoleAsync(elliotUser, BloggerRole);
+            await _userManager.AddToRoleAsync(irvingUser, BloggerRole);
+            await _userManager.AddToRoleAsync(darleneUser, ReaderRole);
+            await _userManager.AddToRoleAsync(tyrellUser, ReaderRole);
+            await _userManager.AddToRoleAsync(angelaUser, ReaderRole);
+            await _userManager.AddToRoleAsync(domUser, ReaderRole);
 
             #endregion
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

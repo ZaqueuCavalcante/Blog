@@ -21,8 +21,8 @@ namespace Blog.Controllers.Search
         /// <summary>
         /// Search for something on the blog.
         /// </summary>
-        [HttpGet("{thing}"), AllowAnonymous]
-        public async Task<ActionResult> Search(string thing)
+        [HttpGet, AllowAnonymous]
+        public async Task<ActionResult> Search([FromQuery] SearchParameters parameters)
         {
             // TODO: https://lucenenet.apache.org/index.html
             var url = Request.GetRoot();
@@ -53,10 +53,10 @@ namespace Blog.Controllers.Search
 
             using (var connection = new NpgsqlConnection(_configuration.GetConnectionString("Connection")))
             {
-                var bloggers = (await connection.QueryAsync<SearchOut>(bloggersSql, new { Thing = thing })).ToList();
-                var categories = (await connection.QueryAsync<SearchOut>(categoriesSql, new { Thing = thing })).ToList();
-                var posts = (await connection.QueryAsync<SearchOut>(postsSql, new { Thing = thing })).ToList();
-                var tags = (await connection.QueryAsync<SearchOut>(tagsSql, new { Thing = thing })).ToList();
+                var bloggers = (await connection.QueryAsync<SearchOut>(bloggersSql, new { parameters.Thing })).ToList();
+                var categories = (await connection.QueryAsync<SearchOut>(categoriesSql, new { parameters.Thing })).ToList();
+                var posts = (await connection.QueryAsync<SearchOut>(postsSql, new { parameters.Thing })).ToList();
+                var tags = (await connection.QueryAsync<SearchOut>(tagsSql, new { parameters.Thing })).ToList();
 
                 bloggers.ForEach(b => b.Link = url + "bloggers/" + b.Id);
                 categories.ForEach(c => c.Link = url + "categories/" + c.Id);

@@ -19,7 +19,8 @@ namespace Blog.Filters
 
         public void Apply(OpenApiParameter parameter, ParameterFilterContext context)
         {
-            if (context.ParameterInfo.ParameterType == typeof(NetworkIn) &&
+            if ((context.ParameterInfo.ParameterType == typeof(NetworkIn) ||
+                context.ParameterInfo.ParameterType == typeof(DeleteNetworkIn)) &&
                 parameter.Name.Equals(nameof(NetworkIn.Name), StringComparison.InvariantCultureIgnoreCase)
             ) {
                 parameter.Schema.Enum = Network.Alloweds.Select(n => new OpenApiString(n)).ToList<IOpenApiAny>();

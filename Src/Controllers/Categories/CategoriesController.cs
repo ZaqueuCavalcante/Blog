@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Blog.Configurations.ControllersConfigurations;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Categories
 {
@@ -22,7 +23,7 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Register a new category.
         /// </summary>
-        [HttpPost, Authorize(Roles = "Admin")]
+        [HttpPost, Authorize(Roles = AdminRole)]
         public async Task<IActionResult> PostCategory(CategoryIn dto)
         {
             var category = new Category(dto.Name, dto.Description);
@@ -30,7 +31,8 @@ namespace Blog.Controllers.Categories
             var categoryAlreadyExists = await _context.Categories.AnyAsync(
                 c => c.Name.ToLower() == dto.Name.Trim().ToLower());
 
-            if (categoryAlreadyExists) return BadRequest("Category already exists.");
+            if (categoryAlreadyExists)
+                return BadRequest("Category already exists.");
 
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
@@ -63,6 +65,7 @@ namespace Blog.Controllers.Categories
         {
             var categories = await _context.Categories.AsNoTracking()
                 .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
+                .OrderBy(c => c.Name)
                 .Page(parameters)
                 .ToListAsync();
 
