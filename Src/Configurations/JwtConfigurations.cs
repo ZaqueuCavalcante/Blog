@@ -45,7 +45,7 @@ namespace Blog.Configurations
                 options.TokenValidationParameters = tokenValidationParameters;
             });
 
-            services.AddScoped(typeof(TokenManager));
+            services.AddScoped<TokenManager>();
 
             return services;
         }

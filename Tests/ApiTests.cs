@@ -205,13 +205,13 @@ namespace Blog.Tests
         [Test]
         public async Task Get_all_categories()
         {
-            var response = await _client.GetAsync("/categories");
+            var response = await _client.GetAsync("/categories/?pageSize=5");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
             var categories = JsonConvert.DeserializeObject<List<CategoryOut>>(await response.Content.ReadAsStringAsync());
 
-            categories.Count.ShouldBe(3);
+            categories.Count.ShouldBe(5);
             categories.ShouldContain(c => c.Name == "Linux");
             categories.ShouldContain(c => c.Name == "Mr. Robot");
         }
@@ -244,13 +244,13 @@ namespace Blog.Tests
 
             var postIn = new PostIn
             {
-                Title = "A new blog post",
-                Resume = "A resume of the new blog post...",
-                Body = "The body of the new blog post...",
+                Title = "A new bolg post",
+                Resume = "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
+                Body = "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them. Topics include Linux command line basics, filesystems, networking, BASH basics, package management, logging, and the Linux kernel and drivers.",
                 CategoryId = 1,
                 Tags = new List<int>{ 1 }
             };
-
+                
             var response = await _client.PostAsync("/posts", postIn.ToStringContent());
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -389,7 +389,7 @@ namespace Blog.Tests
         [Test]
         public async Task Get_all_posts()
         {
-            var response = await _client.GetAsync("/posts");
+            var response = await _client.GetAsync("/posts/?pageSize=3");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -441,7 +441,7 @@ namespace Blog.Tests
         [Test]
         public async Task Get_all_readers()
         {
-            var response = await _client.GetAsync("/readers");
+            var response = await _client.GetAsync("/readers/?pageSize=4");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -474,7 +474,7 @@ namespace Blog.Tests
         [Test]
         public async Task Get_all_tags()
         {
-            var response = await _client.GetAsync("/tags");
+            var response = await _client.GetAsync("/tags/?pageSize=3");
 
             response.StatusCode.ShouldBe(HttpStatusCode.OK);
 

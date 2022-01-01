@@ -30,40 +30,12 @@ namespace Blog.Identity
             SetTokenValidationParameters();
         }
 
-        private void SetTokenValidationParameters()
-        {
-            _tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = _configuration["Jwt:Issuer"],
-
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(_configuration["Jwt:SecurityKey"])
-                ),
-
-                ValidateAudience = true,
-                ValidAudience = _configuration["Jwt:Audience"],
-
-                ValidateLifetime = false,
-
-                RoleClaimType = "role"
-            };
-        }
-
         // TODO: add tests...
         public async Task<(string accessToken, string refreshToken)> GenerateTokens(string userEmail)
         {
             var accessToken = await GenerateAccessToken(userEmail);
             var refreshToken = await GenerateRefreshToken(userEmail, accessToken);
             return (accessToken, refreshToken);
-        }
-
-        private DateTime GetExpDate(IEnumerable<Claim> userClaims)
-        {
-            var utcExpiryDate = long.Parse(userClaims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            return dateTime.AddSeconds(utcExpiryDate).ToUniversalTime();
         }
 
         // TODO: add tests...
@@ -152,16 +124,6 @@ namespace Blog.Identity
             return tokenHandler.WriteToken(token);
         }
 
-        private string GenerateRandomBase64(int length = 42)
-        {
-            var randomNumber = new byte[length];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
-
         // TODO: add tests...
         private async Task<string> GenerateRefreshToken(string userEmail, string accessToken)
         {
@@ -188,6 +150,44 @@ namespace Blog.Identity
             await _context.SaveChangesAsync();
 
             return refreshToken.Token;
+        }
+
+        private void SetTokenValidationParameters()
+        {
+            _tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(_configuration["Jwt:SecurityKey"])
+                ),
+
+                ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
+
+                ValidateLifetime = false,
+
+                RoleClaimType = "role"
+            };
+        }
+
+        private DateTime GetExpDate(IEnumerable<Claim> userClaims)
+        {
+            var utcExpiryDate = long.Parse(userClaims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            return dateTime.AddSeconds(utcExpiryDate).ToUniversalTime();
+        }
+
+        private string GenerateRandomBase64(int length = 42)
+        {
+            var randomNumber = new byte[length];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
         }
     }
 }

@@ -31,6 +31,8 @@ namespace Blog
             services.AddAuthorizationConfigurations();
 
             services.AddCacheConfigurations();
+
+            services.AddHealthChecks();
         }
 
         public void Configure(
@@ -61,11 +63,12 @@ namespace Blog
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseDomainExceptionMiddleware();
+            app.UseDomainExceptions();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(builder =>
             {
-                endpoints.MapControllers();
+                builder.MapControllers();
+                builder.MapHealthChecks("/healthz");
             });
         }
     }

@@ -67,7 +67,7 @@ namespace Blog.Controllers.Readers
         /// Returns all the readers.
         /// </summary>
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<ReaderOut>>> GetReaders(ReadersParameters parameters)
+        public async Task<ActionResult<List<ReaderOut>>> GetReaders([FromQuery] ReadersParameters parameters)
         {
             var readers = await _context.Readers
                 .AsNoTracking()

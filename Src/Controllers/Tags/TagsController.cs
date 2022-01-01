@@ -59,7 +59,7 @@ namespace Blog.Controllers.Tags
         /// Returns all the tags.
         /// </summary>
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<TagOut>>> GetTags(TagsParameters parameters)
+        public async Task<ActionResult<List<TagOut>>> GetTags([FromQuery] TagsParameters parameters)
         {
             var tags = await _context.Tags.AsNoTracking()
                 .Include(t => t.Posts.OrderByDescending(p => p.CreatedAt))

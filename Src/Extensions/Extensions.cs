@@ -38,7 +38,7 @@ namespace Blog.Extensions
             response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
         }
 
-        public static IApplicationBuilder UseDomainExceptionMiddleware(this IApplicationBuilder app)
+        public static IApplicationBuilder UseDomainExceptions(this IApplicationBuilder app)
         {
             app.UseMiddleware<DomainExceptionMiddleware>();
             return app;
