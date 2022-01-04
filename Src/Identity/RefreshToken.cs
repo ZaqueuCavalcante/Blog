@@ -42,5 +42,10 @@ namespace Blog.Identity
 
             return null;
         }
+
+        public void Revoke()
+        {
+            RevokedAt = DateTime.Now;
+        }
     }
 }

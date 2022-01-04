@@ -179,7 +179,7 @@ namespace Blog.Controllers.Posts
                 .Include(p => p.Category)
                 .Include(l => l.Author)
                 .Include(l => l.Comments)
-                    .ThenInclude(c => c.Replies)
+                    .ThenInclude(c => c.Replies.OrderBy(r => r.CreatedAt))
                 .Include(l => l.Comments)
                     .ThenInclude(c => c.Likes)
                 .Include(l => l.Tags)

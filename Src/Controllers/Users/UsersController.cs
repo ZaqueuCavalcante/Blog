@@ -76,7 +76,9 @@ namespace Blog.Controllers.Users
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            
+
+            await _tokenManager.RevokeRefreshTokens(User.GetId());
+
             return Ok("Logout succeeded.");
         }
 
@@ -86,7 +88,13 @@ namespace Blog.Controllers.Users
         [HttpPatch("change-password"), Authorize]
         public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == User.GetId());
+            var userId = User.GetId();
+
+            var error = await _tokenManager.FindUnunsedRefreshTokens(userId);
+            if (error != null)
+                return BadRequest(error);
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             var result = await _userManager.ChangePasswordAsync(
                 user,

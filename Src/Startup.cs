@@ -26,7 +26,7 @@ namespace Blog
 
             services.AddIdentityConfigurations();
 
-            services.AddJwtConfigurations(Configuration);
+            services.AddAuthenticationConfigurations(Configuration);
 
             services.AddAuthorizationConfigurations();
 

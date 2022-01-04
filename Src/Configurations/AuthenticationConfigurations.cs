@@ -6,32 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Blog.Configurations
 {
-    public static class JwtConfigurations
+    public static class AuthenticationConfigurations
     {
-        public static IServiceCollection AddJwtConfigurations(
+        public static IServiceCollection AddAuthenticationConfigurations(
             this IServiceCollection services,
             IConfiguration configuration
         ) {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = configuration["Jwt:Issuer"],
-
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(configuration["Jwt:SecurityKey"])
-                ),
-
-                ValidateAudience = true,
-                ValidAudience = configuration["Jwt:Audience"],
-
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero,
-
-                RoleClaimType = "role"
-            };
 
             services.AddAuthentication(options =>
             {
@@ -42,7 +23,24 @@ namespace Blog.Configurations
             .AddJwtBearer("Bearer", options =>
             {
                 options.SaveToken = true;
-                options.TokenValidationParameters = tokenValidationParameters;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.ASCII.GetBytes(configuration["Jwt:SecurityKey"])
+                    ),
+
+                    ValidateAudience = true,
+                    ValidAudience = configuration["Jwt:Audience"],
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+
+                    RoleClaimType = "role"
+                };
             });
 
             services.AddScoped<TokenManager>();

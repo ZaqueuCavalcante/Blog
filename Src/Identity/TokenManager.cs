@@ -58,7 +58,6 @@ namespace Blog.Identity
                 if (error != null)
                     return error;
 
-                _context.RefreshTokens.Update(storedRefreshToken);
                 await _context.SaveChangesAsync();
 
                 return null;
@@ -67,6 +66,27 @@ namespace Blog.Identity
             {
                 return "Invalid access token.";
             }
+        }
+
+        public async Task RevokeRefreshTokens(int userId)
+        {
+            var refreshTokens = await _context.RefreshTokens.Where(t =>
+                t.UserId == userId && t.UsedAt == null && t.RevokedAt == null).ToListAsync();
+
+            refreshTokens.ForEach(t => t.Revoke());
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<string?> FindUnunsedRefreshTokens(int userId)
+        {
+            var refreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(t =>
+                t.UserId == userId && t.UsedAt == null && t.RevokedAt == null);
+
+            if (refreshToken == null)
+                return "Make login again.";
+
+            return null;
         }
 
         // TODO: add tests...
