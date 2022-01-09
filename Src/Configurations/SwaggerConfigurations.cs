@@ -6,7 +6,7 @@ namespace Blog.Configurations
 {
     public static class SwaggerConfigurations
     {
-        public static IServiceCollection AddSwaggerConfigurations(
+        public static void AddSwaggerConfigurations(
             this IServiceCollection services,
             IConfiguration configuration
         ) {
@@ -58,8 +58,6 @@ namespace Blog.Configurations
                 options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
             })
             .AddSwaggerGenNewtonsoftSupport();
-
-            return services;
         }
     }
 }

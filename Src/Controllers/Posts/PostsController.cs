@@ -60,7 +60,7 @@ namespace Blog.Controllers.Posts
                 return NotFound("Post not found.");
 
             if (post.Author.UserId != User.GetId())
-                return BadRequest("You must be the post author to be able to edit it.");
+                return Forbid("You must be the post author to be able to edit it.");
 
             post.Edit(dto.Title, dto.Resume, dto.Body);
 
@@ -98,7 +98,7 @@ namespace Blog.Controllers.Posts
                 return NotFound("Post not found.");
 
             if (post.Author.UserId != User.GetId())
-                return BadRequest("You must be the post author to be able to pin a comment.");
+                return Forbid("You must be the post author to be able to pin a comment.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
             if (comment is null)

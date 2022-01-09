@@ -5,7 +5,7 @@ namespace Blog.Configurations
 {
     public static class EfCoreConfigurations
     {
-        public static IServiceCollection AddEfCoreConfigurations(
+        public static void AddEfCoreConfigurations(
             this IServiceCollection services,
             IConfiguration configuration
         ) {
@@ -16,8 +16,6 @@ namespace Blog.Configurations
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
             });
-
-            return services;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Blog.Configurations
     {
         public const string TwoMinutesCacheProfile = "TwoMinutesCacheProfile";
 
-        public static IServiceCollection AddControllersConfigurations(this IServiceCollection services)
+        public static void AddControllersConfigurations(this IServiceCollection services)
         {
             services.AddControllers(options => 
             {
@@ -21,8 +21,6 @@ namespace Blog.Configurations
             {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
-
-            return services;
         }
     }
 }

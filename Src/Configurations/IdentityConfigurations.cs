@@ -6,11 +6,16 @@ namespace Blog.Configurations
 {
     public static class IdentityConfigurations
     {
-        public static IServiceCollection AddIdentityConfigurations(this IServiceCollection services)
+        public static void AddIdentityConfigurations(this IServiceCollection services)
         {
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<BlogContext>()
                 .AddDefaultTokenProviders();
+
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(1);
+            });
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -33,8 +38,6 @@ namespace Blog.Configurations
                 options.Lockout.MaxFailedAccessAttempts = 3;  // The number of failed access attempts until a user is locked out, if lockout is enabled.
                 options.Lockout.AllowedForNewUsers = true;  // Determines if a new user can be locked out.
             });
-
-            return services;
         }
     }
 }

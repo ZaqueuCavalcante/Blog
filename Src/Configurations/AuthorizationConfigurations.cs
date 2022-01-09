@@ -9,7 +9,7 @@ namespace Blog.Configurations
         public const string CommentPinPolicy = "CommentPinPolicy";
         public const string CommentLikePolicy = "CommentLikePolicy";
 
-        public static IServiceCollection AddAuthorizationConfigurations(this IServiceCollection services)
+        public static void AddAuthorizationConfigurations(this IServiceCollection services)
         {
             services.AddAuthorization(options =>
             {
@@ -25,8 +25,6 @@ namespace Blog.Configurations
                     policy.RequireClaim("liker", "true");
                 });
             });
-
-            return services;
         }
     }
 }

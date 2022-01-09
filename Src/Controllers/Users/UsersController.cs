@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Blog.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Blog.Controllers.Users
 {
@@ -80,6 +81,23 @@ namespace Blog.Controllers.Users
             await _tokenManager.RevokeRefreshTokens(User.GetId());
 
             return Ok("Logout succeeded.");
+        }
+
+        /// <summary>
+        /// Reset a forgotten password.
+        /// </summary>
+        [HttpPost("generate-reset-password-token"), AllowAnonymous]
+        public async Task<ActionResult> GenerateResetPasswordToken([Required, EmailAddress] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return NotFound("Email not found.");
+ 
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // TODO: SEND TO USER EMAIL ***********
+
+            return Ok(token);
         }
 
         /// <summary>

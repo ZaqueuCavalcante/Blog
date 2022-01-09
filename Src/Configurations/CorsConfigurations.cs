@@ -2,7 +2,7 @@ namespace Blog.Configurations
 {
     public static class CorsConfigurations
     {
-        public static IServiceCollection AddCorsConfigurations(this IServiceCollection services)
+        public static void AddCorsConfigurations(this IServiceCollection services)
         {
             services.AddCors(options =>
             {
@@ -19,8 +19,6 @@ namespace Blog.Configurations
                     .AllowAnyHeader()
                 );
             });
-
-            return services;
         }
     }
 }

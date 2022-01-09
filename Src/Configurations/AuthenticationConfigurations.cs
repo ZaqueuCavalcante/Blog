@@ -8,7 +8,7 @@ namespace Blog.Configurations
 {
     public static class AuthenticationConfigurations
     {
-        public static IServiceCollection AddAuthenticationConfigurations(
+        public static void AddAuthenticationConfigurations(
             this IServiceCollection services,
             IConfiguration configuration
         ) {
@@ -44,8 +44,6 @@ namespace Blog.Configurations
             });
 
             services.AddScoped<TokenManager>();
-
-            return services;
         }
     }
 }
