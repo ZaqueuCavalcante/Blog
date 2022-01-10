@@ -99,10 +99,10 @@ namespace Blog.Controllers.Users
  
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var message = new Message(new string[] { "zaqueudovale@gmail.com" }, "Blog - reset password", token);
+            var message = new Message(new string[] { email }, "Blog - reset password", token);
             _emailSender.Send(message);
 
-            return Ok("Email sended.");
+            return Ok($"Email sended to {email}.");
         }
 
         /// <summary>
