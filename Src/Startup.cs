@@ -1,5 +1,6 @@
 using Blog.Extensions;
 using Blog.Configurations;
+using Blog.Services;
 
 namespace Blog
 {
@@ -33,6 +34,8 @@ namespace Blog
             services.AddCacheConfigurations();
 
             services.AddHealthChecks();
+
+            services.AddScoped<IEmailSender, EmailSender>();
         }
 
         public void Configure(

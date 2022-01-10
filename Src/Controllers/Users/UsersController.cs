@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Blog.Extensions;
 using System.ComponentModel.DataAnnotations;
+using Blog.Services;
 
 namespace Blog.Controllers.Users
 {
@@ -16,17 +17,20 @@ namespace Blog.Controllers.Users
         private readonly SignInManager<User> _signInManager;
         private readonly TokenManager _tokenManager;
         private IConfiguration _configuration;
+        private IEmailSender _emailSender;
 
         public UsersController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             TokenManager tokenManager,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IEmailSender emailSender
         ) {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenManager = tokenManager;
             _configuration = configuration;
+            _emailSender = emailSender;
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace Blog.Controllers.Users
         }
 
         /// <summary>
-        /// Reset a forgotten password.
+        /// Get a token to reset a forgotten password.
         /// </summary>
         [HttpPost("generate-reset-password-token"), AllowAnonymous]
         public async Task<ActionResult> GenerateResetPasswordToken([Required, EmailAddress] string email)
@@ -95,9 +99,27 @@ namespace Blog.Controllers.Users
  
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            // TODO: SEND TO USER EMAIL ***********
+            var message = new Message(new string[] { "zaqueudovale@gmail.com" }, "Blog - reset password", token);
+            _emailSender.Send(message);
 
-            return Ok(token);
+            return Ok("Email sended.");
+        }
+
+        /// <summary>
+        /// Reset a forgotten password.
+        /// </summary>
+        [HttpPost("reset-password"), AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(ResetPasswordIn dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
+                return NotFound("Email not found.");
+ 
+            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest("Reset password failed.");
+
+            return Ok("Password reseted!");
         }
 
         /// <summary>
