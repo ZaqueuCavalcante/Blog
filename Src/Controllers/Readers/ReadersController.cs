@@ -40,7 +40,7 @@ namespace Blog.Controllers.Readers
 
             await _userManager.AddToRoleAsync(user, ReaderRole);
 
-            reader.UserId = user.Id;  // TODO: refactor this to use UoW Pattern...
+            reader.UserId = user.Id;
 
             _context.Readers.Add(reader);
             await _context.SaveChangesAsync();
@@ -64,7 +64,7 @@ namespace Blog.Controllers.Readers
         }
 
         /// <summary>
-        /// Returns all the readers.
+        /// Returns some readers.
         /// </summary>
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<ReaderOut>>> GetReaders([FromQuery] ReadersParameters parameters)

@@ -14,8 +14,6 @@ namespace Blog.Database
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Category> Categories { get; set; }
-
-        public DbSet<User> Users { get; set; }
         public DbSet<Network> Networks { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 

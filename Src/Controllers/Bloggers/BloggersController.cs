@@ -40,7 +40,7 @@ namespace Blog.Controllers.Bloggers
 
             await _userManager.AddToRoleAsync(user, BloggerRole);
 
-            blogger.UserId = user.Id;  // TODO: refactor this to use UoW Pattern...
+            blogger.UserId = user.Id;
 
             _context.Bloggers.Add(blogger);
             await _context.SaveChangesAsync();

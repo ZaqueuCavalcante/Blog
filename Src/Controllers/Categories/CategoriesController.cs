@@ -46,7 +46,7 @@ namespace Blog.Controllers.Categories
         [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<CategoryOut>> GetCategory(int id)
         {
-            var category = await _context.Categories
+            var category = await _context.Categories.AsNoTracking()
                 .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -59,7 +59,7 @@ namespace Blog.Controllers.Categories
         /// <summary>
         /// Returns all the categories.
         /// </summary>
-        [HttpGet, HttpHead, AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         [ResponseCache(CacheProfileName = TwoMinutesCacheProfile)]
         public async Task<ActionResult<List<CategoryOut>>> GetCategories([FromQuery] CategoryParameters parameters)
         {
@@ -74,13 +74,6 @@ namespace Blog.Controllers.Categories
             Response.AddPagination(parameters, count);
 
             return Ok(categories.Select(c => CategoryOut.New(c, Request.GetRoot())).ToList());
-        }
-
-        [HttpOptions, AllowAnonymous]
-        public ActionResult GetCategoriesOptions()
-        {
-            Response.Headers.Add("Allow", "POST, GET, OPTIONS, HEAD");
-            return Ok();
         }
     }
 }

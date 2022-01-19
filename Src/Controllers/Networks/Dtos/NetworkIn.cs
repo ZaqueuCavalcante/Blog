@@ -4,6 +4,7 @@ namespace Blog.Controllers.Networks
 {
     public class NetworkIn
     {
+        /// <example>GitHub</example>
         [Required]
         public string Name { get; set; }
 

@@ -22,7 +22,7 @@ namespace Blog.Controllers.Networks
         /// Add or update a network.
         /// </summary>
         [HttpPost("networks"), Authorize]
-        public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)  // TODO: refactor to FromBody?
+        public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)
         {
             var userId = User.GetId();
 
@@ -49,12 +49,10 @@ namespace Blog.Controllers.Networks
         /// Delete a network.
         /// </summary>
         [HttpDelete("networks"), Authorize]
-        public async Task<ActionResult> DeleteNetwork([FromQuery] DeleteNetworkIn dto)  // TODO: refactor to FromBody?
+        public async Task<ActionResult> DeleteNetwork([FromQuery] DeleteNetworkIn dto)
         {
-            var userId = User.GetId();
-
             var network = await _context.Networks.FirstOrDefaultAsync(
-                n => n.UserId == userId && n.Name == dto.Name
+                n => n.UserId == User.GetId() && n.Name == dto.Name
             );
 
             if (network == null)

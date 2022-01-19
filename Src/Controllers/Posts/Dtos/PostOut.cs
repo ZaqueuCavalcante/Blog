@@ -17,7 +17,6 @@ namespace Blog.Controllers.Posts
         public List<CommentOut> Comments { get; set; }
         public PostCategoryOut Category { get; set; }
         public List<PostTagOut>? Tags { get; set; }
-        public List<RelatedPostOut>? RelatedPosts { get; set; }  // TODO: implement this someday...
 
         public static PostOut New(Post post, string? url = null)
         {
@@ -61,12 +60,6 @@ namespace Blog.Controllers.Posts
     public class PostTagOut
     {
         public string Name { get; set; }
-        public string Link { get; set; }
-    }
-
-    public class RelatedPostOut
-    {
-        public string Title { get; set; }
         public string Link { get; set; }
     }
 }

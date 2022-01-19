@@ -2,6 +2,7 @@
 using Blog.Database;
 using Blog.Domain;
 using Blog.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static Blog.Configurations.AuthorizationConfigurations;
@@ -26,7 +27,7 @@ namespace Blog.Controllers.Bloggers
         }
 
         [HttpGet]
-        public async Task<ActionResult> SeedDb()
+        public async Task<ActionResult> RecreateAndSeedDb()
         {
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();

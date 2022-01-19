@@ -56,7 +56,7 @@ namespace Blog.Controllers.Tags
         }
 
         /// <summary>
-        /// Returns all the tags.
+        /// Returns some tags.
         /// </summary>
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<TagOut>>> GetTags([FromQuery] TagsParameters parameters)

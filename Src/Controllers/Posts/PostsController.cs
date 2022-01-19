@@ -1,4 +1,5 @@
-﻿using Blog.Database;
+﻿using System.Linq.Expressions;
+using Blog.Database;
 using Blog.Domain;
 using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -35,12 +36,12 @@ namespace Blog.Controllers.Posts
                 tags = await _context.Tags.Where(t => dto.Tags.Contains(t.Id)).ToListAsync();
 
             var post = new Post(
-                title: dto.Title,
-                resume: dto.Resume,
-                body: dto.Body,
-                categoryId: category.Id,
-                authorId: author.Id,
-                tags: tags
+                dto.Title,
+                dto.Resume,
+                dto.Body,
+                category.Id,
+                author.Id,
+                tags
             );
 
             _context.Posts.Add(post);
@@ -88,6 +89,22 @@ namespace Blog.Controllers.Posts
         }
 
         /// <summary>
+        /// Get a comment from a blog post.
+        /// </summary>
+        [HttpGet("{postId}/comments/{commentId}"), AllowAnonymous]
+        public async Task<IActionResult> GetComment(int postId, int commentId)
+        {
+            var comment = await _context.Comments.FirstOrDefaultAsync(
+                c => c.PostId == postId && c.Id == commentId
+            );
+
+            if (comment is null)
+                return NotFound("Comment not found.");
+
+            return Ok(CommentOut.New(comment));
+        }
+
+        /// <summary>
         /// Pins a comment to a blog post. If the comment already is pinned, it will be unpinned.
         /// </summary>
         [HttpPatch("{postId}/comments/{commentId}/pins"), Authorize(Policy = CommentPinPolicy)]
@@ -107,8 +124,6 @@ namespace Blog.Controllers.Posts
             post.Pin(comment.Id);
 
             await _context.SaveChangesAsync();
-
-            // TODO: add info log here...
 
             return Ok();
         }
@@ -192,7 +207,7 @@ namespace Blog.Controllers.Posts
         }
 
         /// <summary>
-        /// Returns all the posts.
+        /// Returns some posts.
         /// </summary>
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<PostOut>>> GetPosts([FromQuery] PostParameters parameters)
@@ -200,21 +215,24 @@ namespace Blog.Controllers.Posts
             if (parameters.MinDateIsGreaterThanMaxDate())
                 return BadRequest("MinDate must be less than MaxDate.");
 
+            Expression<Func<Post, bool>> predicate = p =>
+                (p.Tags.Any(t => t.Id == parameters.TagId || parameters.TagId == null)) &&
+                (p.Category.Id == parameters.CategoryId || parameters.CategoryId == null) &&
+                (p.CreatedAt >= parameters.MinDate || parameters.MinDate == null) &&
+                (p.CreatedAt <= parameters.MaxDate || parameters.MaxDate == null);
+
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Category)
                 .Include(l => l.Author)
-                .Include(l => l.Comments)  // TODO: calculate the post rating without get all comments...
+                .Include(l => l.Comments)
                 .Include(l => l.Tags)
-                .Where(p =>
-                    (p.Tags.Any(t => t.Name == parameters.Tag) || string.IsNullOrEmpty(parameters.Tag)) &&
-                    (p.CreatedAt >= parameters.MinDate || parameters.MinDate == null) &&
-                    (p.CreatedAt <= parameters.MaxDate || parameters.MaxDate == null))
+                .Where(predicate)
                 .OrderByDescending(p => p.CreatedAt)
                 .Page(parameters)
                 .ToListAsync();
 
-            var count = await _context.Posts.CountAsync();
+            var count = await _context.Posts.Where(predicate).CountAsync();
 
             Response.AddPagination(parameters, count);
 

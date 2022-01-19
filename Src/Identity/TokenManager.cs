@@ -30,7 +30,6 @@ namespace Blog.Identity
             SetTokenValidationParameters();
         }
 
-        // TODO: add tests...
         public async Task<(string accessToken, string refreshToken)> GenerateTokens(string userEmail)
         {
             var accessToken = await GenerateAccessToken(userEmail);
@@ -38,7 +37,6 @@ namespace Blog.Identity
             return (accessToken, refreshToken);
         }
 
-        // TODO: add tests...
         public async Task<string?> TryUseRefreshToken(string accessToken, string refreshToken)
         {
             try
@@ -89,7 +87,6 @@ namespace Blog.Identity
             return null;
         }
 
-        // TODO: add tests...
         private async Task<string> GenerateAccessToken(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -144,7 +141,6 @@ namespace Blog.Identity
             return tokenHandler.WriteToken(token);
         }
 
-        // TODO: add tests...
         private async Task<string> GenerateRefreshToken(string userEmail, string accessToken)
         {
             var user = await _userManager.FindByEmailAsync(userEmail);

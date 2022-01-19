@@ -63,15 +63,15 @@ namespace Blog.Controllers.Users
             }
 
             if (result.IsLockedOut)
-                return Ok("Account locked.");
+                return Unauthorized("Account locked.");
 
             if (result.IsNotAllowed)
-                return Ok("Login not allowed.");
+                return Unauthorized("Login not allowed.");
 
             if (result.RequiresTwoFactor)
-                return Ok("Requires two factor.");
+                return Unauthorized("Requires two factor.");
             
-            return Ok("Login failed.");
+            return Unauthorized("Login failed.");
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Blog.Controllers.Users
         /// <summary>
         /// Get a token to reset a forgotten password.
         /// </summary>
-        [HttpPost("generate-reset-password-token"), AllowAnonymous]
+        [HttpPost("reset-password-token"), AllowAnonymous]
         public async Task<ActionResult> GenerateResetPasswordToken([Required, EmailAddress] string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

@@ -43,14 +43,9 @@ namespace Blog.Tests
         }
 
         [Test]
-        [TestCase("sam@blog.com", "Test@123")]
-        [TestCase("elliot@blog.com", "Test@123")]
-        [TestCase("darlene@blog.com", "Test@123")]
-        [TestCase("tyrell@blog.com", "Test@123")]
-        [TestCase("angela@blog.com", "Test@123")]
-        public async Task Login_into_blog(string email, string password)
+        public async Task Login_into_blog()
         {
-            var userIn = new UserIn { Email = email, Password = password };
+            var userIn = new UserIn { Email = "sam@blog.com", Password = "Test@123" };
             var loginResponse = await _client.PostAsync("users/login", userIn.ToStringContent());
             loginResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -103,7 +98,6 @@ namespace Blog.Tests
 
         [Test]
         [TestCase(1, "Sam Esmail", "Writes about ASP.NET Core, DevOps and TV Shows.")]
-        [TestCase(2, "Elliot Alderson", "Writes about Linux, Hacking and Computers.")]
         public async Task Get_a_blogger(int id, string name, string resume)
         {
             var response = await _client.GetAsync($"/bloggers/{id}");
@@ -187,7 +181,6 @@ namespace Blog.Tests
 
         [Test]
         [TestCase(1, "Linux", "The Linux category description.")]
-        [TestCase(2, "Mr. Robot", "The Mr. Robot category description.")]
         public async Task Get_a_category(int id, string name, string description)
         {
             var response = await _client.GetAsync($"/categories/{id}");
@@ -250,7 +243,7 @@ namespace Blog.Tests
                 CategoryId = 1,
                 Tags = new List<int>{ 1 }
             };
-                
+
             var response = await _client.PostAsync("/posts", postIn.ToStringContent());
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -424,8 +417,6 @@ namespace Blog.Tests
         [Test]
         [TestCase(1, "Darlene Alderson")]
         [TestCase(2, "Tyrell Wellick")]
-        [TestCase(3, "Angela Moss")]
-        [TestCase(4, "Dominique DiPierro")]
         public async Task Get_a_reader(int id, string name)
         {
             var response = await _client.GetAsync($"/readers/{id}");
