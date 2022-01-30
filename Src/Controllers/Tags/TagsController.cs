@@ -23,15 +23,15 @@ namespace Blog.Controllers.Tags
         /// Register a new tag.
         /// </summary>
         [HttpPost, Authorize(Roles = AdminRole)]
-        public async Task<IActionResult> PostTag(string name)
+        public async Task<IActionResult> PostTag(TagIn dto)
         {
             var tag = await _context.Tags.FirstOrDefaultAsync(
-                t => t.Name.ToLower() == name.Trim().ToLower());
+                t => t.Name.ToLower() == dto.Name.Trim().ToLower());
 
             if (tag != null)
                 return BadRequest("Tag already exists.");
 
-            tag = new Tag(name);
+            tag = new Tag(dto.Name);
 
             await _context.Tags.AddAsync(tag);
             await _context.SaveChangesAsync();

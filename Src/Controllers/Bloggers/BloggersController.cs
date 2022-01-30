@@ -54,7 +54,7 @@ namespace Blog.Controllers.Bloggers
         [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
         {
-            var blogger = await _context.Bloggers
+            var blogger = await _context.Bloggers.AsNoTracking()
                 .Include(b => b.Posts)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
@@ -72,7 +72,7 @@ namespace Blog.Controllers.Bloggers
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<List<BloggerOut>>> GetBloggers()
         {
-            var bloggers = await _context.Bloggers
+            var bloggers = await _context.Bloggers.AsNoTracking()
                 .ToListAsync();
 
             return Ok(bloggers.Select(x => BloggerOut.New(x, null, Request.GetRoot())).ToList());
@@ -98,16 +98,17 @@ namespace Blog.Controllers.Bloggers
         [HttpGet("stats"), Authorize(Roles = BloggerRole)]
         public async Task<ActionResult> GetStats()
         {
-            var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == User.GetId());
+            var blogger = await _context.Bloggers.AsNoTracking()
+                .FirstAsync(b => b.UserId == User.GetId());
 
-            var publishedPosts = await _context.Posts
+            var publishedPosts = await _context.Posts.AsNoTracking()
                 .Where(p => p.AuthorId == blogger.Id)
                 .Select(p => p.Id)
                 .ToListAsync();
 
             var draftPosts = 0;
 
-            var latestComments = await _context.Comments
+            var latestComments = await _context.Comments.AsNoTracking()
                 .Where(c => publishedPosts.Contains(c.PostId))
                 .OrderByDescending(c => c.CreatedAt)
                 .Take(5)

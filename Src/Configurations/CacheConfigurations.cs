@@ -1,10 +1,9 @@
-namespace Blog.Configurations
+namespace Blog.Configurations;
+
+public static class CacheConfigurations
 {
-    public static class CacheConfigurations
+    public static void AddCacheConfigurations(this IServiceCollection services)
     {
-        public static void AddCacheConfigurations(this IServiceCollection services)
-        {
-            services.AddResponseCaching();
-        }
+        services.AddResponseCaching();
     }
 }
