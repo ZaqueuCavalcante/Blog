@@ -1,28 +1,23 @@
-﻿using Blog.Domain;
-using Blog.Exceptions;
+﻿using Blog.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shouldly;
 
-namespace Blog.Tests.Unit;
+namespace Blog.Tests.Integration;
 
 [TestFixture]
-public class JwtIntegrationTests
+public class JwtIntegrationTests : IntegrationTestBase
 {
-
-
     [Test]
-    public void Post_get_rating_without_comments()
+    public async Task Post_get_rating_without_comments()
     {
-        var post = new Post(
-            title: "Linux and hacking",
-            resume: "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
-            body: "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them.",
-            categoryId: 1,
-            authorId: 1  
-        );
+        using var scope = _factory.Services.CreateScope();
+        _tokenManager = scope.ServiceProvider.GetRequiredService<TokenManager>();
 
-        var postRating = post.GetRating();
+        var userEmail = "sam@blog.com";
+        var (accessToken, refreshToken) = await _tokenManager.GenerateTokens(userEmail);
 
-        postRating.ShouldBe((byte) 0);
+        accessToken.ShouldNotBeNullOrEmpty();
+        refreshToken.ShouldNotBeNullOrEmpty();
     }
 }

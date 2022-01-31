@@ -42,8 +42,6 @@ public class ApiTestBase
             _context.Database.EnsureCreated();
 
             await Seed();
-
-            await _context.SaveChangesAsync();
         }
     }
 
