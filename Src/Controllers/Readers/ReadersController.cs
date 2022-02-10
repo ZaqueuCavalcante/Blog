@@ -1,7 +1,7 @@
 ﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Extensions;
-using Blog.Identity;
+using Blog.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +14,11 @@ namespace Blog.Controllers.Readers
     public class ReadersController : ControllerBase
     {
         private readonly BlogContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<BlogUser> _userManager;
 
         public ReadersController(
             BlogContext context,
-            UserManager<User> userManager
+            UserManager<BlogUser> userManager
         ) {
             _context = context;
             _userManager = userManager;
@@ -30,7 +30,7 @@ namespace Blog.Controllers.Readers
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> PostReader(ReaderIn dto)
         {
-            var user = Blog.Identity.User.New(dto.Email);
+            var user = new BlogUser(dto.Email);
 
             var reader = new Reader(dto.Name, user.Id);
 

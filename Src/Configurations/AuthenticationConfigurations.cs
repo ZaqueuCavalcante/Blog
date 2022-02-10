@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Blog.Identity;
+using Blog.Auth;
+using Blog.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -9,10 +10,11 @@ namespace Blog.Configurations;
 public static class AuthenticationConfigurations
 {
     public static void AddAuthenticationConfigurations(
-        this IServiceCollection services,
-        IConfiguration configuration
+        this IServiceCollection services
     ) {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+        var jwtSettings = services.BuildServiceProvider().GetService<JwtSettings>();
 
         services.AddAuthentication(options =>
         {
@@ -26,15 +28,15 @@ public static class AuthenticationConfigurations
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = configuration["Jwt:Issuer"],
+                ValidIssuer = jwtSettings.Issuer,
 
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(configuration["Jwt:SecurityKey"])
+                    Encoding.ASCII.GetBytes(jwtSettings.SecurityKey)
                 ),
 
                 ValidateAudience = true,
-                ValidAudience = configuration["Jwt:Audience"],
+                ValidAudience = jwtSettings.Audience,
 
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero,

@@ -15,9 +15,11 @@ namespace Blog
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSettingsConfigurations();
+
             services.AddControllersConfigurations();
 
-            services.AddSwaggerConfigurations(Configuration);
+            services.AddSwaggerConfigurations();
 
             services.AddRoutingConfigurations();
 
@@ -27,7 +29,7 @@ namespace Blog
 
             services.AddIdentityConfigurations();
 
-            services.AddAuthenticationConfigurations(Configuration);
+            services.AddAuthenticationConfigurations();
 
             services.AddAuthorizationConfigurations();
 

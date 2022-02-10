@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Blog.Controllers.Users;
 using Blog.Database;
 using Blog.Domain;
-using Blog.Identity;
+using Blog.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ public class ApiTestBase
     protected APIWebApplicationFactory _factory;
 
     private BlogContext _context;
-    private UserManager<User> _userManager;
+    private UserManager<BlogUser> _userManager;
     private RoleManager<Role> _roleManager;
 
     [OneTimeSetUp]
@@ -35,7 +35,7 @@ public class ApiTestBase
         using (var scope = _factory.Services.CreateScope())
         {
             _context = scope.ServiceProvider.GetRequiredService<BlogContext>();
-            _userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+            _userManager = scope.ServiceProvider.GetRequiredService<UserManager<BlogUser>>();
             _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
             _context.Database.EnsureDeleted();
@@ -55,27 +55,15 @@ public class ApiTestBase
 
     private async Task Seed()
     {
-        #region Roles
-
-        var readerRole = new Role { Name = ReaderRole };
-        var bloggerRole = new Role { Name = BloggerRole };
-        var adminRole = new Role { Name = AdminRole };
-
-        await _roleManager.CreateAsync(readerRole);
-        await _roleManager.CreateAsync(bloggerRole);
-        await _roleManager.CreateAsync(adminRole);
-
-        #endregion
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         #region Users
 
-        var samUser = Blog.Identity.User.New("sam@blog.com");
-        var elliotUser = Blog.Identity.User.New("elliot@blog.com");
-        var irvingUser = Blog.Identity.User.New("irving@blog.com");
-        var darleneUser = Blog.Identity.User.New("darlene@blog.com");
-        var tyrellUser = Blog.Identity.User.New("tyrell@blog.com");
-        var angelaUser = Blog.Identity.User.New("angela@blog.com");
-        var domUser = Blog.Identity.User.New("dom@blog.com");
+        var samUser = new BlogUser("sam@blog.com");
+        var elliotUser = new BlogUser("elliot@blog.com");
+        var irvingUser = new BlogUser("irving@blog.com");
+        var darleneUser = new BlogUser("darlene@blog.com");
+        var tyrellUser = new BlogUser("tyrell@blog.com");
+        var angelaUser = new BlogUser("angela@blog.com");
+        var domUser = new BlogUser("dom@blog.com");
 
         await _userManager.CreateAsync(samUser, "Test@123");
         await _userManager.CreateAsync(elliotUser, "Test@123");
@@ -97,9 +85,9 @@ public class ApiTestBase
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         #region Claims
 
-        await _userManager.AddClaimAsync(elliotUser, new Claim("pinner", "true"));
-        await _userManager.AddClaimAsync(irvingUser, new Claim("liker", "true"));
-        await _userManager.AddClaimAsync(darleneUser, new Claim("liker", "true"));
+        await _userManager.AddClaimAsync(elliotUser, new Claim(PinnerClaim, "true"));
+        await _userManager.AddClaimAsync(irvingUser, new Claim(LikerClaim, "true"));
+        await _userManager.AddClaimAsync(darleneUser, new Claim(LikerClaim, "true"));
 
         #endregion
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

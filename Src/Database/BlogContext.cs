@@ -1,5 +1,5 @@
 using Blog.Domain;
-using Blog.Identity;
+using Blog.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Database

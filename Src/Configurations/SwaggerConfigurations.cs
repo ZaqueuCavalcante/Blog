@@ -7,8 +7,7 @@ namespace Blog.Configurations;
 public static class SwaggerConfigurations
 {
     public static void AddSwaggerConfigurations(
-        this IServiceCollection services,
-        IConfiguration configuration
+        this IServiceCollection services
     ) {
         services.AddSwaggerGen(options =>
         {

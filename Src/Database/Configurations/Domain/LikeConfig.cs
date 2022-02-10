@@ -1,5 +1,5 @@
 using Blog.Domain;
-using Blog.Identity;
+using Blog.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,7 +17,7 @@ namespace Blog.Database.Configurations.Domain
 
             like.Property(l => l.CreatedAt).IsRequired();
 
-            like.HasOne<User>()
+            like.HasOne<BlogUser>()
                 .WithMany()
                 .HasForeignKey(l => l.UserId)
                 .IsRequired();

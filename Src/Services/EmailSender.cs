@@ -1,3 +1,4 @@
+using Blog.Settings;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -5,11 +6,11 @@ namespace Blog.Services
 {
     public class EmailSender : IEmailSender
     {
-        private readonly IConfiguration _configuration;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailSender(IConfiguration configuration)
+        public EmailSender(EmailSettings emailSettings)
         {
-            _configuration = configuration;
+            _emailSettings = emailSettings;
         }
 
         public void Send(Message message)
@@ -21,7 +22,7 @@ namespace Blog.Services
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress(_configuration["Email:From"]));
+            emailMessage.From.Add(new MailboxAddress(_emailSettings.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
@@ -34,9 +35,9 @@ namespace Blog.Services
             {
                 try
                 {
-                    client.Connect(_configuration["Email:SmtpServer"], int.Parse(_configuration["Email:Port"]), true);
+                    client.Connect(_emailSettings.SmtpServer, _emailSettings.Port, true);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Authenticate(_configuration["Email:UserName"], _configuration["Email:Password"]);
+                    client.Authenticate(_emailSettings.Username, _emailSettings.Password);
                     client.Send(mailMessage);
                 }
                 catch

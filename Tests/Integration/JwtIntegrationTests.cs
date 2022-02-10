@@ -1,4 +1,4 @@
-﻿using Blog.Identity;
+﻿using Blog.Auth;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shouldly;

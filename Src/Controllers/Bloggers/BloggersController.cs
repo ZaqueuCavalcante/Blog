@@ -1,7 +1,7 @@
 ﻿using Blog.Database;
 using Blog.Domain;
 using Blog.Extensions;
-using Blog.Identity;
+using Blog.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +14,11 @@ namespace Blog.Controllers.Bloggers
     public class BloggersController : ControllerBase
     {
         private readonly BlogContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<BlogUser> _userManager;
 
         public BloggersController(
             BlogContext context,
-            UserManager<User> userManager
+            UserManager<BlogUser> userManager
         ) {
             _context = context;
             _userManager = userManager;
@@ -30,7 +30,7 @@ namespace Blog.Controllers.Bloggers
         [HttpPost, Authorize(Roles = AdminRole)]
         public async Task<IActionResult> PostBlogger(BloggerIn dto)
         {
-            var user = Blog.Identity.User.New(dto.Email);
+            var user = new BlogUser(dto.Email);
 
             var blogger = new Blogger(dto.Name, dto.Resume, user.Id);
 

@@ -1,5 +1,5 @@
 using Blog.Database;
-using Blog.Identity;
+using Blog.Auth;
 using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Configurations;
@@ -8,7 +8,7 @@ public static class IdentityConfigurations
 {
     public static void AddIdentityConfigurations(this IServiceCollection services)
     {
-        services.AddIdentity<User, Role>()
+        services.AddIdentity<BlogUser, Role>()
             .AddEntityFrameworkStores<BlogContext>()
             .AddDefaultTokenProviders();
 

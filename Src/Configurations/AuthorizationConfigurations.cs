@@ -6,6 +6,9 @@ public static class AuthorizationConfigurations
     public const string BloggerRole = "Blogger";
     public const string ReaderRole = "Reader";
 
+    public const string PinnerClaim = "pinner";
+    public const string LikerClaim = "liker";
+
     public const string CommentPinPolicy = "CommentPinPolicy";
     public const string CommentLikePolicy = "CommentLikePolicy";
 
@@ -16,13 +19,13 @@ public static class AuthorizationConfigurations
             options.AddPolicy(CommentPinPolicy, policy =>
             {
                 policy.RequireRole(BloggerRole);
-                policy.RequireClaim("pinner", "true");
+                policy.RequireClaim(PinnerClaim, "true");
             });
 
             options.AddPolicy(CommentLikePolicy, policy =>
             {
                 policy.RequireRole(ReaderRole, BloggerRole);
-                policy.RequireClaim("liker", "true");
+                policy.RequireClaim(LikerClaim, "true");
             });
         });
     }
