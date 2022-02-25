@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Networks
+namespace Blog.Controllers.Networks;
+
+public class DeleteNetworkIn
 {
-    public class DeleteNetworkIn
-    {
-        [Required]
-        public string Name { get; set; }
-    }
+    [Required]
+    public string Name { get; set; }
 }

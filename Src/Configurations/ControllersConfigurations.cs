@@ -1,3 +1,4 @@
+using Blog.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using static Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
@@ -21,5 +22,10 @@ public static class ControllersConfigurations
         {
             options.SerializerSettings.Converters.Add(new StringEnumConverter());
         });
+    }
+
+    public static void UseDomainExceptions(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<DomainExceptionMiddleware>();
     }
 }

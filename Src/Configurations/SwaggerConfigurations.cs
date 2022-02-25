@@ -15,7 +15,7 @@ public static class SwaggerConfigurations
             {
                 Title = "Blog",
                 Version = "1.0",
-                Description = "A API to a simple blog engine.",
+                Description = "A API to a simple blog.",
                 Contact = new OpenApiContact() { Name = "Zaqueu", Email = "zaqueudovale@gmail.com" },
                 TermsOfService = new Uri("https://docs.github.com"),
                 License = new OpenApiLicense() { Name = "License", Url = new Uri("https://opensource.org/licenses/MIT") }

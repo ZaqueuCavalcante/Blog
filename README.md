@@ -4,22 +4,27 @@
     - Asp.Net Core
     - EF Core
     - PostgreSQL
+    - React
 
 - TODOS:
-    - Add GitHub Actions CI
+    - Add GitHub Actions CI:
+        - Build
+        - Tests
+        - Deploy (Azure/AWS)
     - Add Logs
-    - Deploy (Azure)
-    - Front-End (only TypeScript)
+    - Front-End:
+        - React + TS
+    - Add cache:
+        - .Net profiles
+    - Cors:
+        - What is?
+        - Policies
 
 - Topics:
     - Web Server (NGINX)
     - CDNs
-    - Cache / Headers dos requests
     - Finite State Machine
     - https://github.com/domaindrivendev/Swashbuckle.AspNetCore#enable-oauth20-flows
-
-- YouTube:
-    - https://www.youtube.com/c/RawCoding/videos
 
 ## References:
     - https://github.com/madskristensen/Miniblog.Core

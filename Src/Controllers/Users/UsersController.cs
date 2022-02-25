@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Blog.Extensions;
-using System.ComponentModel.DataAnnotations;
-using Blog.Services;
 using Blog.Settings;
 
 namespace Blog.Controllers.Users;
@@ -17,18 +15,15 @@ public class UsersController : ControllerBase
     private readonly UserManager<BlogUser> _userManager;
     private readonly SignInManager<BlogUser> _signInManager;
     private readonly TokenManager _tokenManager;
-    private IEmailSender _emailSender;
 
     public UsersController(
         UserManager<BlogUser> userManager,
         SignInManager<BlogUser> signInManager,
-        TokenManager tokenManager,
-        IEmailSender emailSender
+        TokenManager tokenManager
     ) {
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenManager = tokenManager;
-        _emailSender = emailSender;
     }
 
     /// <summary>
@@ -83,24 +78,6 @@ public class UsersController : ControllerBase
         await _tokenManager.RevokeRefreshTokens(User.GetId());
 
         return Ok("Logout succeeded.");
-    }
-
-    /// <summary>
-    /// Get a token to reset a forgotten password.
-    /// </summary>
-    [HttpPost("reset-password-token"), AllowAnonymous]
-    public async Task<ActionResult> GenerateResetPasswordToken([Required, EmailAddress] string email)
-    {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-            return NotFound("Email not found.");
-
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-        var message = new Message(new string[] { email }, "Blog - reset password", token);
-        _emailSender.Send(message);
-
-        return Ok($"Email sended to {email}.");
     }
 
     /// <summary>

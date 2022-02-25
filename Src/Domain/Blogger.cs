@@ -27,6 +27,14 @@ namespace Blog.Domain
             CreatedAt = DateTime.Now;
         }
 
+        public void Update(
+            string name,
+            string resume
+        ) {
+            SetName(name);
+            SetResume(resume);    
+        }
+
         private void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -47,14 +55,6 @@ namespace Blog.Domain
                 throw new DomainException("Blogger's resume cannot be that short.");
 
             Resume = resume;
-        }
-
-        public void Update(
-            string name,
-            string resume
-        ) {
-            SetName(name);
-            SetResume(resume);    
         }
     }
 }

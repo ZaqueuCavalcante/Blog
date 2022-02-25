@@ -1,13 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Bloggers
+namespace Blog.Controllers.Bloggers;
+
+public class BloggerUpdateIn
 {
-    public class BloggerUpdateIn
-    {
-        [Required]
-        public string Name { get; set; }
-        
-        [Required]
-        public string Resume { get; set; }
-    }
+    /// <example>
+    /// Tyler Durden
+    /// </example>
+    [Required]
+    public string Name { get; set; }
+
+    /// <example>
+    /// The Narrator's split personality.
+    /// </example>
+    [Required]
+    public string Resume { get; set; }
 }

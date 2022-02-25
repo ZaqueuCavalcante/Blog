@@ -6,10 +6,8 @@ namespace Blog.Configurations;
 
 public static class EfCoreConfigurations
 {
-    public static void AddEfCoreConfigurations(
-        this IServiceCollection services,
-        IConfiguration configuration
-    ) {
+    public static void AddEfCoreConfigurations(this IServiceCollection services)
+    {
         var databaseSettings = services.BuildServiceProvider().GetService<DatabaseSettings>();
 
         services.AddDbContext<BlogContext>(options =>
