@@ -10,10 +10,6 @@ public class JwtSettings
 
     public JwtSettings(IConfiguration configuration) 
     {
-        SecurityKey = configuration["JWT:SecurityKey"];
-        Issuer = configuration["JWT:Issuer"];
-        Audience = configuration["JWT:Audience"];
-        ExpirationTimeInMinutes = int.Parse(configuration["JWT:ExpirationTimeInMinutes"]);
-        RefreshTokenExpirationTimeInMinutes = int.Parse(configuration["JWT:RefreshTokenExpirationTimeInMinutes"]);
+        configuration.GetSection("JWT").Bind(this);
     }
 }

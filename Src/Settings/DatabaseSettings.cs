@@ -6,6 +6,6 @@ public class DatabaseSettings
 
     public DatabaseSettings(IConfiguration configuration) 
     {
-        ConnectionString = configuration["Database:ConnectionString"];
+        configuration.GetSection("Database").Bind(this);
     }
 }

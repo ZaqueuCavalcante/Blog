@@ -10,10 +10,6 @@ public class EmailSettings
 
     public EmailSettings(IConfiguration configuration) 
     {
-        From = configuration["Email:From"];
-        SmtpServer = configuration["Email:SmtpServer"];
-        Port = int.Parse(configuration["Email:Port"]);
-        Username = configuration["Email:Username"];
-        Password = configuration["Email:Password"];
+        configuration.GetSection("Email").Bind(this);
     }
 }
