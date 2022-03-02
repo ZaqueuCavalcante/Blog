@@ -192,13 +192,13 @@ namespace Blog.Controllers.Posts
             var post = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Category)
-                .Include(l => l.Author)
-                .Include(l => l.Comments)
+                .Include(p => p.Author)
+                .Include(p => p.Comments)
                     .ThenInclude(c => c.Replies.OrderBy(r => r.CreatedAt))
-                .Include(l => l.Comments)
+                .Include(p => p.Comments)
                     .ThenInclude(c => c.Likes)
-                .Include(l => l.Tags)
-                .FirstOrDefaultAsync(l => l.Id == id);
+                .Include(p => p.Tags)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (post is null)
                 return NotFound("Post not found.");
@@ -224,9 +224,9 @@ namespace Blog.Controllers.Posts
             var posts = await _context.Posts
                 .AsNoTrackingWithIdentityResolution()
                 .Include(p => p.Category)
-                .Include(l => l.Author)
-                .Include(l => l.Comments)
-                .Include(l => l.Tags)
+                .Include(p => p.Author)
+                .Include(p => p.Comments)
+                .Include(p => p.Tags)
                 .Where(predicate)
                 .OrderByDescending(p => p.CreatedAt)
                 .Page(parameters)
