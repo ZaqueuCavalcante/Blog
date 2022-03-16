@@ -35,13 +35,12 @@ public class Startup
         IApplicationBuilder app,
         IWebHostEnvironment env
     ) {
+        app.UseSwagger();
+        app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));
+
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));
-
             app.UseCors("Development");
         }
         else
