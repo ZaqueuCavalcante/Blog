@@ -83,7 +83,7 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Reset a forgotten password.
     /// </summary>
-    [HttpPost("reset-password"), AllowAnonymous]
+    [HttpPost("reset-password"), AllowAnonymous]  // TODO: Add email token sent
     public async Task<ActionResult> ResetPassword(ResetPasswordIn dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);

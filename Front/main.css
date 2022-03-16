@@ -9,7 +9,7 @@
 }
 
 .ball {
-    position: relative;
+    position: absolute;
     height: 50px;
     width: 50px;
     border-radius: 50%;
@@ -18,6 +18,8 @@
 
 #ball-00 {
     background-color: red;
+    left: 100px;
+    top: 50px;
 }
 
 #ball-01 {
