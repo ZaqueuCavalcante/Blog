@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 
 namespace Blog.Exceptions;
@@ -26,8 +25,7 @@ public class DomainExceptionMiddleware
 
         context.Response.ContentType = "application/json";
 
-        // TODO: colocar status code na exception e atribuir aqui?
-        context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+        context.Response.StatusCode = ex.StatusCode;
 
         return context.Response.WriteAsync(result);
     }

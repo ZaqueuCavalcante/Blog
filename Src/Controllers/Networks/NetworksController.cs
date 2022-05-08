@@ -4,10 +4,11 @@ using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Blog.Configurations.AuthorizationConfigurations;
 
 namespace Blog.Controllers.Networks;
 
-[ApiController, Route("[controller]")]
+[ApiController, Route("[controller]"), Authorize(Roles = BloggerRole)]
 public class NetworksController : ControllerBase
 {
     private readonly BlogContext _context;
@@ -21,13 +22,14 @@ public class NetworksController : ControllerBase
     /// <summary>
     /// Add or update a network.
     /// </summary>
-    [HttpPost("networks"), Authorize]
+    [HttpPost("networks")]
     public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)
     {
-        var userId = User.GetId();
+        var bloggerId = await _context.Bloggers.Where(b => b.UserId == User.GetId())
+            .Select(b => b.Id).FirstAsync();
 
         var network = await _context.Networks.FirstOrDefaultAsync(
-            n => n.UserId == userId && n.Name == dto.Name
+            n => n.BloggerId == bloggerId && n.Name == dto.Name
         );
 
         if (network != null)
@@ -37,7 +39,7 @@ public class NetworksController : ControllerBase
             return Ok();
         }
 
-        network = new Network(userId, dto.Name, dto.Uri);
+        network = new Network(bloggerId, dto.Name, dto.Uri);
 
         await _context.Networks.AddAsync(network);
         await _context.SaveChangesAsync();
@@ -48,11 +50,14 @@ public class NetworksController : ControllerBase
     /// <summary>
     /// Delete a network.
     /// </summary>
-    [HttpDelete("networks"), Authorize]
+    [HttpDelete("networks")]
     public async Task<ActionResult> DeleteNetwork([FromQuery] DeleteNetworkIn dto)
     {
+        var bloggerId = await _context.Bloggers.Where(b => b.UserId == User.GetId())
+            .Select(b => b.Id).FirstAsync();
+
         var network = await _context.Networks.FirstOrDefaultAsync(
-            n => n.UserId == User.GetId() && n.Name == dto.Name
+            n => n.BloggerId == bloggerId && n.Name == dto.Name
         );
 
         if (network == null)

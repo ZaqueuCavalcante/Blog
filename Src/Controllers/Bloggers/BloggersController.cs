@@ -56,14 +56,13 @@ public class BloggersController : ControllerBase
     {
         var blogger = await _context.Bloggers.AsNoTracking()
             .Include(b => b.Posts)
+            .Include(b => b.Networks)
             .FirstOrDefaultAsync(l => l.Id == id);
 
         if (blogger is null)
             return NotFound("Blogger not found.");
 
-        var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
-
-        return Ok(BloggerOut.New(blogger, networks, Request.GetRoot()));
+        return Ok(BloggerOut.New(blogger, Request.GetRoot()));
     }
 
     /// <summary>
@@ -75,7 +74,7 @@ public class BloggersController : ControllerBase
         var bloggers = await _context.Bloggers.AsNoTracking()
             .ToListAsync();
 
-        return Ok(bloggers.Select(x => BloggerOut.New(x, null, Request.GetRoot())).ToList());
+        return Ok(bloggers.Select(b => BloggerOut.New(b, Request.GetRoot())).ToList());
     }
 
     /// <summary>

@@ -1,4 +1,3 @@
-using Blog.Domain;
 using Blog.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,11 +45,6 @@ public class UserConfig : IEntityTypeConfiguration<BlogUser>
         user.HasIndex(u => u.NormalizedEmail).HasDatabaseName("normalized_email_index");
 
         // Custom blog configurations.
-        user.HasMany<Network>(u => u.Networks)
-            .WithOne()
-            .HasForeignKey(n => n.UserId)
-            .IsRequired();
-
         user.HasMany<RefreshToken>(u => u.RefreshTokens)
             .WithOne()
             .HasForeignKey(rt => rt.UserId)

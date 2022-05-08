@@ -109,13 +109,13 @@ public class ApiTestBase
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         #region Networks
 
-        samUser.Networks = new List<Network>
+        samBlogger.Networks = new List<Network>
         {
             new Network("YouTube", "https://www.youtube.com/sam"),
             new Network("Twitter", "https://twitter.com/sam")
         };
 
-        irvingUser.Networks = new List<Network>
+        irvingBlogger.Networks = new List<Network>
         {
             new Network("YouTube", "https://www.youtube.com/irving"),
             new Network("Twitter", "https://twitter.com/irving")

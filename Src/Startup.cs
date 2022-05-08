@@ -31,23 +31,9 @@ public class Startup
         services.AddHealthChecks();
     }
 
-    public void Configure(
-        IApplicationBuilder app,
-        IWebHostEnvironment env
-    ) {
-        app.UseSwagger();
-        app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));
-
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-            app.UseCors("Development");
-        }
-        else
-        {
-            app.UseCors("Production");
-            app.UseHsts();
-        }
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseCorsThings();
 
         app.UseHttpsRedirection();
 
@@ -58,12 +44,9 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseSwaggerInterface();
         app.UseDomainExceptions();
 
-        app.UseEndpoints(builder =>
-        {
-            builder.MapControllers();
-            builder.MapHealthChecks("/healthz");
-        });
+        app.UseControllersAndEndpoints();
     }
 }

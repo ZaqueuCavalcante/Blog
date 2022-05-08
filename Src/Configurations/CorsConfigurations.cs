@@ -20,4 +20,18 @@ public static class CorsConfigurations
             );
         });
     }
+
+    public static void UseCorsThings(this IApplicationBuilder app)
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (environment == "Development")
+        {
+            app.UseCors("Development");
+        }
+        else
+        {
+            app.UseCors("Production");
+            app.UseHsts();
+        }
+    }
 }

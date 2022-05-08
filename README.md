@@ -1,10 +1,23 @@
 # Blog
 
+- Topics:
+    - Identity Core
+    - Authentication and Authorization
+    - Json Web Token
+    - Caching
+    - Entity Framework Core
+    - Dapper
+    - NUnit
+    - Fluent Assertions
+    - Swagger
+    - Cors (????)
+    - 
+
 - Stack:
     - Asp.Net Core
     - EF Core
     - PostgreSQL
-    - React
+    - Flutter
 
 - TODOS:
     - Add GitHub Actions CI:
@@ -13,18 +26,15 @@
         - Deploy (Azure/AWS)
     - Add Logs
     - Front-End:
-        - React + TS
+        - Flutter Web
     - Add cache:
         - .Net profiles
     - Cors:
         - What is?
         - Policies
-
-- Topics:
-    - Web Server (NGINX)
-    - CDNs
-    - Finite State Machine
-    - https://github.com/domaindrivendev/Swashbuckle.AspNetCore#enable-oauth20-flows
+    - Swagger:
+        - Auth only in the /swagger path
+        - https://www.devtrends.co.uk/blog/conditional-middleware-based-on-request-in-asp.net-core
 
 ## References:
     - https://github.com/madskristensen/Miniblog.Core

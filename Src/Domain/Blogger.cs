@@ -16,6 +16,8 @@ public class Blogger
 
     public List<Post> Posts { get; }
 
+    public List<Network> Networks { get; set; }
+
     public Blogger(
         string name,
         string resume,

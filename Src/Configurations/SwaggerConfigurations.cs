@@ -58,4 +58,10 @@ public static class SwaggerConfigurations
         })
         .AddSwaggerGenNewtonsoftSupport();
     }
+
+    public static void UseSwaggerInterface(this IApplicationBuilder app)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog 1.0"));  
+    }
 }

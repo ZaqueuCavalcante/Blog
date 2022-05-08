@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Blog.Auth;
 using Blog.Settings;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using static Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults;
 
 namespace Blog.Configurations;
 
@@ -18,11 +18,11 @@ public static class AuthenticationConfigurations
 
         services.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = AuthenticationScheme;
+            options.DefaultScheme = AuthenticationScheme;
+            options.DefaultChallengeScheme = AuthenticationScheme;
         })
-        .AddJwtBearer("Bearer", options =>
+        .AddJwtBearer(AuthenticationScheme, options =>
         {
             options.SaveToken = true;
             options.TokenValidationParameters = new TokenValidationParameters

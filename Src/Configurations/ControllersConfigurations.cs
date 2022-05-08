@@ -28,4 +28,13 @@ public static class ControllersConfigurations
     {
         app.UseMiddleware<DomainExceptionMiddleware>();
     }
+
+    public static void UseControllersAndEndpoints(this IApplicationBuilder app)
+    {
+        app.UseEndpoints(builder =>
+        {
+            builder.MapControllers();
+            builder.MapHealthChecks("/healthz");
+        });
+    }
 }

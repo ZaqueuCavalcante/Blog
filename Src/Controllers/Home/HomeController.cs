@@ -35,13 +35,10 @@ namespace Blog.Controllers.Home
             Response.AddPagination(parameters, count);
  
             var bloggers = await _context.Bloggers
+                .Include(b => b.Networks)
                 .ToListAsync();
             var bloggersOut = new List<HomeBloggerOut>();
-            foreach (var blogger in bloggers)
-            {
-                var networks = await _context.Networks.Where(n => n.UserId == blogger.UserId).ToListAsync();
-                bloggersOut.Add(HomeBloggerOut.New(blogger, networks, url));
-            }
+            bloggers.ForEach(b => bloggersOut.Add(HomeBloggerOut.New(b, url)));
 
             var categories = await _context.Categories
                 .Include(c => c.Posts)

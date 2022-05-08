@@ -6,18 +6,18 @@ public class Network
 {
     public int Id { get; }
 
-    public int UserId { get; }
+    public int BloggerId { get; }
 
     public string Name { get; private set; }
 
     public string Uri { get; private set; }
 
     public Network(
-        int userId,
+        int bloggerId,
         string name,
         string uri
     ) {
-        UserId = userId;
+        BloggerId = bloggerId;
         SetName(name);
         SetUri(uri);
     }
