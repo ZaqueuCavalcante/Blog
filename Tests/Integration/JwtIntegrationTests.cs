@@ -1,7 +1,7 @@
 ﻿using Blog.Auth;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Shouldly;
 
 namespace Blog.Tests.Integration;
 
@@ -17,7 +17,7 @@ public class JwtIntegrationTests : IntegrationTestBase
         var userEmail = "sam@blog.com";
         var (accessToken, refreshToken) = await _tokenManager.GenerateTokens(userEmail);
 
-        accessToken.ShouldNotBeNullOrEmpty();
-        refreshToken.ShouldNotBeNullOrEmpty();
+        accessToken.Should().NotBeNullOrEmpty();
+        refreshToken.Should().NotBeNullOrEmpty();
     }
 }

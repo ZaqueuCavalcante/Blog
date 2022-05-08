@@ -2,7 +2,7 @@ using System.Net;
 using Blog.Controllers.Readers;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Shouldly;
+using FluentAssertions;
 
 namespace Blog.Tests.Api;
 
@@ -21,11 +21,11 @@ public class ReadersApiTests : ApiTestBase
 
         var response = await _client.PostAsync("/readers", readerIn.ToStringContent());
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var reader = JsonConvert.DeserializeObject<ReaderOut>(await response.Content.ReadAsStringAsync());
 
-        reader.Name.ShouldBe(readerIn.Name);
+        reader.Name.Should().Be(readerIn.Name);
     }
 
     [Test]
@@ -35,12 +35,12 @@ public class ReadersApiTests : ApiTestBase
         var name = "Darlene Alderson";
         var response = await _client.GetAsync($"/readers/{id}");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var reader = JsonConvert.DeserializeObject<ReaderOut>(await response.Content.ReadAsStringAsync());
 
-        reader.Id.ShouldBe(id);
-        reader.Name.ShouldBe(name);
+        reader.Id.Should().Be(id);
+        reader.Name.Should().Be(name);
     }
 
     [Test]
@@ -48,10 +48,10 @@ public class ReadersApiTests : ApiTestBase
     {
         var response = await _client.GetAsync("/readers/?pageSize=4");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var readers = JsonConvert.DeserializeObject<List<ReaderOut>>(await response.Content.ReadAsStringAsync());
 
-        readers.Count.ShouldBe(4);
+        readers.Count.Should().Be(4);
     }
 }

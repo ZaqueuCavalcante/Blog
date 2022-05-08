@@ -2,7 +2,7 @@ using System.Net;
 using Blog.Controllers.Posts;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Shouldly;
+using FluentAssertions;
 
 namespace Blog.Tests.Api;
 
@@ -23,7 +23,7 @@ public class PostsApiTests : ApiTestBase
 
         var response = await _client.PostAsync("/posts", postIn.ToStringContent());
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Test]
@@ -41,15 +41,15 @@ public class PostsApiTests : ApiTestBase
         };
 
         var response = await _client.PostAsync("/posts", postIn.ToStringContent());
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var post = JsonConvert.DeserializeObject<PostOut>(await response.Content.ReadAsStringAsync());
 
-        post.Title.ShouldBe(postIn.Title);
-        post.Resume.ShouldBe(postIn.Resume);
-        post.Body.ShouldBe(postIn.Body);
-        post.Author.Name.ShouldBe("Elliot Alderson");
-        post.Tags.ShouldContain(t => t.Name == "Tech");
+        post.Title.Should().Be(postIn.Title);
+        post.Resume.Should().Be(postIn.Resume);
+        post.Body.Should().Be(postIn.Body);
+        post.Author.Name.Should().Be("Elliot Alderson");
+        post.Tags.Should().Contain(t => t.Name == "Tech");
     }
 
     [Test]
@@ -66,15 +66,15 @@ public class PostsApiTests : ApiTestBase
         };
 
         var response = await _client.PostAsync("/posts/1/comments", commentIn.ToStringContent());
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var comment = JsonConvert.DeserializeObject<CommentOut>(await response.Content.ReadAsStringAsync());
 
-        comment.UserId.ShouldBe(userId);
-        comment.Body.ShouldBe(commentIn.Body);
-        comment.PostRating.ShouldBe(commentIn.PostRating);
-        comment.Likes.ShouldBe(0);
-        comment.CreatedAt.ShouldNotBeNullOrEmpty();
+        comment.UserId.Should().Be(userId);
+        comment.Body.Should().Be(commentIn.Body);
+        comment.PostRating.Should().Be(commentIn.PostRating);
+        comment.Likes.Should().Be(0);
+        comment.CreatedAt.Should().NotBeNullOrEmpty();
     }
 
     [Test]
@@ -86,17 +86,17 @@ public class PostsApiTests : ApiTestBase
         var commentId = 4;
 
         var postBeforeResponse = await _client.GetAsync($"/posts/{postId}");
-        postBeforeResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        postBeforeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var postBefore = JsonConvert.DeserializeObject<PostOut>(await postBeforeResponse.Content.ReadAsStringAsync());
-        postBefore.PinnedCommentId.ShouldBe(null);
+        postBefore.PinnedCommentId.Should().Be(null);
 
         var response = await _client.PatchAsync($"/posts/{postId}/comments/{commentId}/pins", null);
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var postAfterResponse = await _client.GetAsync($"/posts/{postId}");
-        postAfterResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        postAfterResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var postAfter = JsonConvert.DeserializeObject<PostOut>(await postAfterResponse.Content.ReadAsStringAsync());
-        postAfter.PinnedCommentId.ShouldBe(commentId);
+        postAfter.PinnedCommentId.Should().Be(commentId);
     }
 
     [Test]
@@ -110,12 +110,12 @@ public class PostsApiTests : ApiTestBase
         await _client.PatchAsync($"/posts/{postId}/comments/{commentId}/pins", null);
 
         var response = await _client.PatchAsync($"/posts/{postId}/comments/{commentId}/pins", null);
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var postAfterResponse = await _client.GetAsync($"/posts/{postId}");
-        postAfterResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        postAfterResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var postAfter = JsonConvert.DeserializeObject<PostOut>(await postAfterResponse.Content.ReadAsStringAsync());
-        postAfter.PinnedCommentId.ShouldBe(null);
+        postAfter.PinnedCommentId.Should().Be(null);
     }
 
     [Test]
@@ -133,13 +133,13 @@ public class PostsApiTests : ApiTestBase
         };
 
         var response = await _client.PostAsync($"/posts/{postId}/comments/{commentId}/replies", replyIn.ToStringContent());
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var reply = JsonConvert.DeserializeObject<ReplyOut>(await response.Content.ReadAsStringAsync());
 
-        reply.UserId.ShouldBe(userId);
-        reply.Body.ShouldBe(replyIn.Body);
-        reply.CreatedAt.ShouldNotBeNullOrEmpty();
+        reply.UserId.Should().Be(userId);
+        reply.Body.Should().Be(replyIn.Body);
+        reply.CreatedAt.Should().NotBeNullOrEmpty();
     }
 
     [Test]
@@ -153,12 +153,12 @@ public class PostsApiTests : ApiTestBase
         var commentId = 2;
 
         var response = await _client.PostAsync($"/posts/{postId}/comments/{commentId}/likes", null);
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var like = JsonConvert.DeserializeObject<LikeOut>(await response.Content.ReadAsStringAsync());
 
-        like.UserId.ShouldBe(userId);
-        like.CommentId.ShouldBe(commentId);
+        like.UserId.Should().Be(userId);
+        like.CommentId.Should().Be(commentId);
     }
 
     [Test]
@@ -168,13 +168,13 @@ public class PostsApiTests : ApiTestBase
     {
         var response = await _client.GetAsync($"/posts/{id}");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var post = JsonConvert.DeserializeObject<PostOut>(await response.Content.ReadAsStringAsync());
 
-        post.Id.ShouldBe(id);
-        post.Title.ShouldBe(title);
-        post.Rating.ShouldBe(rating);
+        post.Id.Should().Be(id);
+        post.Title.Should().Be(title);
+        post.Rating.Should().Be(rating);
     }
 
     [Test]
@@ -182,10 +182,10 @@ public class PostsApiTests : ApiTestBase
     {
         var response = await _client.GetAsync("/posts/?pageSize=3");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var posts = JsonConvert.DeserializeObject<List<PostOut>>(await response.Content.ReadAsStringAsync());
 
-        posts.Count.ShouldBe(3);
+        posts.Count.Should().Be(3);
     }
 }

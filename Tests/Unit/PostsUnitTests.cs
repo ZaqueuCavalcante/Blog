@@ -1,29 +1,29 @@
 ﻿using Blog.Domain;
 using Blog.Exceptions;
+using FluentAssertions;
 using NUnit.Framework;
-using Shouldly;
 
 namespace Blog.Tests.Unit;
 
 [TestFixture]
 public class PostsUnitTests
 {
-    [Test]
-    [TestCase(-1)]
-    [TestCase(0)]
-    [TestCase(6)]
-    public void Post_rating_out_of_range(int postRating)
+    [Teste("Para comentar em um post, a nota de avalição deve ser válida.")]
+    [TestCaseSource(typeof(Streams), nameof(Streams.InvalidPostRatingsStream))]
+    public void PostsUnitTests_00(int postRating)
     {
-        var exception = Should.Throw<DomainException>(() =>
-            new Comment(1, (byte) postRating, "Great first season.", 1)
-        );
+        // Arrange
+        Action act = () => new Comment(1, (byte) postRating, "Great first season.", 1);
 
-        exception.Message.ShouldBe("Post rating out of range. Must be between 1 and 5.");
+        // Act / Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Post rating out of range. Must be between 1 and 5.");
     }
 
-    [Test]
-    public void Post_get_rating_without_comments()
+    [Teste("Um post sem comentários não deve possuir nota de avaliação.")]
+    public void PostsUnitTests_01()
     {
+        // Arrange
         var post = new Post(
             title: "Linux and hacking",
             resume: "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
@@ -32,8 +32,10 @@ public class PostsUnitTests
             authorId: 1  
         );
 
+        // Act
         var postRating = post.GetRating();
 
-        postRating.ShouldBe((byte) 0);
+        // Assert
+        postRating.Should().Be((byte) 0);
     }
 }

@@ -2,7 +2,7 @@ using System.Net;
 using Blog.Controllers.Categories;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Shouldly;
+using FluentAssertions;
 
 namespace Blog.Tests.Api;
 
@@ -22,7 +22,7 @@ public class CategoriesApiTests : ApiTestBase
 
         var response = await _client.PostAsync("/categories", categoryIn.ToStringContent());
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Test]
@@ -33,14 +33,14 @@ public class CategoriesApiTests : ApiTestBase
         var description = "The Linux category description.";
         var response = await _client.GetAsync($"/categories/{id}");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var category = JsonConvert.DeserializeObject<CategoryOut>(await response.Content.ReadAsStringAsync());
 
-        category.Name.ShouldBe(name);
-        category.Description.ShouldBe(description);
-        category.CreatedAt.ShouldNotBeNullOrEmpty();
-        category.Posts.Count.ShouldBe(1);
+        category.Name.Should().Be(name);
+        category.Description.Should().Be(description);
+        category.CreatedAt.Should().NotBeNullOrEmpty();
+        category.Posts.Count.Should().Be(1);
     }
 
     [Test]
@@ -48,12 +48,12 @@ public class CategoriesApiTests : ApiTestBase
     {
         var response = await _client.GetAsync("/categories/?pageSize=5");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var categories = JsonConvert.DeserializeObject<List<CategoryOut>>(await response.Content.ReadAsStringAsync());
 
-        categories.Count.ShouldBe(5);
-        categories.ShouldContain(c => c.Name == "Linux");
-        categories.ShouldContain(c => c.Name == "Mr. Robot");
+        categories.Count.Should().Be(5);
+        categories.Should().Contain(c => c.Name == "Linux");
+        categories.Should().Contain(c => c.Name == "Mr. Robot");
     }
 }

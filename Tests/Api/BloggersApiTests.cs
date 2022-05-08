@@ -2,7 +2,7 @@ using System.Net;
 using Blog.Controllers.Bloggers;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Shouldly;
+using FluentAssertions;
 
 namespace Blog.Tests.Api;
 
@@ -22,7 +22,7 @@ public class BloggersApiTests : ApiTestBase
 
         var response = await _client.PostAsync("/bloggers", bloggerIn.ToStringContent());
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Test]
@@ -40,7 +40,7 @@ public class BloggersApiTests : ApiTestBase
 
         var response = await _client.PostAsync("/bloggers", bloggerIn.ToStringContent());
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Test]
@@ -52,13 +52,13 @@ public class BloggersApiTests : ApiTestBase
 
         var response = await _client.GetAsync($"/bloggers/{id}");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var blogger = JsonConvert.DeserializeObject<BloggerOut>(await response.Content.ReadAsStringAsync());
 
-        blogger.Id.ShouldBe(id);
-        blogger.Name.ShouldBe(name);
-        blogger.Resume.ShouldBe(resume);
+        blogger.Id.Should().Be(id);
+        blogger.Name.Should().Be(name);
+        blogger.Resume.Should().Be(resume);
     }
 
     [Test]
@@ -66,7 +66,7 @@ public class BloggersApiTests : ApiTestBase
     {
         var bloggerId = 42; 
         var response = await _client.GetAsync($"/bloggers/{bloggerId}");
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Test]
@@ -74,11 +74,11 @@ public class BloggersApiTests : ApiTestBase
     {
         var response = await _client.GetAsync("/bloggers");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var bloggers = JsonConvert.DeserializeObject<List<BloggerOut>>(await response.Content.ReadAsStringAsync());
 
-        bloggers.Count.ShouldBe(3);
+        bloggers.Count.Should().Be(3);
     }
 
     [Test]
@@ -87,11 +87,11 @@ public class BloggersApiTests : ApiTestBase
         await Login("elliot@blog.com", "Test@123");
 
         var responseBefore = await _client.GetAsync($"/bloggers/2");
-        responseBefore.StatusCode.ShouldBe(HttpStatusCode.OK);
+        responseBefore.StatusCode.Should().Be(HttpStatusCode.OK);
         var bloggerBefore = JsonConvert.DeserializeObject<BloggerOut>(await responseBefore.Content.ReadAsStringAsync());
-        bloggerBefore.Id.ShouldBe(2);
-        bloggerBefore.Name.ShouldBe("Elliot Alderson");
-        bloggerBefore.Resume.ShouldBe("Writes about Linux, Hacking and Computers.");
+        bloggerBefore.Id.Should().Be(2);
+        bloggerBefore.Name.Should().Be("Elliot Alderson");
+        bloggerBefore.Resume.Should().Be("Writes about Linux, Hacking and Computers.");
 
         var bloggerUpdateIn = new BloggerUpdateIn
         {
@@ -99,14 +99,14 @@ public class BloggersApiTests : ApiTestBase
             Resume = "A .Net Core Blogger..."
         };
         var response = await _client.PatchAsync("/bloggers", bloggerUpdateIn.ToStringContent());
-        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var responseAfter = await _client.GetAsync($"/bloggers/2");
-        responseAfter.StatusCode.ShouldBe(HttpStatusCode.OK);
+        responseAfter.StatusCode.Should().Be(HttpStatusCode.OK);
         var bloggerAfter = JsonConvert.DeserializeObject<BloggerOut>(await responseAfter.Content.ReadAsStringAsync());
-        bloggerAfter.Id.ShouldBe(2);
-        bloggerAfter.Name.ShouldBe("Zaqueu C.");
-        bloggerAfter.Resume.ShouldBe("A .Net Core Blogger...");
+        bloggerAfter.Id.Should().Be(2);
+        bloggerAfter.Name.Should().Be("Zaqueu C.");
+        bloggerAfter.Resume.Should().Be("A .Net Core Blogger...");
     }
 
     [Test]
@@ -115,11 +115,11 @@ public class BloggersApiTests : ApiTestBase
         await Login("elliot@blog.com", "Test@123");
 
         var response = await _client.GetAsync("/bloggers/stats");
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var stats = JsonConvert.DeserializeObject<BloggerStatsOut>(await response.Content.ReadAsStringAsync());
 
-        stats.PublishedPosts.ShouldBe(1);
-        stats.DraftPosts.ShouldBe(0);
-        stats.LatestComments.Count.ShouldBe(2);
+        stats.PublishedPosts.Should().Be(1);
+        stats.DraftPosts.Should().Be(0);
+        stats.LatestComments.Count.Should().Be(2);
     }
 }

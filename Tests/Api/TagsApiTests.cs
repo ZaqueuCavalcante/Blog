@@ -2,7 +2,7 @@ using System.Net;
 using Blog.Controllers.Tags;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Shouldly;
+using FluentAssertions;
 
 namespace Blog.Tests.Api;
 
@@ -18,7 +18,7 @@ public class TagsApiTests : ApiTestBase
 
         var response = await _client.PostAsync("/tags", tagIn.ToStringContent());
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Test]
@@ -29,13 +29,13 @@ public class TagsApiTests : ApiTestBase
         var postsCount = 2;
         var response = await _client.GetAsync($"/tags/{id}");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var tag = JsonConvert.DeserializeObject<TagOut>(await response.Content.ReadAsStringAsync());
 
-        tag.Name.ShouldBe(name);
-        tag.CreatedAt.ShouldNotBeNullOrEmpty();
-        tag.Posts.Count.ShouldBe(postsCount);
+        tag.Name.Should().Be(name);
+        tag.CreatedAt.Should().NotBeNullOrEmpty();
+        tag.Posts.Count.Should().Be(postsCount);
     }
 
     [Test]
@@ -43,10 +43,10 @@ public class TagsApiTests : ApiTestBase
     {
         var response = await _client.GetAsync("/tags/?pageSize=3");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var tags = JsonConvert.DeserializeObject<List<TagOut>>(await response.Content.ReadAsStringAsync());
 
-        tags.Count.ShouldBe(3);
+        tags.Count.Should().Be(3);
     }
 }
