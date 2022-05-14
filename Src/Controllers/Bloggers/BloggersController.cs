@@ -1,124 +1,69 @@
-﻿using Blog.Database;
-using Blog.Domain;
-using Blog.Extensions;
-using Blog.Auth;
+﻿using Blog.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using static Blog.Configurations.AuthorizationConfigurations;
+using Blog.Services.Bloggers;
 
 namespace Blog.Controllers.Bloggers;
 
 [ApiController, Route("[controller]")]
 public class BloggersController : ControllerBase
 {
-    private readonly BlogContext _context;
-    private readonly UserManager<BlogUser> _userManager;
+    private readonly IBloggersService _bloggersService;
 
     public BloggersController(
-        BlogContext context,
-        UserManager<BlogUser> userManager
+        IBloggersService bloggersService
     ) {
-        _context = context;
-        _userManager = userManager;
+        _bloggersService = bloggersService;
     }
 
     /// <summary>
     /// Register a new blogger.
     /// </summary>
     [HttpPost, Authorize(Roles = AdminRole)]
-    public async Task<IActionResult> PostBlogger(BloggerIn dto)
+    [ProducesResponseType(typeof(BloggerOut), 201)]
+    public async Task<IActionResult> PostBlogger(BloggerIn data)
     {
-        var user = new BlogUser(dto.Email);
+        var blogger = await _bloggersService.CreateBlogger(
+            data.Name, data.Resume, data.Email, data.Password
+        );
 
-        var blogger = new Blogger(dto.Name, dto.Resume, user.Id);
-
-        var result = await _userManager.CreateAsync(user, dto.Password);
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        await _userManager.AddToRoleAsync(user, BloggerRole);
-
-        blogger.UserId = user.Id;
-
-        _context.Bloggers.Add(blogger);
-        await _context.SaveChangesAsync();
-
-        return Created($"/bloggers/{blogger.Id}", BloggerOut.New(blogger));
+        return Created($"/bloggers/{blogger.Id}", new BloggerOut(blogger));
     }
 
     /// <summary>
     /// Returns a blogger.
     /// </summary>
     [HttpGet("{id}"), AllowAnonymous]
-    public async Task<ActionResult<BloggerOut>> GetBlogger(int id)
+    [ProducesResponseType(typeof(BloggerOut), 200)]
+    public async Task<ActionResult> GetBlogger(int id)
     {
-        var blogger = await _context.Bloggers.AsNoTracking()
-            .Include(b => b.Posts)
-            .Include(b => b.Networks)
-            .FirstOrDefaultAsync(l => l.Id == id);
+        var blogger = await _bloggersService.GetBlogger(id);
 
-        if (blogger is null)
-            return NotFound("Blogger not found.");
-
-        return Ok(BloggerOut.New(blogger, Request.GetRoot()));
+        return Ok(new BloggerOut(blogger));
     }
 
     /// <summary>
     /// Returns all the bloggers.
     /// </summary>
     [HttpGet, AllowAnonymous]
-    public async Task<ActionResult<List<BloggerOut>>> GetBloggers()
+    [ProducesResponseType(typeof(List<BloggerOut>), 200)]
+    public async Task<ActionResult> GetBloggers()
     {
-        var bloggers = await _context.Bloggers.AsNoTracking()
-            .ToListAsync();
+        var bloggers = await _bloggersService.GetBloggers();
 
-        return Ok(bloggers.Select(b => BloggerOut.New(b, Request.GetRoot())).ToList());
+        return Ok(bloggers.Select(b => new BloggerOut(b)).ToList());
     }
 
     /// <summary>
     /// Update a blogger.
     /// </summary>
     [HttpPatch, Authorize(Roles = BloggerRole)]
-    public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn dto)
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn data)
     {
-        var blogger = await _context.Bloggers.FirstAsync(b => b.UserId == User.GetId());
-        blogger.Update(dto.Name, dto.Resume);
-
-        await _context.SaveChangesAsync();
+        await _bloggersService.UpdateBlogger(User.GetId(), data.Name, data.Resume);
 
         return NoContent();
-    }
-
-    /// <summary>
-    /// Return statistics about the blogger.
-    /// </summary>
-    [HttpGet("stats"), Authorize(Roles = BloggerRole)]
-    public async Task<ActionResult> GetStats()
-    {
-        var blogger = await _context.Bloggers.AsNoTracking()
-            .FirstAsync(b => b.UserId == User.GetId());
-
-        var publishedPosts = await _context.Posts.AsNoTracking()
-            .Where(p => p.AuthorId == blogger.Id)
-            .Select(p => p.Id)
-            .ToListAsync();
-
-        var draftPosts = 0;
-
-        var latestComments = await _context.Comments.AsNoTracking()
-            .Where(c => publishedPosts.Contains(c.PostId))
-            .OrderByDescending(c => c.CreatedAt)
-            .Take(5)
-            .ToListAsync();
-
-        var response = BloggerStatsOut.New(
-            publishedPosts.Count,
-            draftPosts,
-            latestComments
-        );
-
-        return Ok(response);
     }
 }

@@ -20,6 +20,8 @@ public class Startup
 
         services.AddCorsConfigurations();
 
+        services.AddBlogServicesConfigurations();
+
         services.AddIdentityConfigurations();
 
         services.AddAuthenticationConfigurations();

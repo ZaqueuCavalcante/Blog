@@ -18,7 +18,7 @@ public static class Extensions
 
     public static string GetRoot(this HttpRequest request)
     {
-        return request.Scheme + "://" + request.Host.Value + "/";
+        return "https://" + request.Host.Value + "/";
     }
 
     public static void AddPagination(

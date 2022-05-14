@@ -40,7 +40,6 @@ public class CategoriesApiTests : ApiTestBase
         category.Name.Should().Be(name);
         category.Description.Should().Be(description);
         category.CreatedAt.Should().NotBeNullOrEmpty();
-        category.Posts.Count.Should().Be(1);
     }
 
     [Test]

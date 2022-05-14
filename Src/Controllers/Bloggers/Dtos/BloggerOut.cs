@@ -8,9 +8,6 @@ public class BloggerOut
     /// <example>42</example>
     public int Id { get; set; }
 
-    /// <example>xyz/bloggers/42</example>
-    public string Link { get; set; }
-
     /// <example>Bob</example>
     public string Name { get; set; }
 
@@ -20,23 +17,20 @@ public class BloggerOut
     public List<object> Networks { get; set; }
     public List<object> Posts { get; set; }
 
-    public static BloggerOut New(Blogger blogger, string? root = null)
+    public BloggerOut() {}
+
+    public BloggerOut(Blogger blogger)
     {
-        return new BloggerOut
+        Id = blogger.Id;
+        Name = blogger.Name;
+        Resume = blogger.Resume;
+        Networks = blogger.Networks?.Select(n => (object) new { Name = n.Name, Uri = n.Uri }).ToList();
+        Posts = blogger.Posts?.Select(p => (object) new
         {
-            Id = blogger.Id,
-            Link = root + "bloggers/" + blogger.Id,
-            Name = blogger.Name,
-            Resume = blogger.Resume,
-            Networks = blogger.Networks?.Select(n => (object) new { Name = n.Name, Uri = n.Uri }).ToList(),
-            Posts = blogger.Posts?.Select(p => (object) new
-            {
-                Id = p.Id,
-                Link = root + $"posts/{p.Id}",
-                Title = p.Title,
-                CreatedAt = p.CreatedAt.Format(),
-                Resume = p.Resume
-            }).ToList()
-        };
+            Id = p.Id,
+            Title = p.Title,
+            CreatedAt = p.CreatedAt.Format(),
+            Resume = p.Resume
+        }).ToList();
     }
 }

@@ -1,79 +1,56 @@
-﻿using Blog.Database;
-using Blog.Domain;
-using Blog.Extensions;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using static Blog.Configurations.ControllersConfigurations;
 using static Blog.Configurations.AuthorizationConfigurations;
+using Blog.Services.Categories;
 
-namespace Blog.Controllers.Categories
+namespace Blog.Controllers.Categories;
+
+[ApiController, Route("[controller]")]
+public class CategoriesController : ControllerBase
 {
-    [ApiController, Route("[controller]")]
-    public class CategoriesController : ControllerBase
+    private readonly ICategoriesService _categoriesService;
+
+    public CategoriesController(
+        ICategoriesService categoriesService
+    ) {
+        _categoriesService = categoriesService;
+    }
+
+    /// <summary>
+    /// Register a new category.
+    /// </summary>
+    [HttpPost, Authorize(Roles = AdminRole)]
+    [ProducesResponseType(typeof(CategoryOut), 201)]
+    public async Task<IActionResult> PostCategory(CategoryIn dto)
     {
-        private readonly BlogContext _context;
+        var category = await _categoriesService.CreateCategory(dto.Name, dto.Description);
 
-        public CategoriesController(
-            BlogContext context
-        ) {
-            _context = context;
-        }
+        return Created($"/categories/{category.Id}", new CategoryOut(category));
+    }
 
-        /// <summary>
-        /// Register a new category.
-        /// </summary>
-        [HttpPost, Authorize(Roles = AdminRole)]
-        public async Task<IActionResult> PostCategory(CategoryIn dto)
-        {
-            var category = new Category(dto.Name, dto.Description);
+    /// <summary>
+    /// Returns a category.
+    /// </summary>
+    [HttpGet("{id}"), AllowAnonymous]
+    [ProducesResponseType(typeof(CategoryOut), 200)]
+    public async Task<ActionResult> GetCategory(int id)
+    {
+        var category = await _categoriesService.GetCategory(id);
 
-            var categoryAlreadyExists = await _context.Categories.AnyAsync(
-                c => c.Name.ToLower() == dto.Name.Trim().ToLower());
+        return Ok(new CategoryOut(category));
+    }
 
-            if (categoryAlreadyExists)
-                return BadRequest("Category already exists.");
+    /// <summary>
+    /// Returns all the categories.
+    /// </summary>
+    [HttpGet, AllowAnonymous]
+    [ProducesResponseType(typeof(List<CategoryOut>), 200)]
+    [ResponseCache(CacheProfileName = TwoMinutesCacheProfile)]
+    public async Task<ActionResult> GetCategories()
+    {
+        var categories = await _categoriesService.GetCategories();
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return Created($"/categories/{category.Id}", CategoryOut.New(category, Request.GetRoot()));
-        }
-
-        /// <summary>
-        /// Returns a category.
-        /// </summary>
-        [HttpGet("{id}"), AllowAnonymous]
-        public async Task<ActionResult<CategoryOut>> GetCategory(int id)
-        {
-            var category = await _context.Categories.AsNoTracking()
-                .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (category is null)
-                return NotFound("Category not found.");
-
-            return Ok(CategoryOut.New(category, Request.GetRoot()));
-        }
-
-        /// <summary>
-        /// Returns all the categories.
-        /// </summary>
-        [HttpGet, AllowAnonymous]
-        [ResponseCache(CacheProfileName = TwoMinutesCacheProfile)]
-        public async Task<ActionResult<List<CategoryOut>>> GetCategories([FromQuery] CategoryParameters parameters)
-        {
-            var categories = await _context.Categories.AsNoTracking()
-                .Include(c => c.Posts.OrderByDescending(p => p.CreatedAt))
-                .OrderBy(c => c.Name)
-                .Page(parameters)
-                .ToListAsync();
-
-            var count = await _context.Categories.CountAsync();
-
-            Response.AddPagination(parameters, count);
-
-            return Ok(categories.Select(c => CategoryOut.New(c, Request.GetRoot())).ToList());
-        }
+        return Ok(categories.Select(c => new CategoryOut(c)).ToList());
     }
 }

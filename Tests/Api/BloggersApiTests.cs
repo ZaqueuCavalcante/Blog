@@ -108,18 +108,4 @@ public class BloggersApiTests : ApiTestBase
         bloggerAfter.Name.Should().Be("Zaqueu C.");
         bloggerAfter.Resume.Should().Be("A .Net Core Blogger...");
     }
-
-    [Test]
-    public async Task Get_blogger_stats()
-    {
-        await Login("elliot@blog.com", "Test@123");
-
-        var response = await _client.GetAsync("/bloggers/stats");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var stats = JsonConvert.DeserializeObject<BloggerStatsOut>(await response.Content.ReadAsStringAsync());
-
-        stats.PublishedPosts.Should().Be(1);
-        stats.DraftPosts.Should().Be(0);
-        stats.LatestComments.Count.Should().Be(2);
-    }
 }
