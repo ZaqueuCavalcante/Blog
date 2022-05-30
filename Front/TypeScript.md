@@ -1,4 +1,0 @@
-# TypeScript
-
-- React
-- Material UI
