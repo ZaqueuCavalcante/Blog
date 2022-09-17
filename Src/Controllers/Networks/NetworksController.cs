@@ -25,7 +25,7 @@ public class NetworksController : ControllerBase
     [HttpPost("networks")]
     public async Task<ActionResult> PostNetwork([FromQuery] NetworkIn dto)
     {
-        var bloggerId = await _context.Bloggers.Where(b => b.UserId == User.GetId())
+        var bloggerId = await _context.Bloggers.Where(b => b.UserId == User.Id())
             .Select(b => b.Id).FirstAsync();
 
         var network = await _context.Networks.FirstOrDefaultAsync(
@@ -53,7 +53,7 @@ public class NetworksController : ControllerBase
     [HttpDelete("networks")]
     public async Task<ActionResult> DeleteNetwork([FromQuery] DeleteNetworkIn dto)
     {
-        var bloggerId = await _context.Bloggers.Where(b => b.UserId == User.GetId())
+        var bloggerId = await _context.Bloggers.Where(b => b.UserId == User.Id())
             .Select(b => b.Id).FirstAsync();
 
         var network = await _context.Networks.FirstOrDefaultAsync(

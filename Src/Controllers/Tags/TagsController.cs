@@ -6,89 +6,88 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Blog.Configurations.AuthorizationConfigurations;
 
-namespace Blog.Controllers.Tags
+namespace Blog.Controllers.Tags;
+
+[ApiController, Route("[controller]")]
+public class TagsController : ControllerBase
 {
-    [ApiController, Route("[controller]")]
-    public class TagsController : ControllerBase
+    private readonly BlogContext _context;
+
+    public TagsController(
+        BlogContext context
+    ) {
+        _context = context;
+    }
+
+    /// <summary>
+    /// Register a new tag.
+    /// </summary>
+    [HttpPost, Authorize(Roles = AdminRole)]
+    public async Task<IActionResult> PostTag(TagIn dto)
     {
-        private readonly BlogContext _context;
+        var tag = await _context.Tags.FirstOrDefaultAsync(
+            t => t.Name.ToLower() == dto.Name.Trim().ToLower());
 
-        public TagsController(
-            BlogContext context
-        ) {
-            _context = context;
-        }
+        if (tag != null)
+            return BadRequest("Tag already exists.");
 
-        /// <summary>
-        /// Register a new tag.
-        /// </summary>
-        [HttpPost, Authorize(Roles = AdminRole)]
-        public async Task<IActionResult> PostTag(TagIn dto)
-        {
-            var tag = await _context.Tags.FirstOrDefaultAsync(
-                t => t.Name.ToLower() == dto.Name.Trim().ToLower());
+        tag = new Tag(dto.Name);
 
-            if (tag != null)
-                return BadRequest("Tag already exists.");
+        await _context.Tags.AddAsync(tag);
+        await _context.SaveChangesAsync();
 
-            tag = new Tag(dto.Name);
+        return Created($"/tags/{tag.Id}", new TagOut(tag, Request.GetRoot()));
+    }
 
-            await _context.Tags.AddAsync(tag);
-            await _context.SaveChangesAsync();
+    /// <summary>
+    /// Returns a tag.
+    /// </summary>
+    [HttpGet("{id}"), AllowAnonymous]
+    public async Task<ActionResult> GetTag(int id)
+    {
+        var tag = await _context.Tags
+            .Include(t => t.Posts.OrderByDescending(p => p.CreatedAt))
+            .FirstOrDefaultAsync(t => t.Id == id);
 
-            return Created($"/tags/{tag.Id}", TagOut.New(tag, Request.GetRoot()));
-        }
+        if (tag is null)
+            return NotFound("Tag not found.");
 
-        /// <summary>
-        /// Returns a tag.
-        /// </summary>
-        [HttpGet("{id}"), AllowAnonymous]
-        public async Task<ActionResult> GetTag(int id)
-        {
-            var tag = await _context.Tags
-                .Include(t => t.Posts.OrderByDescending(p => p.CreatedAt))
-                .FirstOrDefaultAsync(t => t.Id == id);
+        return Ok(new TagOut(tag, Request.GetRoot()));
+    }
 
-            if (tag is null)
-                return NotFound("Tag not found.");
+    /// <summary>
+    /// Returns some tags.
+    /// </summary>
+    [HttpGet, AllowAnonymous]
+    public async Task<ActionResult<List<TagOut>>> GetTags([FromQuery] TagsParameters parameters)
+    {
+        var tags = await _context.Tags.AsNoTracking()
+            .Include(t => t.Posts.OrderByDescending(p => p.CreatedAt))
+            .OrderBy(t => t.Name)
+            .Page(parameters)
+            .ToListAsync();
 
-            return Ok(TagOut.New(tag, Request.GetRoot()));
-        }
+        var count = await _context.Tags.CountAsync();
 
-        /// <summary>
-        /// Returns some tags.
-        /// </summary>
-        [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<TagOut>>> GetTags([FromQuery] TagsParameters parameters)
-        {
-            var tags = await _context.Tags.AsNoTracking()
-                .Include(t => t.Posts.OrderByDescending(p => p.CreatedAt))
-                .OrderBy(t => t.Name)
-                .Page(parameters)
-                .ToListAsync();
+        Response.AddPagination(parameters, count);
 
-            var count = await _context.Tags.CountAsync();
+        return Ok(tags.Select(t => new TagOut(t, Request.GetRoot())).ToList());
+    }
 
-            Response.AddPagination(parameters, count);
+    /// <summary>
+    /// Delete a tag.
+    /// </summary>
+    [HttpDelete("{id}"), Authorize(Roles = AdminRole)]
+    public async Task<ActionResult> DeleteTag(int id)
+    {
+        var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
 
-            return Ok(tags.Select(t => TagOut.New(t, Request.GetRoot())).ToList());
-        }
+        if (tag is null)
+            return NotFound("Tag not found.");
 
-        /// <summary>
-        /// Delete a tag.
-        /// </summary>
-        [HttpDelete("{id}"), Authorize(Roles = AdminRole)]
-        public async Task<ActionResult> DeleteTag(int id)
-        {
-            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
+        _context.Remove(tag);
+        await _context.SaveChangesAsync();
 
-            if (tag is null)
-                return NotFound("Tag not found.");
-
-            _context.Remove(tag);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

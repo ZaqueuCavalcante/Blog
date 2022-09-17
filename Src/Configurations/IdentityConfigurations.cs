@@ -8,7 +8,7 @@ public static class IdentityConfigurations
 {
     public static void AddIdentityConfigurations(this IServiceCollection services)
     {
-        services.AddIdentity<BlogUser, Role>()
+        services.AddIdentity<BlogUser, BlogRole>()
             .AddEntityFrameworkStores<BlogContext>()
             .AddDefaultTokenProviders();
 

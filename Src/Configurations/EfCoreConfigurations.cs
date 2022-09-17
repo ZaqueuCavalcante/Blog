@@ -14,8 +14,11 @@ public static class EfCoreConfigurations
         {
             options.UseNpgsql(databaseSettings.ConnectionString);
             options.UseSnakeCaseNamingConvention();
-            options.EnableDetailedErrors();
-            options.EnableSensitiveDataLogging();
+            if (Env.IsDevelopment())
+            {
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+            }
         });
     }
 }

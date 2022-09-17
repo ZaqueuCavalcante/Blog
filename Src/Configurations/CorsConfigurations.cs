@@ -1,3 +1,5 @@
+using Blog.Settings;
+
 namespace Blog.Configurations;
 
 public static class CorsConfigurations
@@ -23,12 +25,11 @@ public static class CorsConfigurations
 
     public static void UseCorsThings(this IApplicationBuilder app)
     {
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        if (environment == "Development")
+        if (Env.IsDevelopment())
         {
             app.UseCors("Development");
         }
-        else
+        if (Env.IsProduction())
         {
             app.UseCors("Production");
             app.UseHsts();

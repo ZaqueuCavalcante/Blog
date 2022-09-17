@@ -2,7 +2,7 @@
 
 Desenvolvi uma API para um Blog simples, sempre prezando pela integridade conceitual.
 
-Usei como inspiração o [Medium](medium.com) e o [dev.to](dev.to) para desenvolver os casos de uso.
+Usei como inspiração o [Medium](https://medium.com) e o [dev.to](https://dev.to) para desenvolver os casos de uso.
 
 A API foi feita com DotNet Core e C#. <br>
 Na parte de banco de dados, usei o EF Core, o Dapper e o Postgres. <br>
@@ -12,11 +12,19 @@ E para documentação, o Swagger. <br>
 
 Este projeto ainda não está finalizado, ainda pretendo desenvolver os seguintes pontos:
 
+- [ ] Utilizar migrations pro banco de dados
 - [ ] Adicionar pipelines de CI/CD usando o GitHub Actions CI
-- [ ] Dockerizar o projeto
-- [ ] Fazer o front-end
+- [ ] Dockerizar oz projetos
+- [ ] Subir tudo no GCP
+- [ ] Entender CORs
+- [ ] Adicionar ReDoc
+- [ ] Adicionar cache simples do DotNet
+- [ ] Fazer o front-end com Blazor
+- [ ] Tirar secrets do appsettings
 - [ ] Refatorar código das controllers usando services
-- [ ] Adicionar mais testes
+- [ ] Adicionar mais testes (principalmente de unidade) e melhorar os já existentes
+- [ ] Adicionar integração com Google pra facilitar o login
+- [ ] Adicionar um painel para administração dos posts
 
 ## Modelagem de dados
 

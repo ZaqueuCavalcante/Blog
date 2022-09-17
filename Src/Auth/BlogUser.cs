@@ -1,4 +1,3 @@
-using Blog.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Auth;

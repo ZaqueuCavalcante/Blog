@@ -2,6 +2,7 @@
 using Blog.Database;
 using Blog.Domain;
 using Blog.Extensions;
+using Blog.Services.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,14 @@ namespace Blog.Controllers.Posts
     [ApiController, Route("[controller]")]
     public class PostsController : ControllerBase
     {
+        private readonly IPostsService _postsService;
         private readonly BlogContext _context;
 
-        public PostsController(BlogContext context)
-        {
+        public PostsController(
+            IPostsService postsService,
+            BlogContext context
+        ) {
+            _postsService = postsService;
             _context = context;
         }
 
@@ -25,27 +30,7 @@ namespace Blog.Controllers.Posts
         [HttpPost, Authorize(Roles = BloggerRole)]
         public async Task<IActionResult> PostPost(PostIn dto)
         {
-            var author = await _context.Bloggers.FirstOrDefaultAsync(b => b.UserId == User.GetId());
-
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == dto.CategoryId);
-            if (category == null)
-                return NotFound("Category not found.");
-
-            List<Tag>? tags = null;
-            if (dto.Tags != null && dto.Tags.Any())
-                tags = await _context.Tags.Where(t => dto.Tags.Contains(t.Id)).ToListAsync();
-
-            var post = new Post(
-                dto.Title,
-                dto.Resume,
-                dto.Body,
-                category.Id,
-                author.Id,
-                tags
-            );
-
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
+            var post = await _postsService.CreatePost(User.Id(), dto);
 
             return Created($"/posts/{post.Id}", PostOut.New(post));
         }
@@ -60,7 +45,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            if (post.Author.UserId != User.GetId())
+            if (post.Author.UserId != User.Id())
                 return Forbid("You must be the post author to be able to edit it.");
 
             post.Edit(dto.Title, dto.Resume, dto.Body);
@@ -80,12 +65,12 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            var comment = new Comment(postId, dto.PostRating, dto.Body, User.GetId());
+            var comment = new Comment(postId, dto.PostRating, dto.Body, User.Id());
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}/comments/{comment.Id}", CommentOut.New(comment));
+            return Created($"/posts/{post.Id}/comments/{comment.Id}", new CommentOut(comment));
         }
 
         /// <summary>
@@ -101,7 +86,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            return Ok(CommentOut.New(comment));
+            return Ok(new CommentOut(comment));
         }
 
         /// <summary>
@@ -114,7 +99,7 @@ namespace Blog.Controllers.Posts
             if (post is null)
                 return NotFound("Post not found.");
 
-            if (post.Author.UserId != User.GetId())
+            if (post.Author.UserId != User.Id())
                 return Forbid("You must be the post author to be able to pin a comment.");
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == post.Id);
@@ -142,7 +127,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            var reply = new Reply(comment.Id, dto.Body, User.GetId());
+            var reply = new Reply(comment.Id, dto.Body, User.Id());
 
             _context.Replies.Add(reply);
             await _context.SaveChangesAsync();
@@ -164,7 +149,7 @@ namespace Blog.Controllers.Posts
             if (comment is null)
                 return NotFound("Comment not found.");
 
-            var userId = User.GetId();
+            var userId = User.Id();
 
             var like = await _context.Likes.FirstOrDefaultAsync(l => l.CommentId == commentId && l.UserId == userId);
 
@@ -180,7 +165,7 @@ namespace Blog.Controllers.Posts
             _context.Likes.Add(like);
             await _context.SaveChangesAsync();
 
-            return Created($"/posts/{post.Id}/comments/{comment.Id}/likes/{like.Id}", LikeOut.New(comment.Id, userId));
+            return Created($"/posts/{post.Id}/comments/{comment.Id}/likes/{like.Id}", new LikeOut(comment.Id, userId));
         }
 
         /// <summary>

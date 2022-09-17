@@ -45,19 +45,18 @@ public class SearchController : ControllerBase
             ORDER BY name
         ";
 
-        using (var connection = new NpgsqlConnection(dbSettings.ConnectionString))
-        {
-            var bloggers = (await connection.QueryAsync<SearchOut>(bloggersSql, new { parameters.Thing })).ToList();
-            var categories = (await connection.QueryAsync<SearchOut>(categoriesSql, new { parameters.Thing })).ToList();
-            var posts = (await connection.QueryAsync<SearchOut>(postsSql, new { parameters.Thing })).ToList();
-            var tags = (await connection.QueryAsync<SearchOut>(tagsSql, new { parameters.Thing })).ToList();
+        using var connection = new NpgsqlConnection(dbSettings.ConnectionString);
 
-            bloggers.ForEach(b => b.Link = url + "bloggers/" + b.Id);
-            categories.ForEach(c => c.Link = url + "categories/" + c.Id);
-            posts.ForEach(p => { p.Link = url + "posts/" + p.Id; });
-            tags.ForEach(t => { t.Link = url + "tags/" + t.Id; });
+        var bloggers = (await connection.QueryAsync<SearchOut>(bloggersSql, new { parameters.Thing })).ToList();
+        var categories = (await connection.QueryAsync<SearchOut>(categoriesSql, new { parameters.Thing })).ToList();
+        var posts = (await connection.QueryAsync<SearchOut>(postsSql, new { parameters.Thing })).ToList();
+        var tags = (await connection.QueryAsync<SearchOut>(tagsSql, new { parameters.Thing })).ToList();
 
-            return Ok(new { bloggers, categories, posts, tags });
-        }
+        bloggers.ForEach(b => b.Link = url + "bloggers/" + b.Id);
+        categories.ForEach(c => c.Link = url + "categories/" + c.Id);
+        posts.ForEach(p => { p.Link = url + "posts/" + p.Id; });
+        tags.ForEach(t => { t.Link = url + "tags/" + t.Id; });
+
+        return Ok(new { bloggers, categories, posts, tags });
     }
 }

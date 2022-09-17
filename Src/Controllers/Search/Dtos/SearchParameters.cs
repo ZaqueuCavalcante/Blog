@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Search
+namespace Blog.Controllers.Search;
+
+public class SearchParameters : RequestParameters
 {
-    public class SearchParameters : RequestParameters
-    {
-        [Required]
-        public string Thing { get; set; }
-    }
+    [Required]
+    public string Thing { get; set; }
 }

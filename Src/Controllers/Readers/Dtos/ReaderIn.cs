@@ -1,16 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Readers
+namespace Blog.Controllers.Readers;
+
+public class ReaderIn
 {
-    public class ReaderIn
-    {
-        [Required]
-        public string Name { get; set; }
+    [Required]
+    public string Name { get; set; }
 
-        [Required, EmailAddress]
-        public string Email { get; set; }
+    [Required, EmailAddress]
+    public string Email { get; set; }
 
-        [Required]
-        public string Password { get; set; }
-    }
+    [Required]
+    public string Password { get; set; }
 }

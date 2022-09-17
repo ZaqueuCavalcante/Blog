@@ -11,7 +11,7 @@ public static class Extensions
         return date.ToString("dd/MM/yyyy HH:mm");
     }
 
-    public static int GetId(this ClaimsPrincipal user)
+    public static int Id(this ClaimsPrincipal user)
     {
         return int.Parse(user.FindFirstValue("sub"));
     }

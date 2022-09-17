@@ -1,16 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Users
+namespace Blog.Controllers.Users;
+
+public class ChangePasswordIn
 {
-    public class ChangePasswordIn
-    {
-        [Required]
-        public string Current { get; set; }
+    [Required]
+    public string Current { get; set; }
 
-        [Required]
-        public string NewPassword { get; set; }
+    [Required]
+    public string NewPassword { get; set; }
 
-        [Required, Compare(nameof(NewPassword))]
-        public string ConfirmPassword { get; set; }
-    }
+    [Required, Compare(nameof(NewPassword))]
+    public string ConfirmPassword { get; set; }
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 using Blog.Database;
 using Blog.Settings;
 
@@ -13,14 +12,14 @@ namespace Blog.Auth;
 public class TokenManager
 {
     private readonly UserManager<BlogUser> _userManager;
-    private readonly RoleManager<Role> _roleManager;
+    private readonly RoleManager<BlogRole> _roleManager;
     private readonly BlogContext _context;
     private JwtSettings _jwtSettings;
     private TokenValidationParameters _tokenValidationParameters;
 
     public TokenManager(
         UserManager<BlogUser> userManager,
-        RoleManager<Role> roleManager,
+        RoleManager<BlogRole> roleManager,
         BlogContext context,
         JwtSettings jwtSettings
     ) {
@@ -155,7 +154,7 @@ public class TokenManager
         var refreshToken = new RefreshToken
         {
             UserId = user.Id,
-            Token = GenerateRandomBase64(),
+            Token = Guid.NewGuid().ToString(),
             JwtId = jwtId,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(refreshTokenExpirationTime),
@@ -195,15 +194,5 @@ public class TokenManager
         var utcExpiryDate = long.Parse(userClaims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
         var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
         return dateTime.AddSeconds(utcExpiryDate).ToUniversalTime();
-    }
-
-    private string GenerateRandomBase64(int length = 42)
-    {
-        var randomNumber = new byte[length];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
     }
 }

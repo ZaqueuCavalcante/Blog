@@ -1,3 +1,4 @@
+using Blog.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -10,10 +11,12 @@ public class APIWebApplicationFactory : WebApplicationFactory<Startup>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        Env.SetAsTesting();
+
         builder.ConfigureAppConfiguration(config =>
         {
             var projectDir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(projectDir, "appsettings.Test.json");
+            var configPath = Path.Combine(projectDir, "appsettings.Testing.json");
 
             Configuration = new ConfigurationBuilder()
                 .AddJsonFile(configPath)

@@ -1,19 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Blog.Controllers.Users
+namespace Blog.Controllers.Users;
+
+public class ResetPasswordIn
 {
-    public class ResetPasswordIn
-    {
-        [Required, EmailAddress]
-        public string Email { get; set; }
+    [Required, EmailAddress]
+    public string Email { get; set; }
 
-        [Required]
-        public string Token { get; set; }
+    [Required]
+    public string Token { get; set; }
 
-        [Required]
-        public string NewPassword { get; set; }
+    [Required]
+    public string NewPassword { get; set; }
 
-        [Required, Compare(nameof(NewPassword))]
-        public string ConfirmPassword { get; set; }
-    }
+    [Required, Compare(nameof(NewPassword))]
+    public string ConfirmPassword { get; set; }
 }

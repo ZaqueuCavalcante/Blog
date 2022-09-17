@@ -62,7 +62,7 @@ public class BloggersController : ControllerBase
     [ProducesResponseType(204)]
     public async Task<IActionResult> UpdateBlogger(BloggerUpdateIn data)
     {
-        await _bloggersService.UpdateBlogger(User.GetId(), data.Name, data.Resume);
+        await _bloggersService.UpdateBlogger(User.Id(), data.Name, data.Resume);
 
         return NoContent();
     }

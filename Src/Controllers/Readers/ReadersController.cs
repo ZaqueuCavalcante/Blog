@@ -8,77 +8,76 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Blog.Configurations.AuthorizationConfigurations;
 
-namespace Blog.Controllers.Readers
+namespace Blog.Controllers.Readers;
+
+[ApiController, Route("[controller]")]
+public class ReadersController : ControllerBase
 {
-    [ApiController, Route("[controller]")]
-    public class ReadersController : ControllerBase
+    private readonly BlogContext _context;
+    private readonly UserManager<BlogUser> _userManager;
+
+    public ReadersController(
+        BlogContext context,
+        UserManager<BlogUser> userManager
+    ) {
+        _context = context;
+        _userManager = userManager;
+    }
+
+    /// <summary>
+    /// Register a new reader.
+    /// </summary>
+    [HttpPost, AllowAnonymous]
+    public async Task<IActionResult> PostReader(ReaderIn dto)
     {
-        private readonly BlogContext _context;
-        private readonly UserManager<BlogUser> _userManager;
+        var user = new BlogUser(dto.Email);
 
-        public ReadersController(
-            BlogContext context,
-            UserManager<BlogUser> userManager
-        ) {
-            _context = context;
-            _userManager = userManager;
-        }
+        var reader = new Reader(dto.Name, user.Id);
 
-        /// <summary>
-        /// Register a new reader.
-        /// </summary>
-        [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> PostReader(ReaderIn dto)
-        {
-            var user = new BlogUser(dto.Email);
+        var result = await _userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
 
-            var reader = new Reader(dto.Name, user.Id);
+        await _userManager.AddToRoleAsync(user, ReaderRole);
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+        reader.UserId = user.Id;
 
-            await _userManager.AddToRoleAsync(user, ReaderRole);
+        _context.Readers.Add(reader);
+        await _context.SaveChangesAsync();
 
-            reader.UserId = user.Id;
+        return Created($"/readers/{reader.Id}", new ReaderOut(reader));
+    }
 
-            _context.Readers.Add(reader);
-            await _context.SaveChangesAsync();
+    /// <summary>
+    /// Returns a reader.
+    /// </summary>
+    [HttpGet("{id}"), AllowAnonymous]
+    public async Task<ActionResult<ReaderOut>> GetReader(int id)
+    {
+        var reader = await _context.Readers
+            .FirstOrDefaultAsync(l => l.Id == id);
 
-            return Created($"/readers/{reader.Id}", ReaderOut.New(reader));
-        }
+        if (reader is null)
+            return NotFound("Reader not found.");
 
-        /// <summary>
-        /// Returns a reader.
-        /// </summary>
-        [HttpGet("{id}"), AllowAnonymous]
-        public async Task<ActionResult<ReaderOut>> GetReader(int id)
-        {
-            var reader = await _context.Readers
-                .FirstOrDefaultAsync(l => l.Id == id);
+        return Ok(new ReaderOut(reader));
+    }
 
-            if (reader is null)
-                return NotFound("Reader not found.");
+    /// <summary>
+    /// Returns some readers.
+    /// </summary>
+    [HttpGet, AllowAnonymous]
+    public async Task<ActionResult<List<ReaderOut>>> GetReaders([FromQuery] ReadersParameters parameters)
+    {
+        var readers = await _context.Readers
+            .AsNoTracking()
+            .Page(parameters)
+            .ToListAsync();
 
-            return Ok(ReaderOut.New(reader));
-        }
+        var count = await _context.Readers.CountAsync();
 
-        /// <summary>
-        /// Returns some readers.
-        /// </summary>
-        [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<List<ReaderOut>>> GetReaders([FromQuery] ReadersParameters parameters)
-        {
-            var readers = await _context.Readers
-                .AsNoTracking()
-                .Page(parameters)
-                .ToListAsync();
+        Response.AddPagination(parameters, count);
 
-            var count = await _context.Readers.CountAsync();
-
-            Response.AddPagination(parameters, count);
-
-            return Ok(readers.Select(r => ReaderOut.New(r)).ToList());
-        }
+        return Ok(readers.Select(r => new ReaderOut(r)).ToList());
     }
 }

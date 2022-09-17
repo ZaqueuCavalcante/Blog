@@ -19,7 +19,7 @@ public class ApiTestBase
 
     private BlogContext _context;
     private UserManager<BlogUser> _userManager;
-    private RoleManager<Role> _roleManager;
+    private RoleManager<BlogRole> _roleManager;
 
     [OneTimeSetUp]
     public virtual void OneTimeSetUp()
@@ -36,7 +36,7 @@ public class ApiTestBase
         {
             _context = scope.ServiceProvider.GetRequiredService<BlogContext>();
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<BlogUser>>();
-            _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+            _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<BlogRole>>();
 
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();

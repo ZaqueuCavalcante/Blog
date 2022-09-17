@@ -75,26 +75,9 @@ public class UsersController : ControllerBase
     {
         await _signInManager.SignOutAsync();
 
-        await _tokenManager.RevokeRefreshTokens(User.GetId());
+        await _tokenManager.RevokeRefreshTokens(User.Id());
 
         return Ok("Logout succeeded.");
-    }
-
-    /// <summary>
-    /// Reset a forgotten password.
-    /// </summary>
-    [HttpPost("reset-password"), AllowAnonymous]  // TODO: Add email token sent
-    public async Task<ActionResult> ResetPassword(ResetPasswordIn dto)
-    {
-        var user = await _userManager.FindByEmailAsync(dto.Email);
-        if (user == null)
-            return NotFound("Email not found.");
-
-        var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
-        if (!result.Succeeded)
-            return BadRequest("Reset password failed.");
-
-        return Ok("Password reseted!");
     }
 
     /// <summary>
@@ -103,7 +86,7 @@ public class UsersController : ControllerBase
     [HttpPatch("change-password"), Authorize]
     public async Task<ActionResult> ChangePassword(ChangePasswordIn dto)
     {
-        var userId = User.GetId();
+        var userId = User.Id();
 
         var error = await _tokenManager.FindUnunsedRefreshTokens(userId);
         if (error != null)
