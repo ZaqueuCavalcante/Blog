@@ -1,7 +1,40 @@
 ﻿@page "/categories"
+@inject HttpClient Http
 
 <PageTitle>Categories</PageTitle>
 
-<h1>EF Core</h1>
-<h1>Dapper</h1>
-<h1>Tests</h1>
+<MudTable Items="@_categories" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>CreatedAt</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code
+{
+    private List<Category>? _categories = new List<Category>();
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        _categories = await Http.GetFromJsonAsync<List<Category>>("/categories");
+        _loading = false;
+    }
+
+    public class Category
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string CreatedAt { get; set; } = "";
+    }
+}

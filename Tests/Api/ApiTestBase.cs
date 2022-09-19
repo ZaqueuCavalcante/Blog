@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using static Blog.Configurations.AuthorizationConfigurations;
+using Blog.Settings;
 
 namespace Blog.Tests.Api;
 
@@ -38,8 +39,11 @@ public class ApiTestBase
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<BlogUser>>();
             _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<BlogRole>>();
 
-            _context.Database.EnsureDeleted();
-            _context.Database.EnsureCreated();
+            if (Env.IsTesting())
+            {
+                _context.Database.EnsureDeleted();
+                _context.Database.EnsureCreated();
+            }
 
             await Seed();
         }

@@ -1,6 +1,64 @@
 ﻿@page "/posts"
+@inject HttpClient Http
 
 <PageTitle>Posts</PageTitle>
 
-<h1>Post mais recente</h1>
-<h1>Outro post</h1>
+@if (_posts == null)
+{
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+}
+else
+{
+    foreach (var post in _posts)
+    {
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudAvatar Color="Color.Secondary">@post.Author.Name[0]</MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@post.Author.Name - @post.CreatedAt</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.h4">@post.Title</MudText>
+                <MudText Typo="Typo.h6">@post.Resume</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />
+                <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" />
+            </MudCardActions>
+        </MudCard>
+    }
+}
+
+@code
+{
+    private List<Post>? _posts = new List<Post>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _posts = await Http.GetFromJsonAsync<List<Post>>("/posts");
+    }
+
+    public class Post
+    {
+        public int Id { get; set; }
+        public string Link { get; set; }
+        public int? PinnedCommentId { get; set; }
+        public string Title { get; set; }
+        public string Resume { get; set; }
+        public string Body { get; set; }
+        public byte Rating { get; set; }
+        public string CreatedAt { get; set; }
+        public PostAuthor Author { get; set; }
+    }
+
+    public class PostAuthor
+    {
+        public string Name { get; set; }
+    }
+}
