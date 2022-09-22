@@ -37,7 +37,7 @@ public class PostOut
         };
     }
 
-    public static PostOut NewWithoutComments(Post post, string? url = null)
+    public static PostOut WithoutComments(Post post, string? url = null)
     {
         var postOut = New(post, url);
         postOut.Comments = new List<CommentOut>();

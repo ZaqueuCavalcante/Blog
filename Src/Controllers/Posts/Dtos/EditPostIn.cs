@@ -5,6 +5,9 @@ namespace Blog.Controllers.Posts;
 public class EditPostIn
 {
     [Required]
+    public int Id { get; set; }
+
+    [Required]
     public string Title { get; set; }
 
     [Required]

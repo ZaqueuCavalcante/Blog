@@ -31,7 +31,7 @@ public class TagsApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var tag = JsonConvert.DeserializeObject<TagOut>(await response.Content.ReadAsStringAsync());
+        var tag = await response.DeserializeTo<TagOut>();
 
         tag.Name.Should().Be(name);
         tag.CreatedAt.Should().NotBeNullOrEmpty();
@@ -45,7 +45,7 @@ public class TagsApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var tags = JsonConvert.DeserializeObject<List<TagOut>>(await response.Content.ReadAsStringAsync());
+        var tags = await response.DeserializeTo<List<TagOut>>();
 
         tags.Count.Should().Be(3);
     }

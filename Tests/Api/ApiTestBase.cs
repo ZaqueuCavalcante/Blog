@@ -53,7 +53,7 @@ public class ApiTestBase
     {
         var userIn = new UserIn { Email = email, Password = password };
         var loginResponse = await _client.PostAsync("users/login", userIn.ToStringContent());
-        var loginOut = JsonConvert.DeserializeObject<LoginOut>(await loginResponse.Content.ReadAsStringAsync());
+        var loginOut = await loginResponse.DeserializeTo<LoginOut>();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginOut.AccessToken);    
     }
 

@@ -43,13 +43,50 @@ public class PostsApiTests : ApiTestBase
         var response = await _client.PostAsync("/posts", postIn.ToStringContent());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var post = JsonConvert.DeserializeObject<PostOut>(await response.Content.ReadAsStringAsync());
+        var post = await response.DeserializeTo<PostOut>();
 
         post.Title.Should().Be(postIn.Title);
         post.Resume.Should().Be(postIn.Resume);
         post.Body.Should().Be(postIn.Body);
         post.Author.Name.Should().Be("Elliot Alderson");
         post.Tags.Should().Contain(t => t.Name == "Tech");
+    }
+
+    [Test]
+    public async Task Edit_a_post()
+    {
+        // Arrange
+        await Login("elliot@blog.com", "Test@123");
+
+        var createPostIn = new PostIn
+        {
+            Title = "A new bolg post",
+            Resume = "Linux Basics for Hackers: Getting Started with Networking, Scripting, and Security in Kali.",
+            Body = "This practical, tutorial-style book uses the Kali Linux distribution to teach Linux basics with a focus on how hackers would use them. Topics include Linux command line basics, filesystems, networking, BASH basics, package management, logging, and the Linux kernel and drivers.",
+            CategoryId = 1,
+            Tags = new List<int>{ 1 },
+        };
+        var createResponse = await _client.PostAsync("/posts", createPostIn.ToStringContent());
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var createdPost = await createResponse.DeserializeTo<PostOut>();
+
+        var editPostIn = new EditPostIn
+        {
+            Id = createdPost.Id,
+            Title = "A new title",
+            Resume = "A new resume",
+            Body = "A new body",
+        };
+
+        // Act
+        var editResponse = await _client.PostAsync("/posts", editPostIn.ToStringContent());
+        editResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var editedPost = await createResponse.DeserializeTo<PostOut>();
+
+        // Assert
+        editedPost.Title.Should().Be(editPostIn.Title);
+        editedPost.Resume.Should().Be(editPostIn.Resume);
+        editedPost.Body.Should().Be(editPostIn.Body);
     }
 
     [Test]
@@ -68,7 +105,7 @@ public class PostsApiTests : ApiTestBase
         var response = await _client.PostAsync("/posts/1/comments", commentIn.ToStringContent());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var comment = JsonConvert.DeserializeObject<CommentOut>(await response.Content.ReadAsStringAsync());
+        var comment = await response.DeserializeTo<CommentOut>();
 
         comment.UserId.Should().Be(userId);
         comment.Body.Should().Be(commentIn.Body);
@@ -87,7 +124,7 @@ public class PostsApiTests : ApiTestBase
 
         var postBeforeResponse = await _client.GetAsync($"/posts/{postId}");
         postBeforeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var postBefore = JsonConvert.DeserializeObject<PostOut>(await postBeforeResponse.Content.ReadAsStringAsync());
+        var postBefore = await postBeforeResponse.DeserializeTo<PostOut>();
         postBefore.PinnedCommentId.Should().Be(null);
 
         var response = await _client.PatchAsync($"/posts/{postId}/comments/{commentId}/pins", null);
@@ -95,7 +132,7 @@ public class PostsApiTests : ApiTestBase
 
         var postAfterResponse = await _client.GetAsync($"/posts/{postId}");
         postAfterResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var postAfter = JsonConvert.DeserializeObject<PostOut>(await postAfterResponse.Content.ReadAsStringAsync());
+        var postAfter = await postAfterResponse.DeserializeTo<PostOut>();
         postAfter.PinnedCommentId.Should().Be(commentId);
     }
 
@@ -114,7 +151,7 @@ public class PostsApiTests : ApiTestBase
 
         var postAfterResponse = await _client.GetAsync($"/posts/{postId}");
         postAfterResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var postAfter = JsonConvert.DeserializeObject<PostOut>(await postAfterResponse.Content.ReadAsStringAsync());
+        var postAfter = await postAfterResponse.DeserializeTo<PostOut>();
         postAfter.PinnedCommentId.Should().Be(null);
     }
 
@@ -135,7 +172,7 @@ public class PostsApiTests : ApiTestBase
         var response = await _client.PostAsync($"/posts/{postId}/comments/{commentId}/replies", replyIn.ToStringContent());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var reply = JsonConvert.DeserializeObject<ReplyOut>(await response.Content.ReadAsStringAsync());
+        var reply = await response.DeserializeTo<ReplyOut>();
 
         reply.UserId.Should().Be(userId);
         reply.Body.Should().Be(replyIn.Body);
@@ -155,7 +192,7 @@ public class PostsApiTests : ApiTestBase
         var response = await _client.PostAsync($"/posts/{postId}/comments/{commentId}/likes", null);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var like = JsonConvert.DeserializeObject<LikeOut>(await response.Content.ReadAsStringAsync());
+        var like = await response.DeserializeTo<LikeOut>();
 
         like.UserId.Should().Be(userId);
         like.CommentId.Should().Be(commentId);
@@ -170,7 +207,7 @@ public class PostsApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var post = JsonConvert.DeserializeObject<PostOut>(await response.Content.ReadAsStringAsync());
+        var post = await response.DeserializeTo<PostOut>();
 
         post.Id.Should().Be(id);
         post.Title.Should().Be(title);
@@ -184,7 +221,7 @@ public class PostsApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var posts = JsonConvert.DeserializeObject<List<PostOut>>(await response.Content.ReadAsStringAsync());
+        var posts = await response.DeserializeTo<List<PostOut>>();
 
         posts.Count.Should().Be(3);
     }

@@ -38,21 +38,12 @@ namespace Blog.Controllers.Posts
         /// <summary>
         /// Update a blog post.
         /// </summary>
-        [HttpPatch("{id}"), Authorize(Roles = BloggerRole)]
-        public async Task<IActionResult> EditPost(int id, EditPostIn dto)
+        [HttpPatch(""), Authorize(Roles = BloggerRole)]
+        public async Task<IActionResult> EditPost(EditPostIn dto)
         {
-            var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
-            if (post is null)
-                return NotFound("Post not found.");
+            var post = await _postsService.EditPost(User.Id(), dto);
 
-            if (post.Author.UserId != User.Id())
-                return Forbid("You must be the post author to be able to edit it.");
-
-            post.Edit(dto.Title, dto.Resume, dto.Body);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(PostOut.NewWithoutComments(post));
+            return Ok(PostOut.WithoutComments(post));
         }
 
         /// <summary>
@@ -221,7 +212,7 @@ namespace Blog.Controllers.Posts
 
             Response.AddPagination(parameters, count);
 
-            return Ok(posts.Select(p => PostOut.NewWithoutComments(p, Request.GetRoot())).ToList());
+            return Ok(posts.Select(p => PostOut.WithoutComments(p, Request.GetRoot())).ToList());
         }
     }
 }

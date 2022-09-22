@@ -38,4 +38,20 @@ public class PostsService : IPostsService
 
         return post;
     }
+
+    public async Task<Post> EditPost(int userId, EditPostIn dto)
+    {
+        var post = await _context.Posts.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == dto.Id);
+        if (post is null)
+            throw new DomainException("Post not found.", 404);
+
+        if (post.Author.UserId != userId)
+            throw new DomainException("You must be the post author to be able to edit it.", 403);
+
+        post.Edit(dto.Title, dto.Resume, dto.Body);
+
+        await _context.SaveChangesAsync();
+
+        return post;
+    }
 }

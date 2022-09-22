@@ -23,7 +23,7 @@ public class ReadersApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var reader = JsonConvert.DeserializeObject<ReaderOut>(await response.Content.ReadAsStringAsync());
+        var reader = await response.DeserializeTo<ReaderOut>();
 
         reader.Name.Should().Be(readerIn.Name);
     }
@@ -37,7 +37,7 @@ public class ReadersApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var reader = JsonConvert.DeserializeObject<ReaderOut>(await response.Content.ReadAsStringAsync());
+        var reader = await response.DeserializeTo<ReaderOut>();
 
         reader.Id.Should().Be(id);
         reader.Name.Should().Be(name);
@@ -50,7 +50,7 @@ public class ReadersApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var readers = JsonConvert.DeserializeObject<List<ReaderOut>>(await response.Content.ReadAsStringAsync());
+        var readers = await response.DeserializeTo<List<ReaderOut>>();
 
         readers.Count.Should().Be(4);
     }

@@ -54,7 +54,7 @@ public class BloggersApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var blogger = JsonConvert.DeserializeObject<BloggerOut>(await response.Content.ReadAsStringAsync());
+        var blogger = await response.DeserializeTo<BloggerOut>();
 
         blogger.Id.Should().Be(id);
         blogger.Name.Should().Be(name);
@@ -76,7 +76,7 @@ public class BloggersApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var bloggers = JsonConvert.DeserializeObject<List<BloggerOut>>(await response.Content.ReadAsStringAsync());
+        var bloggers = await response.DeserializeTo<List<BloggerOut>>();
 
         bloggers.Count.Should().Be(3);
     }
@@ -88,7 +88,7 @@ public class BloggersApiTests : ApiTestBase
 
         var responseBefore = await _client.GetAsync($"/bloggers/2");
         responseBefore.StatusCode.Should().Be(HttpStatusCode.OK);
-        var bloggerBefore = JsonConvert.DeserializeObject<BloggerOut>(await responseBefore.Content.ReadAsStringAsync());
+        var bloggerBefore = await responseBefore.DeserializeTo<BloggerOut>();
         bloggerBefore.Id.Should().Be(2);
         bloggerBefore.Name.Should().Be("Elliot Alderson");
         bloggerBefore.Resume.Should().Be("Writes about Linux, Hacking and Computers.");
@@ -103,7 +103,7 @@ public class BloggersApiTests : ApiTestBase
 
         var responseAfter = await _client.GetAsync($"/bloggers/2");
         responseAfter.StatusCode.Should().Be(HttpStatusCode.OK);
-        var bloggerAfter = JsonConvert.DeserializeObject<BloggerOut>(await responseAfter.Content.ReadAsStringAsync());
+        var bloggerAfter = await responseAfter.DeserializeTo<BloggerOut>();
         bloggerAfter.Id.Should().Be(2);
         bloggerAfter.Name.Should().Be("Zaqueu C.");
         bloggerAfter.Resume.Should().Be("A .Net Core Blogger...");

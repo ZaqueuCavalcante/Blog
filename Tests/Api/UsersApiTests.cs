@@ -1,6 +1,5 @@
 using System.Net;
 using Blog.Controllers.Users;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -16,7 +15,7 @@ public class UsersApiTests : ApiTestBase
         var loginResponse = await _client.PostAsync("users/login", userIn.ToStringContent());
         loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var loginOut = JsonConvert.DeserializeObject<LoginOut>(await loginResponse.Content.ReadAsStringAsync());
+        var loginOut = await loginResponse.DeserializeTo<LoginOut>();
 
         loginOut.AccessToken.Should().NotBeNullOrEmpty();
         loginOut.ExpiresInMinutes.Should().Be("5");

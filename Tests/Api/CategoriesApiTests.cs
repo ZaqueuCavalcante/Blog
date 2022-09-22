@@ -35,7 +35,7 @@ public class CategoriesApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var category = JsonConvert.DeserializeObject<CategoryOut>(await response.Content.ReadAsStringAsync());
+        var category = await response.DeserializeTo<CategoryOut>();
 
         category.Name.Should().Be(name);
         category.Description.Should().Be(description);
@@ -49,7 +49,7 @@ public class CategoriesApiTests : ApiTestBase
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var categories = JsonConvert.DeserializeObject<List<CategoryOut>>(await response.Content.ReadAsStringAsync());
+        var categories = await response.DeserializeTo<List<CategoryOut>>();
 
         categories.Count.Should().Be(5);
         categories.Should().Contain(c => c.Name == "Linux");
