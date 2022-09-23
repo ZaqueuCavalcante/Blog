@@ -12,8 +12,8 @@ public class SwaggerParametersFilter : IParameterFilter
 
     public void Apply(OpenApiParameter parameter, ParameterFilterContext context)
     {
-        if ((context.ParameterInfo.ParameterType == typeof(NetworkIn) ||
-            context.ParameterInfo.ParameterType == typeof(DeleteNetworkIn)) &&
+        var type = context.ParameterInfo.ParameterType;
+        if ((type == typeof(NetworkIn) || type == typeof(DeleteNetworkIn)) &&
             parameter.Name.Equals(nameof(NetworkIn.Name), StringComparison.InvariantCultureIgnoreCase)
         ) {
             parameter.Schema.Enum = Network.Alloweds.Select(n => new OpenApiString(n)).ToList<IOpenApiAny>();

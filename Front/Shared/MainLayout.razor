@@ -1,33 +1,19 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
 
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-            OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
-            Href="https://github.com/ZaqueuCavalcante/Blog" Target="_blank" Title="Got to GitHub" Edge="Edge.End" />
+        <MudButton Style="color: white;" Href="https://localhost:5001" Target="_self" Size="Size.Large" StartIcon="@Icons.Filled.Memory" Variant="Variant.Text" >MangueBit</MudButton>
+        <MudSpacer />
+        <MudButton Style="color: white;" Href="https://localhost:5001/posts" Target="_self" Size="Size.Large" Variant="Variant.Text" >Posts</MudButton>
+        <MudButton Style="color: white;" Href="https://localhost:5001/tags" Target="_self" Size="Size.Large" Variant="Variant.Text" >Tags</MudButton>
+        <MudIconButton Size="Size.Medium" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
+            Href="https://github.com/ZaqueuCavalcante/Blog" Target="_blank" Title="Got to GitHub"/>
+        <MudSpacer />
     </MudAppBar>
-    <MudDrawer ClipMode="DrawerClipMode.Always" @bind-Open="_drawerOpen" Elevation="2">
-        <MudDrawerHeader LinkToIndex="true">
-            <MudText Typo="Typo.h4" Class="mt-1">MangueBit</MudText>
-        </MudDrawerHeader>
-        <MyNavMenu />
-    </MudDrawer>
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
-
-@code {
-    private bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-}

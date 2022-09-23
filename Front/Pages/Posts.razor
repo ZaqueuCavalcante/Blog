@@ -11,27 +11,15 @@ else
 {
     foreach (var post in _posts)
     {
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderAvatar>
-                    <MudAvatar Color="Color.Secondary">@post.Author.Name[0]</MudAvatar>
-                </CardHeaderAvatar>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@post.Author.Name - @post.CreatedAt</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.h4">@post.Title</MudText>
-                <MudText Typo="Typo.h6">@post.Resume</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />
-                <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" />
-            </MudCardActions>
-        </MudCard>
+        <MudContainer Style="" MaxWidth="MaxWidth.Large">
+            <PostCard
+                AuthorName="@post.Author.Name"
+                CreatedAt="@post.CreatedAt"
+                Title="@post.Title"
+                Resume="@post.Resume">
+            </PostCard>
+            <MudDivider DividerType="DividerType.FullWidth"/>
+        </MudContainer>
     }
 }
 
